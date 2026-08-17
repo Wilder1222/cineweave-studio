@@ -9,6 +9,7 @@ This repository is intentionally outside the CineWeave Web application. Install 
 - reads a user-provided World context and creative intent;
 - produces 2–5 genuinely different director proposals;
 - translates proposals into composition, camera, performance, lighting, sound and risk decisions;
+- analyzes supplied visual observations into receipt-backed semantic PromptHypotheses without pretending they are tested Prompts;
 - prepares a Codex-owned interactive image draft brief;
 - returns stable JSON that CineWeave’s Director’s Palette can import.
 
@@ -46,6 +47,7 @@ The Codex receipt must contain the actual repository URL, ref, commit and conten
 
 ```bash
 node scripts/validate-output.mjs schemas/proposal-output.schema.json examples/proposal-output.json
+node scripts/validate-output.mjs schemas/hypothesis-output.schema.json examples/hypothesis-output.json
 node scripts/validate-output.mjs schemas/draft-brief.schema.json examples/draft-brief.json
 ```
 

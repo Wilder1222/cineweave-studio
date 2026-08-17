@@ -64,6 +64,32 @@ function validateDraftBrief(payload, errors) {
   ["requiredMedia", "nextAction"].forEach((field) => requiredString(payload.importContract[field], `importContract.${field}`, errors));
 }
 
+function validateHypothesisPayload(payload, errors) {
+  if (payload.kind !== "cineweave_codex_prompt_hypothesis") errors.push("kind must be cineweave_codex_prompt_hypothesis");
+  requiredString(payload.worldId, "worldId", errors);
+  validateReceipt(payload.skillReceipt, errors);
+  if (!Array.isArray(payload.hypotheses) || payload.hypotheses.length < 1 || payload.hypotheses.length > 12) {
+    errors.push("hypotheses must contain 1–12 items");
+    return;
+  }
+  const categories = new Set(["subject", "identity", "state", "environment", "composition", "camera", "light", "color", "material", "style", "atmosphere", "negative"]);
+  const confidences = new Set(["high", "medium", "low", "unknown"]);
+  payload.hypotheses.forEach((hypothesis, index) => {
+    const prefix = `hypotheses[${index}]`;
+    if (!isRecord(hypothesis)) {
+      errors.push(`${prefix} must be an object`);
+      return;
+    }
+    ["fragment", "category", "confidence"].forEach((field) => requiredString(hypothesis[field], `${prefix}.${field}`, errors));
+    if (!categories.has(hypothesis.category)) errors.push(`${prefix}.category is unsupported`);
+    if (!confidences.has(hypothesis.confidence)) errors.push(`${prefix}.confidence is unsupported`);
+    ["unknowns", "observationIds"].forEach((field) => {
+      if (!Array.isArray(hypothesis[field])) errors.push(`${prefix}.${field} must be an array`);
+    });
+    if (hypothesis.alternativeHypotheses !== undefined && !Array.isArray(hypothesis.alternativeHypotheses)) errors.push(`${prefix}.alternativeHypotheses must be an array when provided`);
+  });
+}
+
 async function main() {
   const [, , schemaPath, payloadPath] = process.argv;
   if (!schemaPath || !payloadPath) {
@@ -78,6 +104,7 @@ async function main() {
   if (!isRecord(payload)) errors.push("payload must be an object");
   else if (schema.title?.includes("Proposal")) validateProposalPayload(payload, errors);
   else if (schema.title?.includes("Draft Brief")) validateDraftBrief(payload, errors);
+  else if (schema.title?.includes("Prompt Hypothesis")) validateHypothesisPayload(payload, errors);
   else errors.push("unsupported schema title");
   if (errors.length) {
     console.error(JSON.stringify({ valid: false, errors }, null, 2));
