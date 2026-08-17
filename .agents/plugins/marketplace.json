@@ -1,0 +1,21 @@
+{
+  "name": "cineweave-director",
+  "interface": {
+    "displayName": "CineWeave Director"
+  },
+  "plugins": [
+    {
+      "name": "cineweave-director",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Wilder1222/cineweave-director.git",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

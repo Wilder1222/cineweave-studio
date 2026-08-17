@@ -1,0 +1,22 @@
+{
+  "name": "cineweave-director",
+  "version": "0.1.0",
+  "description": "Codex-first director and visual-development workflow for CineWeave Worlds.",
+  "homepage": "https://github.com/Wilder1222/cineweave-director",
+  "repository": "https://github.com/Wilder1222/cineweave-director",
+  "license": "MIT",
+  "keywords": ["cineweave", "codex", "director", "storyboard", "cinematography"],
+  "author": {
+    "name": "CineWeave"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cineweave Director",
+    "shortDescription": "Create Codex-owned directing proposals for a CineWeave World.",
+    "longDescription": "CineWeave Director turns World context and a creator intent into comparable directing proposals, structured DirectingSpec inputs, and Codex draft briefs. It never installs Skills, generates through the Web app, writes Canon, or submits a paid Provider handoff.",
+    "developerName": "CineWeave",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use CineWeave Director to turn this World context and creative intent into 3–5 distinct directing proposals."
+  }
+}
