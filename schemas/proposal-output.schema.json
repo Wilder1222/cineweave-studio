@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/cineweave/cineweave-director/schemas/proposal-output.schema.json",
+  "$id": "https://github.com/Wilder1222/cineweave-director/schemas/proposal-output.schema.json",
   "title": "CineWeave Codex Director Proposal Payload",
   "type": "object",
   "additionalProperties": false,

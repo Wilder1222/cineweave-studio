@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/cineweave/cineweave-director/schemas/draft-brief.schema.json",
+  "$id": "https://github.com/Wilder1222/cineweave-director/schemas/draft-brief.schema.json",
   "title": "CineWeave Codex Interactive Draft Brief",
   "type": "object",
   "additionalProperties": false,
