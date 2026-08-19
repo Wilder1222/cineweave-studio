@@ -1,0 +1,63 @@
+{
+  "suite": "cineweave-prompt-management",
+  "version": "0.1.0",
+  "purpose": "Behavior contract for general text-to-image Prompt creation, import, versioning, composition, reference binding and repair.",
+  "cases": [
+    {
+      "id": "prompt-create-product",
+      "mode": "prompt_management",
+      "prompt": "创建一个用于白色耳机产品图的通用 Prompt，不要加入电影镜头语言。",
+      "loads": ["prompt-management"],
+      "expectedOutput": "prompt-record",
+      "assertions": ["domain is product", "one primary target", "camera is not forced", "provider neutral"]
+    },
+    {
+      "id": "prompt-import-normalize",
+      "mode": "prompt_management",
+      "prompt": "导入我现有的一段人物 Prompt，保留原文并拆成 subject、lighting、style 和 negative blocks。",
+      "loads": ["prompt-management"],
+      "expectedOutput": "prompt-record",
+      "assertions": ["sourceText is preserved", "semantic blocks are explicit", "normalization does not claim a generation result"]
+    },
+    {
+      "id": "prompt-version-update",
+      "mode": "prompt_management",
+      "prompt": "只把旧 Prompt 的背景从室内改成花园，生成新版本并保留父版本。",
+      "loads": ["prompt-management"],
+      "expectedOutput": "prompt-record",
+      "assertions": ["version increases", "parentPromptId is retained", "change log names one changed variable", "parent is not overwritten"]
+    },
+    {
+      "id": "prompt-variables-and-variants",
+      "mode": "prompt_management",
+      "prompt": "把人物、背景和色温做成变量，生成三个一次只改变一个变量的变体。",
+      "loads": ["prompt-management"],
+      "expectedOutput": "prompt-record",
+      "assertions": ["variables are bound with slots", "variants are bounded", "each variant has an explicit single change"]
+    },
+    {
+      "id": "prompt-reference-binding",
+      "mode": "prompt_management",
+      "prompt": "把一张人物参考图作为 identity，一张光线参考图作为 lighting，写清楚保留和排除内容。",
+      "loads": ["prompt-management", "reference-editing"],
+      "expectedOutput": "prompt-record",
+      "assertions": ["roles are explicit", "only Observation IDs are used", "style does not replace identity", "preserve and excluded contracts exist"]
+    },
+    {
+      "id": "prompt-review-repair",
+      "mode": "prompt_management",
+      "prompt": "上一版总是把产品变成漂浮的广告海报，请诊断并只修复空间接触关系。",
+      "loads": ["prompt-management"],
+      "expectedOutput": "new prompt-record or repair proposal",
+      "assertions": ["failure is observable", "smallest repair variable is selected", "other intent remains stable"]
+    },
+    {
+      "id": "prompt-domain-not-cinematic-by-default",
+      "mode": "prompt_management",
+      "prompt": "管理一个食物摄影 Prompt，只关注摆盘、蒸汽、表面质感和俯拍构图。",
+      "loads": ["prompt-management"],
+      "expectedOutput": "prompt-record",
+      "assertions": ["domain is food", "cinematic shot package is not required", "material and composition remain concrete"]
+    }
+  ]
+}

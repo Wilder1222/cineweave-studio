@@ -1,22 +1,22 @@
 {
   "name": "cineweave-director",
-  "version": "0.2.0",
-  "description": "Codex-first director and visual-development workflow for CineWeave Worlds.",
+  "version": "0.5.0",
+  "description": "Codex-first general Prompt management, director, storyboard, cinematography, cinematic text-to-image and provider-neutral render planning workflow for CineWeave Worlds.",
   "homepage": "https://github.com/Wilder1222/cineweave-director",
   "repository": "https://github.com/Wilder1222/cineweave-director",
   "license": "MIT",
-  "keywords": ["cineweave", "codex", "director", "storyboard", "cinematography"],
+  "keywords": ["cineweave", "codex", "director", "prompt-management", "prompt-library", "prompt-variants", "storyboard", "cinematography", "text-to-image", "visual-realism", "render-plan", "reference-editing"],
   "author": {
     "name": "CineWeave"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "Cineweave Director",
-    "shortDescription": "Create Codex-owned directing proposals for a CineWeave World.",
-    "longDescription": "CineWeave Director turns World context and a creator intent into comparable directing proposals, receipt-backed semantic PromptHypotheses, structured DirectingSpec inputs, and Codex draft briefs. It never installs Skills, generates through the Web app, writes Canon, or submits a paid Provider handoff.",
+    "shortDescription": "Manage general Prompts, cinematic storyboards and safe render plans.",
+    "longDescription": "CineWeave Director manages general text-to-image Prompts as versioned assets with domains, tags, variables, semantic references, variants, evaluation and repair history. It also turns World context and creator intent into professional director decisions, shot-by-shot storyboards, camera language, cinematic-realistic provider-neutral prompt packages, human-gated RenderPlans, verified Draft media metadata, receipt-backed PromptHypotheses, structured DirectingSpec inputs and Codex draft briefs. It never installs Skills, generates through the Web app, writes Canon, or submits a paid Provider handoff.",
     "developerName": "CineWeave",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "Use CineWeave Director to turn this World context and creative intent into 3–5 distinct directing proposals."
+    "defaultPrompt": "Use CineWeave Director to create or manage this text-to-image Prompt, or turn this World context and creative intent into a director proposal, storyboard sequence, cinematic-realistic frame prompt and human-gated RenderPlan."
   }
 }

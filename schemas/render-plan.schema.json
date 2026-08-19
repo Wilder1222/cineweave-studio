@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Wilder1222/cineweave-director/schemas/render-plan.schema.json",
+  "title": "CineWeave Codex Provider-neutral Image Render Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "worldId", "skillReceipt", "mode", "promptPayloadRef", "canvas", "qualityBudget", "variantCount", "inputs", "executionGate", "preflight", "postflight"],
+  "properties": {
+    "kind": { "const": "cineweave_codex_render_plan" },
+    "worldId": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "shotId": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "proposalId": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "skillReceipt": { "$ref": "#/$defs/skillReceipt" },
+    "mode": { "enum": ["generate", "edit", "inpaint", "multi_reference"] },
+    "promptPayloadRef": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "canvas": { "$ref": "#/$defs/canvas" },
+    "qualityBudget": { "enum": ["draft", "explore", "final"] },
+    "variantCount": { "type": "integer", "minimum": 1, "maximum": 12 },
+    "inputs": {
+      "type": "array",
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/input" }
+    },
+    "mask": { "$ref": "#/$defs/mask" },
+    "requiredCapabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "items": { "enum": ["native_image_generation", "multi_reference", "mask_inpaint", "exact_text", "high_resolution", "transparent_background"] }
+    },
+    "executionGate": { "$ref": "#/$defs/executionGate" },
+    "preflight": { "$ref": "#/$defs/preflight" },
+    "postflight": { "$ref": "#/$defs/postflight" },
+    "notes": { "type": "string", "maxLength": 2000 }
+  },
+  "$defs": {
+    "skillReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "ref", "commit", "installedBy", "usedAt"],
+      "properties": {
+        "repository": { "type": "string", "format": "uri", "pattern": "^https://(www\\.)?github\\.com/[^/]+/[^/]+(?:\\.git)?/?$" },
+        "ref": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "commit": { "type": "string", "pattern": "^[0-9a-fA-F]{7,64}$" },
+        "contentHash": { "type": "string", "pattern": "^sha256:[0-9a-fA-F]{64}$" },
+        "installedBy": { "const": "codex-environment" },
+        "environmentId": { "type": "string", "maxLength": 240 },
+        "usedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "stringList": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 24,
+      "items": { "type": "string", "minLength": 1, "maxLength": 1200 }
+    },
+    "canvas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aspectRatio", "sizeClass"],
+      "properties": {
+        "aspectRatio": { "type": "string", "pattern": "^[1-9][0-9]*:[1-9][0-9]*$" },
+        "sizeClass": { "enum": ["square", "portrait", "landscape", "wide", "tall", "custom", "unspecified"] },
+        "pixelDimensions": { "type": "string", "pattern": "^[1-9][0-9]*x[1-9][0-9]*$" }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observationId", "role", "preserve"],
+      "properties": {
+        "observationId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "role": { "enum": ["identity", "composition", "lighting", "style", "material", "background", "mask", "reference"] },
+        "preserve": { "$ref": "#/$defs/stringList" },
+        "transformation": { "type": "string", "minLength": 1, "maxLength": 1200 }
+      }
+    },
+    "mask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observationId", "opaqueMeans", "transparentMeans", "purpose"],
+      "properties": {
+        "observationId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "opaqueMeans": { "const": "preserve" },
+        "transparentMeans": { "const": "regenerate" },
+        "purpose": { "type": "string", "minLength": 1, "maxLength": 1200 }
+      }
+    },
+    "executionGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiresHumanApproval", "status"],
+      "properties": {
+        "requiresHumanApproval": { "const": true },
+        "status": { "enum": ["planned", "approved", "blocked", "rejected"] },
+        "approvedBy": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "approvedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "status", "message"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "status": { "enum": ["pending", "pass", "fail"] },
+        "message": { "type": "string", "minLength": 1, "maxLength": 1000 }
+      }
+    },
+    "preflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "checks"],
+      "properties": {
+        "status": { "enum": ["pending", "ready", "blocked"] },
+        "checks": { "type": "array", "minItems": 1, "maxItems": 24, "items": { "$ref": "#/$defs/check" } }
+      }
+    },
+    "postflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredArtifacts", "verify", "importStatus"],
+      "properties": {
+        "requiredArtifacts": { "$ref": "#/$defs/stringList" },
+        "verify": { "$ref": "#/$defs/stringList" },
+        "importStatus": { "const": "draft" }
+      }
+    }
+  }
+}

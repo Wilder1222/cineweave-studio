@@ -1,0 +1,75 @@
+{
+  "atlasCaseId": "portrait-character-design-dark-fantasy-001",
+  "category": "portrait-character-design",
+  "status": "recommended",
+  "source": {
+    "sourceType": "user_upload",
+    "sourceLabel": "User-supplied reference image",
+    "rightsStatus": "unverified",
+    "usageNote": "Keep local unless the user confirms permission to redistribute or publish this asset."
+  },
+  "asset": {
+    "file": "dark-fantasy-portrait-user-upload.png",
+    "format": "png",
+    "width": 1200,
+    "height": 2665,
+    "sha256": "542ee9190b66d4f7bfb157f73c35bfaaff197e40c406ab06aad5abdf9b75b1ff"
+  },
+  "recommendedRoute": "reference_set",
+  "primaryRole": "identity",
+  "visualEvidence": [
+    "Long dark hair framing a close frontal portrait",
+    "Bright green eyes and visible freckles",
+    "Crescent forehead ornament and layered bead necklaces",
+    "Dark fantasy adornment with warm skin against a charcoal background",
+    "Hand-to-lips gesture suitable for an intimate character close-up"
+  ],
+  "preserve": [
+    "dark long-hair silhouette",
+    "green eye accent",
+    "freckled complexion",
+    "crescent forehead ornament",
+    "layered necklace and adornment language",
+    "mysterious dark-fantasy character impression"
+  ],
+  "borrow": [
+    "warm skin against a dark neutral field",
+    "muted black, brown and red palette with green highlights",
+    "intimate vertical portrait framing",
+    "soft frontal facial illumination and small reflective accents"
+  ],
+  "exclude": [
+    "painterly brush marks as photographic realism evidence",
+    "exact original face and pose when a new character is intended",
+    "the original abstract background",
+    "unmotivated duplication of every necklace and accessory"
+  ],
+  "suitability": {
+    "characterIdentity": 8.5,
+    "costumeAndAdornment": 8,
+    "portraitComposition": 8,
+    "paletteAndMood": 8,
+    "lighting": 6.5,
+    "cameraAndLens": 5,
+    "photographicRealism": 4.5,
+    "environmentAndGeography": 2
+  },
+  "pairWith": [
+    "a photographic portrait for skin, hair and facial-proportion realism",
+    "a motivated cinematic-lighting reference for key, fill and rim direction",
+    "a location or production-design reference when the shot needs environment"
+  ],
+  "generationGuidance": {
+    "goodFor": [
+      "dark-fantasy character design",
+      "stylized portrait key art",
+      "close-up storyboard frame with a mystical female character",
+      "identity, adornment and palette guidance"
+    ],
+    "notFor": [
+      "sole reference for live-action photorealism",
+      "wide shots or spatial geography",
+      "accurate lens, focus-distance or camera-movement reconstruction"
+    ]
+  }
+}
