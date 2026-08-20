@@ -15,7 +15,8 @@
     "height": 2665,
     "sha256": "542ee9190b66d4f7bfb157f73c35bfaaff197e40c406ab06aad5abdf9b75b1ff"
   },
-  "recommendedRoute": "reference_set",
+  "recommendedRoute": "reference_review",
+  "followUpRoute": "reference_set",
   "primaryRole": "identity",
   "visualEvidence": [
     "Long dark hair framing a close frontal portrait",

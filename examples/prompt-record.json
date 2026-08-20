@@ -100,6 +100,7 @@
     "onePrimaryTarget": true,
     "providerNeutral": true,
     "variablesBound": true,
-    "referencesScoped": true
+    "referencesScoped": true,
+    "observationReady": true
   }
 }

@@ -177,12 +177,13 @@
     "validation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["onePrimaryTarget", "providerNeutral", "variablesBound", "referencesScoped"],
+      "required": ["onePrimaryTarget", "providerNeutral", "variablesBound", "referencesScoped", "observationReady"],
       "properties": {
         "onePrimaryTarget": { "const": true },
         "providerNeutral": { "const": true },
         "variablesBound": { "const": true },
-        "referencesScoped": { "const": true }
+        "referencesScoped": { "const": true },
+        "observationReady": { "const": true }
       }
     }
   }

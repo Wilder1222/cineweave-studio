@@ -1,4 +1,4 @@
 interface:
   display_name: "CineWeave Director"
-  short_description: "Manage general Prompts, cinematic storyboards and safe render plans"
-  default_prompt: "Use $cineweave-director to create or manage this text-to-image Prompt, or turn this World context and creative intent into a director proposal, storyboard sequence, cinematic-realistic frame prompt or human-gated RenderPlan."
+  short_description: "Professional shots from exact character, scene and production bindings"
+  default_prompt: "Use $cineweave-director to turn exact CharacterBinding, SceneBinding, InteractionConstraintSet and production-control refs into a coherent proposal, storyboard, image prompt or human-gated RenderPlan."

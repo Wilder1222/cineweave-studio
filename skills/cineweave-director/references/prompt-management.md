@@ -35,6 +35,46 @@ Choose the smallest operation that matches the request:
 
 Never overwrite a prior version and never claim that a Prompt produced a successful image. A Prompt is a design and management artifact; generated media requires a separate human-gated RenderPlan and verified Draft import.
 
+## Reference gallery routing
+
+When a creator asks whether a reference image is suitable, which category to use, or how to reproduce a visual treatment, read [`prompt-gallery.md`](prompt-gallery.md) first and then one matching category. Keep the gallery index small and high-signal; do not paste every example into the active context. Score a reference for the declared purpose and role, preserve source and rights metadata, and separate what to preserve, borrow and exclude. If the bundled gallery has no relevant case, use a user-supplied or rights-cleared reference and say that the gallery is inconclusive.
+
+For any domain, make the observation order explicit when it affects the result: canvas or layout, target and arrangement, observer viewpoint and crop, light/color/material behavior, bounded style grammar, then technical and negative constraints. Put exact visible text in quotes with placement and typography instructions. For an edit, state `change only X; preserve Y` and keep camera, identity and layout invariants visible.
+
+## Director-first translation
+
+The same observation-first compiler applies to every Prompt domain. The camera may be literal in a cinematic or photographic Prompt, or it may be an observer viewpoint and layout decision in a product, illustration or abstract Prompt.
+
+Translate abstract intent through this chain:
+
+`emotion or quality word → visible effect → observer/camera decision → composition and subject state → light/color/material behavior → physical proof → targeted negative`
+
+Use these as translations, not as mandatory vocabulary:
+
+| Vague input | Observable Prompt decision |
+|---|---|
+| “电影感” | one capture moment, explicit shot scale or viewpoint, focus relationship, depth layers and motivated light |
+| “高级感” | one clear primary target, controlled negative space, restrained palette, clean silhouette and deliberate material response |
+| “氛围感” | time/weather, light direction, atmosphere density, color relationship and the subject's readable state |
+| “真实感” | believable anatomy or geometry, contact and cast shadows, perspective scale, material-specific highlights and natural asymmetry |
+| “唯美” | calm pose or gaze, selected palette, soft but motivated light, controlled bloom and an explicit exclusion of plastic skin |
+| “史诗感” | scale anchor, low/high viewpoint when justified, layered depth, architectural or environmental proportion and a readable subject-to-world ratio |
+
+Keep the original feeling in `purpose` or a style label if useful, but do not let it stand in for the decisions that create the feeling. The positive Prompt must be ready for a reviewer to visualize without relying on the adjective alone.
+
+## Observation-ready checklist
+
+Before activating a Prompt, confirm:
+
+- the observer or camera position, crop or layout is stated when it affects the result;
+- the primary target and the first visual read are unambiguous;
+- the subject has a visible state, action, pose or arrangement;
+- foreground, subject and background relationships are described when depth matters;
+- the light source or graphic hierarchy is concrete rather than merely “beautiful”;
+- materials have observable behavior such as sheen, translucency, roughness, grain, steam or reflection;
+- each important emotion has at least one visible consequence;
+- negative constraints remove a likely failure instead of repeating generic quality slogans.
+
 ## Domain profiles
 
 Use domain to select the relevant vocabulary. Do not force camera or dramatic language into a non-cinematic Prompt.
@@ -92,6 +132,7 @@ Before activating a Prompt, review:
 
 - one primary visual target;
 - clear domain and intended output use;
+- observation-ready camera/viewpoint, composition, subject state and visual consequences;
 - enough concrete nouns and observable constraints;
 - no contradictory camera, light, material or style instructions;
 - variable names actually explain the intended experiment;

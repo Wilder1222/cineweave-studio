@@ -20,7 +20,9 @@ Every storyboard shot should specify:
 
 - shot purpose and dramatic beat;
 - shot scale, angle, height and lens;
-- blocking and performance;
+- blocking and human-readable performance;
+- CharacterBindings when reusable characters are present;
+- SceneBinding when reusable geography, materials or scene state matter;
 - composition and depth layers;
 - dominant camera movement and its start/peak/end states;
 - lighting and material continuity;
@@ -29,10 +31,36 @@ Every storyboard shot should specify:
 - continuity invariants;
 - a provider-neutral frame prompt for the single frozen image.
 
+## Character continuity
+
+For each bound character, preserve or explicitly change:
+
+- CharacterSpec ID, version and content hash;
+- active identity anchors visible at that shot scale;
+- dominant side, body ratio and signature motion baseline;
+- wardrobe, hair, makeup and injury state;
+- emotion intensity and concealment trend;
+- gaze target, body orientation and action-arc handoff.
+
+Keep `performance` as a concise director-readable summary. Store machine-checkable identity and behavior decisions in `characterBindings`. Do not force every shot to repeat the whole CharacterSpec.
+
+## Scene continuity
+
+For each bound scene, preserve or explicitly change:
+
+- SceneSpec and optional SceneState version/hash;
+- active geography, architecture and scale anchors;
+- active zones, entrances, exits and occlusion placement;
+- camera axis, side and supportable camera anchor;
+- fixed/movable prop state;
+- material state, weather, atmosphere and light direction.
+
+Keep human-readable scene continuity in `continuity.sceneState`, `geographyAnchors` and `materialState`; keep machine-checkable decisions in `sceneBinding`.
+
 ## Storyboard versus image prompt
 
 The storyboard owns sequence logic and continuity. The image prompt owns the exact frozen frame, visual hierarchy and text-to-image construction. Link them with `shotId` and keep the frame prompt subordinate to the storyboard beat.
 
 ## Continuity checks
 
-Before returning a sequence, check that screen direction, eyelines, axis, subject identity, costume, light direction, geography and scale anchors remain coherent. If a deliberate break is required, label it as a transition decision rather than allowing an accidental discontinuity.
+Before returning a sequence, check that screen direction, eyelines, axis, subject identity, character state, appearance state, SceneState, active zones, prop placement, light direction, geography and scale anchors remain coherent. If a deliberate break is required, label it as a transition decision rather than allowing an accidental discontinuity.

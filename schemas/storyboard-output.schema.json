@@ -4,92 +4,396 @@
   "title": "CineWeave Codex Storyboard Sequence",
   "type": "object",
   "additionalProperties": false,
-  "required": ["kind", "worldId", "skillReceipt", "sequenceTitle", "scenePurpose", "shots"],
+  "required": [
+    "kind",
+    "worldId",
+    "skillReceipt",
+    "sequenceTitle",
+    "scenePurpose",
+    "shots"
+  ],
   "properties": {
-    "kind": { "const": "cineweave_codex_storyboard_sequence" },
-    "worldId": { "type": "string", "minLength": 1, "maxLength": 160 },
-    "skillReceipt": { "$ref": "#/$defs/skillReceipt" },
-    "sequenceId": { "type": "string", "minLength": 1, "maxLength": 160 },
-    "sequenceTitle": { "type": "string", "minLength": 1, "maxLength": 500 },
-    "scenePurpose": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "contractVersion": {
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ]
+    },
+    "kind": {
+      "const": "cineweave_codex_storyboard_sequence"
+    },
+    "worldId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "skillReceipt": {
+      "$ref": "#/$defs/skillReceipt"
+    },
+    "sequenceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "sequenceTitle": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "scenePurpose": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
     "shots": {
       "type": "array",
       "minItems": 1,
       "maxItems": 24,
-      "items": { "$ref": "#/$defs/shot" }
+      "items": {
+        "$ref": "#/$defs/shot"
+      }
     }
   },
   "$defs": {
     "skillReceipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["repository", "ref", "commit", "installedBy", "usedAt"],
+      "required": [
+        "repository",
+        "ref",
+        "commit",
+        "installedBy",
+        "usedAt"
+      ],
       "properties": {
-        "repository": { "type": "string", "format": "uri", "pattern": "^https://(www\\.)?github\\.com/[^/]+/[^/]+(?:\\.git)?/?$" },
-        "ref": { "type": "string", "minLength": 1, "maxLength": 240 },
-        "commit": { "type": "string", "pattern": "^[0-9a-fA-F]{7,64}$" },
-        "contentHash": { "type": "string", "pattern": "^sha256:[0-9a-fA-F]{64}$" },
-        "installedBy": { "const": "codex-environment" },
-        "environmentId": { "type": "string", "maxLength": 240 },
-        "usedAt": { "type": "string", "format": "date-time" }
+        "repository": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://(www\\.)?github\\.com/[^/]+/[^/]+(?:\\.git)?/?$"
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{7,64}$"
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-fA-F]{64}$"
+        },
+        "installedBy": {
+          "const": "codex-environment"
+        },
+        "environmentId": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "usedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "lens": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["focalLengthMm", "character"],
+      "required": [
+        "focalLengthMm",
+        "character"
+      ],
       "properties": {
-        "focalLengthMm": { "type": "number", "minimum": 12, "maximum": 400 },
-        "character": { "type": "string", "minLength": 1, "maxLength": 500 }
+        "focalLengthMm": {
+          "type": "number",
+          "minimum": 12,
+          "maximum": 400
+        },
+        "character": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
       }
     },
     "movement": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["type", "direction", "speedCurve", "startState", "peakState", "endState"],
+      "required": [
+        "type",
+        "direction",
+        "speedCurve",
+        "startState",
+        "peakState",
+        "endState"
+      ],
       "properties": {
-        "type": { "enum": ["static", "dolly", "truck", "pan", "tilt", "arc", "crane", "handheld", "gimbal", "rack-focus"] },
-        "direction": { "type": "string", "minLength": 1, "maxLength": 300 },
-        "speedCurve": { "type": "string", "minLength": 1, "maxLength": 500 },
-        "startState": { "type": "string", "minLength": 1, "maxLength": 1000 },
-        "peakState": { "type": "string", "minLength": 1, "maxLength": 1000 },
-        "endState": { "type": "string", "minLength": 1, "maxLength": 1000 }
+        "type": {
+          "enum": [
+            "static",
+            "dolly",
+            "truck",
+            "pan",
+            "tilt",
+            "arc",
+            "crane",
+            "handheld",
+            "gimbal",
+            "rack-focus"
+          ]
+        },
+        "direction": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "speedCurve": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "startState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "peakState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "endState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
       }
     },
     "continuity": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["screenDirection", "eyeline", "axis", "preserve"],
+      "required": [
+        "screenDirection",
+        "eyeline",
+        "axis",
+        "preserve"
+      ],
       "properties": {
-        "screenDirection": { "type": "string", "minLength": 1, "maxLength": 500 },
-        "eyeline": { "type": "string", "minLength": 1, "maxLength": 500 },
-        "axis": { "type": "string", "minLength": 1, "maxLength": 500 },
-        "preserve": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1, "maxLength": 800 } }
+        "screenDirection": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "eyeline": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "axis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "preserve": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
+          }
+        },
+        "characterState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "sceneState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "geographyAnchors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
+          },
+          "maxItems": 24,
+          "uniqueItems": true
+        },
+        "materialState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "emotionalState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "interactionState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "propState": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
       }
     },
     "shot": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["shotId", "order", "durationSeconds", "purpose", "shotScale", "cameraAngle", "lens", "cameraHeight", "movement", "composition", "actionBeat", "performance", "lighting", "soundEdit", "transition", "continuity", "framePrompt"],
+      "required": [
+        "shotId",
+        "order",
+        "durationSeconds",
+        "purpose",
+        "shotScale",
+        "cameraAngle",
+        "lens",
+        "cameraHeight",
+        "movement",
+        "composition",
+        "actionBeat",
+        "performance",
+        "lighting",
+        "soundEdit",
+        "transition",
+        "continuity",
+        "framePrompt"
+      ],
       "properties": {
-        "shotId": { "type": "string", "minLength": 1, "maxLength": 160 },
-        "order": { "type": "integer", "minimum": 1, "maximum": 99 },
-        "durationSeconds": { "type": "number", "minimum": 0.5, "maximum": 120 },
-        "purpose": { "type": "string", "minLength": 1, "maxLength": 1500 },
-        "shotScale": { "type": "string", "minLength": 1, "maxLength": 200 },
-        "cameraAngle": { "type": "string", "minLength": 1, "maxLength": 300 },
-        "lens": { "$ref": "#/$defs/lens" },
-        "cameraHeight": { "type": "string", "minLength": 1, "maxLength": 300 },
-        "movement": { "$ref": "#/$defs/movement" },
-        "composition": { "type": "string", "minLength": 1, "maxLength": 2000 },
-        "actionBeat": { "type": "string", "minLength": 1, "maxLength": 1500 },
-        "performance": { "type": "string", "minLength": 1, "maxLength": 1500 },
-        "lighting": { "type": "string", "minLength": 1, "maxLength": 1500 },
-        "soundEdit": { "type": "string", "minLength": 1, "maxLength": 1500 },
-        "transition": { "enum": ["cut", "dissolve", "match-cut", "smash-cut", "fade", "hold", "j-cut", "l-cut"] },
-        "continuity": { "$ref": "#/$defs/continuity" },
-        "imagePromptId": { "type": "string", "minLength": 1, "maxLength": 160 },
-        "framePrompt": { "type": "string", "minLength": 1, "maxLength": 12000 }
+        "shotId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "durationSeconds": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 120
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1500
+        },
+        "shotScale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "cameraAngle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "lens": {
+          "$ref": "#/$defs/lens"
+        },
+        "cameraHeight": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "movement": {
+          "$ref": "#/$defs/movement"
+        },
+        "composition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "actionBeat": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1500
+        },
+        "performance": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1500
+        },
+        "characterBindings": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "character-binding.schema.json"
+          }
+        },
+        "lighting": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1500
+        },
+        "soundEdit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1500
+        },
+        "transition": {
+          "enum": [
+            "cut",
+            "dissolve",
+            "match-cut",
+            "smash-cut",
+            "fade",
+            "hold",
+            "j-cut",
+            "l-cut"
+          ]
+        },
+        "continuity": {
+          "$ref": "#/$defs/continuity"
+        },
+        "imagePromptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "framePrompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "sceneBinding": {
+          "$ref": "scene-binding.schema.json"
+        },
+        "interactionConstraints": {
+          "$ref": "interaction-constraint-set.schema.json#/$defs/interactionConstraints"
+        },
+        "productionContext": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assetRecipeRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "controlSetRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "evidenceBundleRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          }
+        }
       }
     }
   }

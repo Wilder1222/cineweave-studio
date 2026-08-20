@@ -1,22 +1,44 @@
 {
   "name": "cineweave-director",
-  "version": "0.5.0",
-  "description": "Codex-first general Prompt management, director, storyboard, cinematography, cinematic text-to-image and provider-neutral render planning workflow for CineWeave Worlds.",
+  "version": "1.1.0",
+  "description": "CineWeave creative Skill suite for controlled character identity and styling, scene interaction, professional directing, production recipes, evidence, capability matching, rights and ControlBench validation.",
   "homepage": "https://github.com/Wilder1222/cineweave-director",
   "repository": "https://github.com/Wilder1222/cineweave-director",
   "license": "MIT",
-  "keywords": ["cineweave", "codex", "director", "prompt-management", "prompt-library", "prompt-variants", "storyboard", "cinematography", "text-to-image", "visual-realism", "render-plan", "reference-editing"],
+  "keywords": [
+    "cineweave",
+    "codex",
+    "director",
+    "character-design",
+    "character-consistency",
+    "character-performance",
+    "scene-design",
+    "scene-continuity",
+    "production-design",
+    "storyboard",
+    "cinematography",
+    "text-to-image",
+    "render-plan",
+    "reference-editing",
+    "asset-recipe",
+    "control-channels",
+    "evidence-bundle",
+    "capability-profile",
+    "license-profile",
+    "control-benchmark",
+    "interaction-constraints"
+  ],
   "author": {
     "name": "CineWeave"
   },
   "skills": "./skills/",
   "interface": {
-    "displayName": "Cineweave Director",
-    "shortDescription": "Manage general Prompts, cinematic storyboards and safe render plans.",
-    "longDescription": "CineWeave Director manages general text-to-image Prompts as versioned assets with domains, tags, variables, semantic references, variants, evaluation and repair history. It also turns World context and creator intent into professional director decisions, shot-by-shot storyboards, camera language, cinematic-realistic provider-neutral prompt packages, human-gated RenderPlans, verified Draft media metadata, receipt-backed PromptHypotheses, structured DirectingSpec inputs and Codex draft briefs. It never installs Skills, generates through the Web app, writes Canon, or submits a paid Provider handoff.",
+    "displayName": "CineWeave Creative Skills",
+    "shortDescription": "Character, scene, director and production-control workflows.",
+    "longDescription": "CineWeave Creative Skills v1.1 coordinates four Codex Skills. Character owns reusable identity, detailed makeup/hair/costume states, behavior logic, emotion and performance. Scene owns reusable geography, time/weather/light states and grounded character-environment interactions. Director composes exact character, scene and interaction bindings into professional storyboards, prompts and render plans. Production owns deterministic AssetRecipes, hard/soft/advisory ControlChannels, scoped EvidenceBundles, provider-neutral CapabilityProfiles, explicit LicenseProfiles and ControlBench evaluation suites. The system never assumes commercial rights, hides capability mismatch, writes Canon, exposes private paths, calls paid Providers or claims media generation without evidence.",
     "developerName": "CineWeave",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "Use CineWeave Director to create or manage this text-to-image Prompt, or turn this World context and creative intent into a director proposal, storyboard sequence, cinematic-realistic frame prompt and human-gated RenderPlan."
+    "defaultPrompt": "Use CineWeave Character to define identity, styling and performance; CineWeave Scene to define geography, environmental state and interactions; CineWeave Director to design shots; and CineWeave Production to compile recipes, controls, evidence, capability and rights gates before a human-approved RenderPlan."
   }
 }

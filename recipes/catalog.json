@@ -1,0 +1,49 @@
+{
+  "catalog": "cineweave-production-recipes",
+  "version": "1.1.0",
+  "schema": "schemas/asset-recipe.schema.json",
+  "recipes": [
+    {
+      "recipeId": "recipe.character-expression-sheet-3x3",
+      "path": "recipes/character-expression-sheet-3x3.json",
+      "ownerSkill": "cineweave-character",
+      "outputType": "expression_sheet"
+    },
+    {
+      "recipeId": "recipe.character-turnaround-3view",
+      "path": "recipes/character-turnaround-3view.json",
+      "ownerSkill": "cineweave-character",
+      "outputType": "turnaround"
+    },
+    {
+      "recipeId": "recipe.character-action-sheet-2x3",
+      "path": "recipes/character-action-sheet-2x3.json",
+      "ownerSkill": "cineweave-character",
+      "outputType": "action_sheet"
+    },
+    {
+      "recipeId": "recipe.character-appearance-sheet-2x2",
+      "path": "recipes/character-appearance-sheet-2x2.json",
+      "ownerSkill": "cineweave-character",
+      "outputType": "appearance_sheet"
+    },
+    {
+      "recipeId": "recipe.scene-establishing-frame",
+      "path": "recipes/scene-establishing-frame.json",
+      "ownerSkill": "cineweave-scene",
+      "outputType": "establishing_frame"
+    },
+    {
+      "recipeId": "recipe.scene-state-sheet-2x2",
+      "path": "recipes/scene-state-sheet-2x2.json",
+      "ownerSkill": "cineweave-scene",
+      "outputType": "scene_state_sheet"
+    },
+    {
+      "recipeId": "recipe.storyboard-sequence-4up",
+      "path": "recipes/storyboard-sequence-4up.json",
+      "ownerSkill": "cineweave-director",
+      "outputType": "storyboard_board"
+    }
+  ]
+}

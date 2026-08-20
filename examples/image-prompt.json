@@ -98,6 +98,7 @@
       "perspective and scale anchors",
       "natural anatomy and fabric weight"
     ],
+    "observationReady": true,
     "providerNeutral": true
   }
 }

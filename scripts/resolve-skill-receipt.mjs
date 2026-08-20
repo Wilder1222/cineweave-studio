@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { resolve } from "node:path";
+import { dirname, relative, resolve, sep } from "node:path";
 
 const execFileAsync = promisify(execFile);
 
@@ -21,6 +21,29 @@ function normalizeRepository(remote) {
   const value = remote.trim();
   if (value.startsWith("git@github.com:")) return `https://github.com/${value.slice("git@github.com:".length).replace(/\.git$/i, "")}`;
   return value.replace(/\.git\/?$/i, "");
+}
+
+async function listSkillFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+    const absolutePath = resolve(directory, entry.name);
+    if (entry.isDirectory()) files.push(...await listSkillFiles(absolutePath));
+    else if (entry.isFile()) files.push(absolutePath);
+  }
+  return files;
+}
+
+async function hashSkillBundle(skillRoot) {
+  const files = await listSkillFiles(skillRoot);
+  if (!files.length) throw new Error(`skill bundle is empty: ${skillRoot}`);
+  const manifest = ["cineweave-skill-bundle-v1\n"];
+  for (const file of files.sort()) {
+    const relativePath = relative(skillRoot, file).split(sep).join("/");
+    const digest = createHash("sha256").update(await readFile(file)).digest("hex");
+    manifest.push(`${relativePath}\0${digest}\n`);
+  }
+  return `sha256:${createHash("sha256").update(manifest.join(""), "utf8").digest("hex")}`;
 }
 
 async function resolveRef(repoRoot, commit) {
@@ -54,8 +77,7 @@ async function main() {
     const remote = normalizeRepository(await git(repoRoot, ["remote", "get-url", "origin"]));
     const commit = await git(repoRoot, ["rev-parse", "HEAD"]);
     const ref = await resolveRef(repoRoot, commit);
-    const skillContent = await readFile(skillFile);
-    const contentHash = `sha256:${createHash("sha256").update(skillContent).digest("hex")}`;
+    const contentHash = await hashSkillBundle(dirname(skillFile));
 
     if (!/^https:\/\/(www\.)?github\.com\/[^/]+\/[^/]+$/.test(remote)) throw new Error(`origin is not a GitHub HTTPS repository: ${remote}`);
     if (!/^[0-9a-f]{40}$/i.test(commit)) throw new Error(`HEAD is not a full Git commit: ${commit}`);

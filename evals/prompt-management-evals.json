@@ -9,7 +9,7 @@
       "prompt": "创建一个用于白色耳机产品图的通用 Prompt，不要加入电影镜头语言。",
       "loads": ["prompt-management"],
       "expectedOutput": "prompt-record",
-      "assertions": ["domain is product", "one primary target", "camera is not forced", "provider neutral"]
+      "assertions": ["domain is product", "one primary target", "camera is not forced", "observation-ready product viewpoint, composition, light, or material decisions", "provider neutral"]
     },
     {
       "id": "prompt-import-normalize",
@@ -44,6 +44,14 @@
       "assertions": ["roles are explicit", "only Observation IDs are used", "style does not replace identity", "preserve and excluded contracts exist"]
     },
     {
+      "id": "reference-review-role-scoped",
+      "mode": "reference_review",
+      "prompt": "评分这张人物参考图是否适合做身份、构图、灯光和真实感参考，并说明应该搭配什么参考图。",
+      "loads": ["prompt-gallery", "gallery-portrait-character-design", "reference-editing"],
+      "expectedOutput": "reference-review",
+      "assertions": ["scores are for the declared purpose", "each score has observable evidence", "decision is role-scoped", "rights status is explicit", "preserve/borrow/exclude contracts exist", "pairing recommendations are concrete"]
+    },
+    {
       "id": "prompt-review-repair",
       "mode": "prompt_management",
       "prompt": "上一版总是把产品变成漂浮的广告海报，请诊断并只修复空间接触关系。",
@@ -57,7 +65,7 @@
       "prompt": "管理一个食物摄影 Prompt，只关注摆盘、蒸汽、表面质感和俯拍构图。",
       "loads": ["prompt-management"],
       "expectedOutput": "prompt-record",
-      "assertions": ["domain is food", "cinematic shot package is not required", "material and composition remain concrete"]
+      "assertions": ["domain is food", "cinematic shot package is not required", "material and composition remain concrete", "observation-ready viewpoint, crop, light, and surface decisions"]
     }
   ]
 }

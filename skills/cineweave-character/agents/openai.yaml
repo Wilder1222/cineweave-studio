@@ -1,0 +1,4 @@
+interface:
+  display_name: "CineWeave Character"
+  short_description: "Identity, styling, behavior, emotion and consistency"
+  default_prompt: "Use $cineweave-character to define or bind exact face/body identity, makeup, hair, costume construction/materials, behavior causality, emotion trajectory, micro-expression and shot performance without mutating the locked character."

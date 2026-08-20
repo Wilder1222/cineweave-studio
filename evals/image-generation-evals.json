@@ -9,7 +9,7 @@
       "prompt": "为同一个 World 场景生成电影感写实关键帧，女主第一次看见云上天宫。",
       "loads": ["cinematic-atlas", "prompt-craft", "text-to-image", "cinematography", "visual-realism"],
       "expectedOutput": "image-prompt-output",
-      "assertions": ["one primary target", "camera and light are explicit", "realism anchors are observable", "provider neutral"]
+      "assertions": ["one primary target", "camera and light are explicit", "emotion is translated into observable composition and subject-state decisions", "realism anchors are observable", "provider neutral"]
     },
     {
       "id": "render-plan-generate",

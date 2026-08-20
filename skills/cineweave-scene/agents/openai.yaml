@@ -1,0 +1,4 @@
+interface:
+  display_name: "CineWeave Scene"
+  short_description: "Geography, time, light and grounded interaction"
+  default_prompt: "Use $cineweave-scene to define or bind reusable geography, time/weather/light state and grounded character-environment contacts, occlusion, prop handling and material response."
