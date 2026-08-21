@@ -1,6 +1,6 @@
 {
   "suite": "cineweave-studio",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "repository": "https://github.com/Wilder1222/cineweave-studio",
   "entrySkill": "cineweave",
   "skills": [
@@ -8,7 +8,7 @@
       "name": "cineweave",
       "role": "product_router",
       "owns": ["creative_intake", "workflow_compose"],
-      "consumes": ["NaturalLanguageBrief", "ReferenceAssets", "OptionalExactContractRefs"],
+      "consumes": ["NaturalLanguageBrief", "ReferenceAssets", "ReferenceBindingSet", "OptionalExactContractRefs"],
       "standalone": true,
       "composable": true
     },
@@ -24,7 +24,7 @@
       "name": "cineweave-character",
       "role": "identity_and_performance",
       "owns": ["character_explore", "character_converge", "character_design", "character_reference_plan", "appearance_state", "character_performance", "performance_timeline", "character_review", "character_repair"],
-      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "StoryBrief", "CharacterExplorationBrief", "CharacterOptionSet", "CharacterPreferenceFeedback", "WorldContext", "ObservationIds", "StyleCompile", "ProductionContracts"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "StoryBrief", "CharacterExplorationBrief", "CharacterOptionSet", "CharacterPreferenceFeedback", "WorldContext", "ReferenceObservation", "ReferenceBindingSet", "StyleCompile", "ProductionContracts"],
       "standalone": true,
       "composable": true
     },
@@ -32,7 +32,7 @@
       "name": "cineweave-scene",
       "role": "geography_interaction_and_physical_light",
       "owns": ["scene_design", "scene_reference_plan", "scene_state", "scene_light_state", "scene_binding", "scene_interaction", "scene_review", "scene_repair"],
-      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "StoryBrief", "WorldContext", "ObservationIds", "CharacterBinding", "StyleCompile", "ProductionContracts"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "StoryBrief", "WorldContext", "ReferenceObservation", "ReferenceBindingSet", "CharacterBinding", "StyleCompile", "ProductionContracts"],
       "standalone": true,
       "composable": true
     },
@@ -40,15 +40,23 @@
       "name": "cineweave-style",
       "role": "style_system",
       "owns": ["style_analyze", "style_reference_plan", "style_resolve", "style_compose", "style_package", "style_compile", "style_light_grammar", "style_review"],
-      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "ReferenceReview", "ReferenceSet", "CharacterSpec", "SceneSpec", "SceneLightState", "CharacterBinding", "SceneBinding", "ObservationIds"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "ReferenceObservation", "ReferenceReview", "ReferenceBindingSet", "ReferenceSet", "CharacterSpec", "SceneSpec", "SceneLightState", "CharacterBinding", "SceneBinding"],
+      "standalone": true,
+      "composable": true
+    },
+    {
+      "name": "cineweave-reference",
+      "role": "reference_asset_lifecycle",
+      "owns": ["reference_ingest", "reference_verify", "reference_observe", "reference_review", "reference_bind", "reference_set"],
+      "consumes": ["NaturalLanguageBrief", "LocalReferenceMedia", "ReferenceAsset", "LicenseProfile", "OptionalTargetRefs"],
       "standalone": true,
       "composable": true
     },
     {
       "name": "cineweave-director",
       "role": "shot_and_temporal_direction",
-      "owns": ["proposal", "shot_direction", "shot_lighting", "temporal_direction", "storyboard", "reference_review", "reference_set", "render_plan", "media_import", "repair"],
-      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "StoryBrief", "ScriptScene", "CharacterBinding", "PerformanceTimeline", "SceneBinding", "SceneLightState", "InteractionConstraintSet", "StyleCompile", "StyleLightGrammar", "PromptContracts", "ProductionContracts"],
+      "owns": ["proposal", "shot_direction", "shot_lighting", "temporal_direction", "storyboard", "render_plan", "media_import", "repair"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "StoryBrief", "ScriptScene", "ReferenceObservation", "ReferenceBindingSet", "CharacterBinding", "PerformanceTimeline", "SceneBinding", "SceneLightState", "InteractionConstraintSet", "StyleCompile", "StyleLightGrammar", "PromptContracts", "ProductionContracts"],
       "standalone": true,
       "composable": true
     },
@@ -56,7 +64,7 @@
       "name": "cineweave-prompt",
       "role": "image_prompt_assets",
       "owns": ["prompt_design", "prompt_import", "prompt_compile", "prompt_compare", "reference_hypothesis", "draft_brief", "prompt_repair"],
-      "consumes": ["NaturalLanguageBrief", "ExistingPromptText", "CreativeBrief", "StoryBrief", "CharacterBinding", "SceneBinding", "StyleCompile", "ShotSpec", "ShotLightingPlan", "EvidenceBundle", "ObservationIds"],
+      "consumes": ["NaturalLanguageBrief", "ExistingPromptText", "CreativeBrief", "StoryBrief", "ReferenceBindingSet", "CharacterBinding", "SceneBinding", "StyleCompile", "ShotSpec", "ShotLightingPlan", "EvidenceBundle"],
       "standalone": true,
       "composable": true
     },
@@ -64,7 +72,7 @@
       "name": "cineweave-production",
       "role": "production_validation",
       "owns": ["asset_recipe", "control_plan", "evidence_bundle", "capability_profile", "license_profile", "control_benchmark", "adapter_descriptor", "execution_request", "execution_receipt"],
-      "consumes": ["CreativeBrief", "StoryContracts", "CharacterContracts", "SceneContracts", "StyleContracts", "DirectorContracts", "PromptContracts", "ObservationIds"],
+      "consumes": ["CreativeBrief", "ReferenceAsset", "ReferenceObservation", "ReferenceBindingSet", "StoryContracts", "CharacterContracts", "SceneContracts", "StyleContracts", "DirectorContracts", "PromptContracts"],
       "standalone": true,
       "composable": true
     }
@@ -109,10 +117,14 @@
     { "kind": "cineweave_codex_shot_lighting_plan", "schema": "schemas/shot-lighting-plan.schema.json", "example": "examples/shot-lighting-plan.json", "owner": "cineweave-director" },
     { "kind": "cineweave_codex_temporal_spec", "schema": "schemas/temporal-spec.schema.json", "example": "examples/temporal-spec.json", "owner": "cineweave-director" },
     { "kind": "cineweave_codex_storyboard_sequence", "schema": "schemas/storyboard-output.schema.json", "example": "examples/integrated-storyboard.json", "owner": "cineweave-director" },
-    { "kind": "cineweave_codex_reference_review", "schema": "schemas/reference-review.schema.json", "example": "examples/reference-review.json", "owner": "cineweave-director" },
-    { "kind": "cineweave_codex_reference_set", "schema": "schemas/reference-set.schema.json", "example": "examples/character-reference-set.json", "owner": "cineweave-director" },
     { "kind": "cineweave_codex_render_plan", "schema": "schemas/render-plan.schema.json", "example": "examples/character-render-plan.json", "owner": "cineweave-director" },
     { "kind": "cineweave_codex_media_import", "schema": "schemas/media-import.schema.json", "example": "examples/media-import.json", "owner": "cineweave-director" },
+
+    { "kind": "cineweave_codex_reference_asset", "schema": "schemas/reference-asset.schema.json", "example": "examples/reference-asset.json", "owner": "cineweave-reference" },
+    { "kind": "cineweave_codex_reference_observation", "schema": "schemas/reference-observation.schema.json", "example": "examples/reference-observation.json", "owner": "cineweave-reference" },
+    { "kind": "cineweave_codex_reference_review", "schema": "schemas/reference-review.schema.json", "example": "examples/reference-review.json", "owner": "cineweave-reference" },
+    { "kind": "cineweave_codex_reference_binding_set", "schema": "schemas/reference-binding-set.schema.json", "example": "examples/reference-binding-set.json", "owner": "cineweave-reference" },
+    { "kind": "cineweave_codex_reference_set", "schema": "schemas/reference-set.schema.json", "example": "examples/character-reference-set.json", "owner": "cineweave-reference" },
 
     { "kind": "cineweave_codex_prompt_record", "schema": "schemas/prompt-record.schema.json", "example": "examples/prompt-record.json", "owner": "cineweave-prompt" },
     { "kind": "cineweave_codex_image_prompt", "schema": "schemas/image-prompt-output.schema.json", "example": "examples/integrated-image-prompt.json", "owner": "cineweave-prompt" },
@@ -156,7 +168,10 @@
     "executionReceipts": true,
     "exactArtifactGraph": true,
     "approvalGateQueries": true,
-    "safeProjectBundles": true
+    "safeProjectBundles": true,
+    "contentAddressedReferenceMedia": true,
+    "roleScopedReferenceBindings": true,
+    "referenceBlobVerification": true
   },
   "composition": {
     "workflowContract": "cineweave_codex_workflow_plan",
@@ -173,6 +188,8 @@
     "noPrivatePathsOrSignedUrls": true,
     "noAssumedCommercialRights": true,
     "capabilityMismatchBlocksHardControls": true,
-    "distributablePluginContainsNoUserUploads": true
+    "distributablePluginContainsNoUserUploads": true,
+    "referenceIntegrityDoesNotImplyRights": true,
+    "rawReferencesRequireExplicitIngestion": true
   }
 }

@@ -21,7 +21,7 @@ This Skill owns:
 - `ExecutionRequest`: a budgeted, idempotent request bound to exact approved production artifacts;
 - `ExecutionReceipt`: immutable evidence of authorization, attempts, costs, verified output hashes and failure state.
 
-It does not redefine a CharacterSpec, SceneSpec, CharacterBinding, SceneBinding, StylePackage or director shot. A Skill never calls a provider itself. The local runtime may invoke a separately registered adapter only through an ExecutionRequest; external mode remains denied until an approval binds that exact request hash.
+It does not redefine a CharacterSpec, SceneSpec, CharacterBinding, SceneBinding, StylePackage, ReferenceObservation or director shot. `$cineweave-reference` owns raw media integrity and semantic reference binding; Production owns the exact LicenseProfile and execution gates that consume them. A Skill never calls a provider itself. The local runtime may invoke a separately registered adapter only through an ExecutionRequest; external mode remains denied until an approval binds that exact request hash.
 
 ## Independent and composed use
 
@@ -52,7 +52,7 @@ Choose the smallest route that satisfies the request.
 2. Resolve the exact StylePackage/StyleCompile when style affects the artifact; keep it below locked identity, geography and interaction controls.
 3. Choose or instantiate the smallest matching AssetRecipe.
 4. Convert preserve rules into hard controls, intended variation into soft controls and style preference into advisory controls.
-5. Assemble an EvidenceBundle. Do not allow one reference to silently serve incompatible roles.
+5. Resolve exact ReferenceAsset, ReferenceObservation and ReferenceBindingSet refs, then assemble an EvidenceBundle. Do not allow one reference to silently serve incompatible roles.
 6. Resolve every evidence item and adapter dependency to a LicenseProfile.
 7. Match hard adapter requirements against a CapabilityProfile.
 8. Block when a hard capability, required evidence role or rights profile is unresolved.

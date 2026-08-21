@@ -1,6 +1,6 @@
 {
   "catalog": "cineweave-production-recipes",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "schema": "schemas/asset-recipe.schema.json",
   "recipes": [
     {

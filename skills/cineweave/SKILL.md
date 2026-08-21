@@ -1,6 +1,6 @@
 ---
 name: cineweave
-description: Turn a natural-language creative request into a stage-aware CineWeave brief and composable workflow plan. Use as the optional product entry when a request spans story, character, scene, style, direction, image prompting or production; do not use it when the user explicitly invokes one specialist for a bounded task.
+description: Turn a natural-language creative request into a stage-aware CineWeave brief and composable workflow plan. Use as the optional product entry when a request spans story, character, scene, style, reference assets, direction, image prompting or production; do not use it when the user explicitly invokes one specialist for a bounded task.
 ---
 
 # CineWeave Studio
@@ -19,7 +19,7 @@ This Skill owns only:
 It does not create a StoryBrief, CharacterSpec, SceneSpec, StylePackage, ShotSpec,
 ImagePrompt, Storyboard, AssetRecipe or RenderPlan. Users may invoke any specialist
 directly: `$cineweave-story`, `$cineweave-character`, `$cineweave-scene`,
-`$cineweave-style`, `$cineweave-director`, `$cineweave-prompt` and
+`$cineweave-style`, `$cineweave-reference`, `$cineweave-director`, `$cineweave-prompt` and
 `$cineweave-production` never require this router.
 
 ## Modes
@@ -37,7 +37,7 @@ when a task needs more than one specialist or must be handed to a team.
 ## Required behavior
 
 1. Treat the natural-language request as creative intent, not as a complete Canon record.
-2. Classify every supplied reference by role, scope, preserve list and ignore list; do not let one image silently define identity, costume, style and composition together.
+2. Route raw supplied media to `$cineweave-reference` for exact ingestion and atomic role-scoped observations. Preserve an existing exact `ReferenceBindingSet`; do not let one image silently define identity, costume, style and composition together.
 3. Keep story causality, identity, geography, style representation, shot language, prompt compilation and production readiness separate.
 4. Build a directed acyclic workflow. A Skill can consume an upstream contract but never relies on hidden conversational state or a circular handoff.
 5. Prefer a direct specialist route for a single-domain task. Use a composed plan only when a concrete output needs cross-domain contracts.

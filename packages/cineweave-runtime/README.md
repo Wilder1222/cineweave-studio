@@ -14,6 +14,8 @@ The runtime owns mechanical operations that Skills must not improvise:
 - exact approval gates with optional current-version and dependency-approval
   policies;
 - byte-verified, path-scoped project bundle export, verification and import;
+- bounded content-addressed reference-media ingestion and exact blob
+  verification;
 - deterministic SVG board assembly with per-tile provenance;
 - trusted in-process adapter registration with implementation-hash matching;
 - idempotent execution, exact-request authorization, constrained output writes
@@ -30,11 +32,21 @@ node packages/cineweave-runtime/bin/cineweave.mjs verify .
 node packages/cineweave-runtime/bin/cineweave.mjs graph .
 node packages/cineweave-runtime/bin/cineweave.mjs stale .
 node packages/cineweave-runtime/bin/cineweave.mjs gate . artifact-envelope.json --require-current
+node packages/cineweave-runtime/bin/cineweave.mjs reference-ingest . portrait.png --source-class user_upload
+node packages/cineweave-runtime/bin/cineweave.mjs reference-verify . reference-asset-envelope.json
 ```
 
 `graph` returns the strict `cineweave_artifact_graph` contract. By default an
 approved old artifact remains usable and emits a warning; `--require-current`
 turns a superseded root or dependency into a blocking reason.
+
+Reference ingestion accepts only allow-listed PNG, JPEG, WebP, MP4/M4V, MOV
+and WebM files whose extension matches a bounded signature/container probe.
+Images are dimension-bounded; all media is size-bounded and stored under a
+SHA-256-derived, non-executable blob path. The semantic asset does not retain
+the source path or original filename. This is not decoding, malware scanning,
+Content Credentials validation or a grant of copyright/likeness rights;
+embedded metadata remains uninspected until a separate privacy review.
 
 Project transfer uses a directory instead of arbitrary archive extraction:
 
@@ -44,8 +56,9 @@ node packages/cineweave-runtime/bin/cineweave.mjs bundle-verify ../project-trans
 node packages/cineweave-runtime/bin/cineweave.mjs import ../project-transfer ../restored-project
 ```
 
-Every regular store file is listed by safe relative path, category, byte length
-and SHA-256 digest in `cineweave-bundle.json`. Symbolic links, unknown store
+Every regular store file—including V2.4 reference blobs—is listed by safe
+relative path, category, byte length and SHA-256 digest in
+`cineweave-bundle.json`. Symbolic links, unknown store
 paths, unlisted files, duplicate paths, traversal syntax, changed bytes and an
 existing target `.cineweave` store are rejected. Successful import stages and
 verifies the complete store before one rename. The manifest explicitly does not

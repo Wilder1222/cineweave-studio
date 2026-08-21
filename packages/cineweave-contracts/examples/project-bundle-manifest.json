@@ -1,17 +1,18 @@
 {
   "kind": "cineweave_project_bundle_manifest",
-  "contractVersion": "2.3.1",
-  "bundleFormatVersion": "1.0.0",
-  "bundleHash": "sha256:7816336f61c049e93865943b625c98ffe1ee2ef6ab7e6066af7669e93056fc2b",
+  "contractVersion": "2.4.0",
+  "bundleFormatVersion": "1.1.0",
+  "bundleHash": "sha256:149079d9a213d26aff8f8300f7c878421585c7dbcb728b08bf6d0316e4900d13",
   "createdAt": "2026-08-21T10:00:00.000Z",
   "sourceProject": {
     "projectId": "project.bundle-example",
     "projectManifestHash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-    "runtimeVersion": "2.3.1"
+    "runtimeVersion": "2.4.0"
   },
   "purpose": "local_transfer",
   "contentPolicy": {
     "containsProjectContent": true,
+    "containsReferenceMedia": true,
     "redistributionAuthorized": false,
     "rightsApprovalImplied": false
   },
@@ -22,16 +23,23 @@
       "category": "project_manifest",
       "contentHash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       "byteLength": 512
+    },
+    {
+      "path": "store/reference-blobs/sha256/11/1111111111111111111111111111111111111111111111111111111111111111.blob",
+      "category": "reference_blob",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "byteLength": 2048
     }
   ],
   "summary": {
-    "fileCount": 1,
-    "totalBytes": 512,
+    "fileCount": 2,
+    "totalBytes": 2560,
     "projectManifestCount": 1,
     "artifactEnvelopeCount": 0,
     "versionPointerCount": 0,
     "approvalRecordCount": 0,
     "idempotencyClaimCount": 0,
-    "executionOutputCount": 0
+    "executionOutputCount": 0,
+    "referenceBlobCount": 1
   }
 }

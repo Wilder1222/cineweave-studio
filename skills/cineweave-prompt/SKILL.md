@@ -16,6 +16,7 @@ This Skill owns `PromptRecord`, `ImagePrompt`, `PromptHypothesis`, `DraftBrief` 
 - `$cineweave-scene` owns reusable geography, architecture, materials and physical scene light state.
 - `$cineweave-style` owns representational style systems and style light grammar.
 - `$cineweave-director` owns shot purpose, blocking, camera, shot lighting and temporal direction.
+- `$cineweave-reference` owns raw media ingestion, atomic visible observations, suitability review and exact reference bindings.
 - `$cineweave-production` owns execution recipes, evidence, capabilities and rights gates.
 
 Prompt compiles supplied facts; it does not silently redefine them. It may create a one-off prompt directly from natural language, but reusable unknowns remain explicit.
@@ -40,8 +41,8 @@ Choose the smallest route.
 
 1. Identify one primary image target and intended use.
 2. Separate facts into subject, state/action, environment, viewpoint/composition, physical light, materials, representational style, technical delivery and constraints.
-3. Resolve exact Character, Scene, Style or Shot refs only when supplied or required. Do not invent hashes or Observation IDs.
-4. Assign every reference one role and scope, with explicit preserve, ignore and allowed-transform rules.
+3. Resolve exact Character, Scene, Style, Shot or ReferenceBindingSet refs only when supplied or required. Do not invent hashes or Observation IDs.
+4. Compile only role-scoped observations from an exact binding. Route raw media or ambiguous multi-role uploads to `$cineweave-reference` first.
 5. Allocate a visibility budget: describe only details that can affect the requested framing and scale.
 6. Compile the concise prompt first, then an expanded version only when extra blocks carry distinct control value.
 7. Use targeted negatives for likely failure modes; do not append a universal error dictionary.

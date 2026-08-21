@@ -3,7 +3,7 @@
   "contractVersion": "2.0.0",
   "skillReceipt": {
     "repository": "https://github.com/owner/repository",
-    "ref": "v2.0.0",
+    "ref": "v2.4.0",
     "commit": "0123456789abcdef0123456789abcdef01234567",
     "contentHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "installedBy": "codex-environment",
@@ -14,6 +14,12 @@
     "sourceType": "user_upload",
     "sourceLabel": "运行时用户提供的暗黑幻想人物肖像",
     "sourceId": "OBS_RUNTIME_PORTRAIT_001",
+    "assetRef": {
+      "kind": "cineweave_codex_reference_asset",
+      "id": "reference.user_upload.1111111111111111111111111111111111111111111111111111111111111111",
+      "version": 1,
+      "contentHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
     "rightsStatus": "unverified",
     "usageNote": "仅评审当前会话中的可见证据；确认授权前不得重新分发、打包或用于生产发布。"
   },

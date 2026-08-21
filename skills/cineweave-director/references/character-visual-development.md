@@ -8,8 +8,8 @@ This is an orchestration plan, not a single mega-prompt. Each stage answers a di
 
 Keep the payloads separate:
 
-- `$cineweave-director` owns reference review, shot purpose, blocking, camera,
-  shot-light use, temporal direction and storyboard use.
+- `$cineweave-reference` owns ingestion, atomic reference observations, suitability review and binding sets.
+- `$cineweave-director` owns shot purpose, blocking, camera, shot-light use, temporal direction and storyboard use.
 - `$cineweave-prompt` owns `PromptRecord`, `ImagePrompt`, prompt variants and
   prompt repair; it compiles exact Director decisions when a `ShotSpec` exists.
 - `$cineweave-character` owns `CharacterSpec`, `CharacterReferencePlan`, `CharacterAppearanceState`, `CharacterBinding` and identity/performance review.
@@ -21,7 +21,7 @@ A visually striking reference can be a strong costume or palette sample while re
 
 | Stage | Visual question | Primary owner | Output / gate |
 |---|---|---|---|
-| 0. Reference gate | What is actually visible, and what role may it serve? | Director | `ReferenceReview`; rights and role scope resolved |
+| 0. Reference gate | What is actually visible, and what role may it serve? | Reference | `ReferenceAsset` + `ReferenceObservation` / `ReferenceReview`; rights and role scope resolved |
 | 1. Identity lock | Who is this person without hairstyle, costume or mood styling? | Character | `CharacterSpec` + neutral reference plan; human identity approval |
 | 2. Appearance lock | Which approved hair, makeup, costume, materials and accessories are worn? | Character | `CharacterAppearanceState`; identity must remain unchanged |
 | 3. Hero portrait | Does the intended face, styling and photographic language read in one compelling frame? | Director + Prompt | `ShotSpec` + `ImagePrompt`; portrait review, not automatic identity proof |
@@ -34,7 +34,7 @@ If a request jumps directly to Stage 3 or later, state which earlier evidence is
 
 ## Stage 0 — reference gate
 
-Run `reference_review` before translating a supplied image into a reusable character. Decompose visible evidence into the nine blocks used by the [ReferenceReview schema](../../../packages/cineweave-contracts/schemas/reference-review.schema.json):
+Run `$cineweave-reference` `reference_review` before translating a supplied image into a reusable character. Decompose visible evidence into the nine blocks used by the [ReferenceReview schema](../../../packages/cineweave-contracts/schemas/reference-review.schema.json):
 
 `identity`, `appearance`, `performance`, `composition`, `capture`, `lighting`, `materials`, `paletteGrade`, `environment`.
 

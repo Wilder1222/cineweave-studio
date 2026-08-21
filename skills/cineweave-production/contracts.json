@@ -1,11 +1,11 @@
 {
-  "contractPackage": "cineweave-contracts@2.3.1",
+  "contractPackage": "cineweave-contracts@2.4.0",
   "standalone": {
-    "accepts": ["NaturalLanguageBrief", "OptionalApprovedContracts", "OptionalEvidence"],
+    "accepts": ["NaturalLanguageBrief", "OptionalApprovedContracts", "OptionalEvidence", "OptionalReferenceContracts"],
     "produces": ["AssetRecipe", "ControlChannelSet", "EvidenceBundle", "CapabilityProfile", "LicenseProfile", "ControlBenchmark", "AdapterDescriptor", "ExecutionRequest", "ExecutionReceipt"]
   },
   "composed": {
-    "consumes": ["CreativeBrief", "StoryContracts", "CharacterContracts", "SceneContracts", "StyleCompile", "DirectorContracts", "PromptContracts", "ObservationIds"],
+    "consumes": ["CreativeBrief", "ReferenceAsset", "ReferenceObservation", "ReferenceBindingSet", "StoryContracts", "CharacterContracts", "SceneContracts", "StyleCompile", "DirectorContracts", "PromptContracts"],
     "produces": ["AssetRecipe", "ControlChannelSet", "EvidenceBundle", "CapabilityProfile", "LicenseProfile", "ControlBenchmark", "AdapterDescriptor", "ExecutionRequest", "ExecutionReceipt"]
   },
   "contractKinds": [
@@ -35,6 +35,9 @@
     "cineweave_codex_temporal_spec",
     "cineweave_codex_prompt_record",
     "cineweave_codex_image_prompt",
-    "cineweave_codex_storyboard_sequence"
+    "cineweave_codex_storyboard_sequence",
+    "cineweave_codex_reference_asset",
+    "cineweave_codex_reference_observation",
+    "cineweave_codex_reference_binding_set"
   ]
 }

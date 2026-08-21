@@ -1,5 +1,5 @@
 {
-  "version": "2.3.1",
+  "version": "2.4.0",
   "cases": [
     {
       "id": "direct-character",
@@ -21,6 +21,13 @@
       "entrySkill": "cineweave-style",
       "mode": "standalone",
       "mustNotRequire": ["cineweave", "cineweave-character"]
+    },
+    {
+      "id": "direct-reference",
+      "request": "评分这张肖像是否适合作为皮肤质感和侧光参考，并明确哪些内容不能迁移。",
+      "entrySkill": "cineweave-reference",
+      "mode": "standalone",
+      "mustNotRequire": ["cineweave", "cineweave-character", "cineweave-style", "cineweave-director"]
     },
     {
       "id": "direct-scene",

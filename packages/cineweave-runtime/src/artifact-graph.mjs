@@ -68,7 +68,7 @@ async function listApprovalRecords(projectRoot) {
     const record = await readStrictJson(path);
     const { approvalHash, ...body } = record;
     if (sha256Canonical(body) !== approvalHash) throw new Error(`Approval hash mismatch: ${path}`);
-    if (record.kind !== "cineweave_approval_record" || !["2.2.0", "2.3.0", "2.3.1"].includes(record.contractVersion)) throw new Error(`Approval kind/version mismatch: ${path}`);
+    if (record.kind !== "cineweave_approval_record" || !["2.2.0", "2.3.0", "2.3.1", "2.4.0"].includes(record.contractVersion)) throw new Error(`Approval kind/version mismatch: ${path}`);
     if (!identifierPattern.test(record.approvalId || "") || !["approved", "rejected"].includes(record.decision)) throw new Error(`Approval identity/decision mismatch: ${path}`);
     if (typeof record.actor !== "string" || !record.actor.trim() || Number.isNaN(Date.parse(record.decidedAt))) throw new Error(`Approval actor/time mismatch: ${path}`);
     if (!contentHashPattern.test(approvalHash || "")) throw new Error(`Approval hash format mismatch: ${path}`);
@@ -317,7 +317,7 @@ export async function buildArtifactGraph(projectRoot, options = {}) {
 
   return {
     kind: "cineweave_artifact_graph",
-    contractVersion: "2.3.1",
+    contractVersion: "2.4.0",
     generatedAt: options.generatedAt || new Date().toISOString(),
     project: {
       projectId: project.projectId,

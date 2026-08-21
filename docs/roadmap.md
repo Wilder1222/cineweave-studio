@@ -41,26 +41,44 @@
 - tests for round trips, V2.2 preservation, tampering, unexpected files,
   duplicate entries, path traversal, backslashes and CLI behavior.
 
-## Next incremental priorities (V2.3.x)
+## Shipped in V2.4
+
+- ninth standalone/composable `$cineweave-reference` Skill with unique route
+  and contract ownership;
+- exact content-addressed `ReferenceAsset`, one-role `ReferenceObservation`,
+  purpose-specific `ReferenceReview` and ordered `ReferenceBindingSet`;
+- spatial, temporal, spatiotemporal and mask selectors with extract/ignore and
+  authority boundaries;
+- local allow-listed reference ingestion with bounded signature probes,
+  generated non-executable names and no retained source path or filename;
+- explicit separation of byte integrity, content credentials, copyright,
+  likeness, training, provider transfer, publication and redistribution;
+- ReferenceArtifact dependencies in ArtifactGraph and format 1.1 project bundle
+  transfer, while retaining V2.3.1 format 1.0 read/import compatibility;
+- 63 contracts, 61 routes, 28 behavior cases, 11 live replay cases and reference
+  ingestion, tamper, deduplication, selector, rights and bundle tests.
+
+## Next incremental priorities (V2.4.x)
 
 Priority remains based on user value and architectural risk.
 
-1. **Reference ingestion (P0).** Create local observations with perceptual role,
-   region scope, content hash, source, consent and redistribution status; never
-   copy user uploads into the public plugin.
-2. **Contract-aware repair runner (P1).** Execute one-variable repair plans while
+1. **Contract-aware repair runner (P0).** Execute one-variable repair plans while
    preserving passing immutable inputs and recording before/after evidence.
-3. **Original case atlas (P1).** Add rights-cleared, reproducible worked cases
+2. **Original case atlas (P1).** Add rights-cleared, reproducible worked cases
    for portrait, product, food, architecture, editorial, diagrams and exact-text
    layouts. Keep a small routing index, load only the matching category and
    attach prompt version, adapter context, candidate hash and review evidence.
-4. **Evaluation baselines (P1).** Retain versioned aggregate scores, compare
+3. **Evaluation baselines (P1).** Retain versioned aggregate scores, compare
    regressions by route and require human review for grader-definition changes.
-5. **Adapter conformance kit (P1).** Publish fixtures for timeout, partial output,
+4. **Adapter conformance kit (P1).** Publish fixtures for timeout, partial output,
    retryable billing, malformed metadata and cancellation without shipping any
    provider credential or paid adapter in core.
+5. **Reference derivation pipeline (P1).** Add explicitly derived,
+   metadata-stripped thumbnails/proxies without mutating or confusing the
+   original byte-bound asset, and add pluggable malware/content-credential
+   inspection reports whose absence remains visible.
 
-## V2.4 — production workspace
+## V2.5 — production workspace
 
 1. Editable cards for Brief, Story, Character, Scene, Style, Shot and Prompt.
 2. Visual artifact graph, exact-version diff and approval history.

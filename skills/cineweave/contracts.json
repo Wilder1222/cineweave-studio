@@ -1,7 +1,7 @@
 {
-  "contractPackage": "cineweave-contracts@2.3.1",
+  "contractPackage": "cineweave-contracts@2.4.0",
   "standalone": {
-    "accepts": ["NaturalLanguageBrief", "ReferenceAssets", "OptionalExactContractRefs"],
+    "accepts": ["NaturalLanguageBrief", "ReferenceAssets", "ReferenceBindingSet", "OptionalExactContractRefs"],
     "produces": ["CreativeBrief", "WorkflowPlan"]
   },
   "composed": {
@@ -10,6 +10,8 @@
   },
   "contractKinds": [
     "cineweave_codex_creative_brief",
-    "cineweave_codex_workflow_plan"
+    "cineweave_codex_workflow_plan",
+    "cineweave_codex_reference_asset",
+    "cineweave_codex_reference_binding_set"
   ]
 }

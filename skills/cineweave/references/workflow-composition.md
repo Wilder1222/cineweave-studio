@@ -18,6 +18,9 @@ one-off prompt
 one-off shot direction
   → cineweave-director
 
+reference suitability or reusable reference binding
+  → cineweave-reference
+
 story or script scene
   → cineweave-story
 
@@ -27,8 +30,8 @@ reusable character
 zero-prompt reusable character
   → cineweave-character explore → prompt comparable candidates → production candidate board → character converge
 
-character keyframe with a defined visual system
-  → character + style → director → prompt
+character keyframe from supplied media with a defined visual system
+  → reference → character + style → director → prompt
 
 story scene with physical interaction
   → story + character + scene + style → director → prompt → production

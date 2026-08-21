@@ -7,8 +7,8 @@
   "required": ["kind", "contractVersion", "bundleFormatVersion", "bundleHash", "createdAt", "sourceProject", "purpose", "contentPolicy", "storeDirectory", "entries", "summary"],
   "properties": {
     "kind": { "const": "cineweave_project_bundle_manifest" },
-    "contractVersion": { "const": "2.3.1" },
-    "bundleFormatVersion": { "const": "1.0.0" },
+    "contractVersion": { "enum": ["2.3.1", "2.4.0"] },
+    "bundleFormatVersion": { "enum": ["1.0.0", "1.1.0"] },
     "bundleHash": { "$ref": "common.schema.json#/$defs/contentHash" },
     "createdAt": { "type": "string", "format": "date-time" },
     "sourceProject": {
@@ -18,7 +18,7 @@
       "properties": {
         "projectId": { "$ref": "common.schema.json#/$defs/identifier" },
         "projectManifestHash": { "$ref": "common.schema.json#/$defs/contentHash" },
-        "runtimeVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1"] }
+        "runtimeVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1", "2.4.0"] }
       }
     },
     "purpose": { "const": "local_transfer" },
@@ -28,6 +28,7 @@
       "required": ["containsProjectContent", "redistributionAuthorized", "rightsApprovalImplied"],
       "properties": {
         "containsProjectContent": { "const": true },
+        "containsReferenceMedia": { "type": "boolean" },
         "redistributionAuthorized": { "const": false },
         "rightsApprovalImplied": { "const": false }
       }
@@ -46,9 +47,9 @@
             "type": "string",
             "minLength": 7,
             "maxLength": 800,
-            "pattern": "^store/(?:project\\.json|artifacts/[a-z0-9][a-z0-9._-]{1,159}/[a-z0-9][a-z0-9._-]{1,159}/v[1-9][0-9]*(?:\\.ref|-[0-9a-f]{16}\\.json)|approvals/[0-9a-f]{64}\\.json|idempotency/[0-9a-f]{64}\\.json|executions/[a-z0-9][a-z0-9._-]{1,159}/[a-zA-Z0-9][a-zA-Z0-9._-]{0,159})$"
+            "pattern": "^store/(?:project\\.json|artifacts/[a-z0-9][a-z0-9._-]{1,159}/[a-z0-9][a-z0-9._-]{1,159}/v[1-9][0-9]*(?:\\.ref|-[0-9a-f]{16}\\.json)|approvals/[0-9a-f]{64}\\.json|idempotency/[0-9a-f]{64}\\.json|executions/[a-z0-9][a-z0-9._-]{1,159}/[a-zA-Z0-9][a-zA-Z0-9._-]{0,159}|reference-blobs/sha256/[0-9a-f]{2}/[0-9a-f]{64}\\.blob)$"
           },
-          "category": { "enum": ["project_manifest", "artifact_envelope", "version_pointer", "approval_record", "idempotency_claim", "execution_output"] },
+          "category": { "enum": ["project_manifest", "artifact_envelope", "version_pointer", "approval_record", "idempotency_claim", "execution_output", "reference_blob"] },
           "contentHash": { "$ref": "common.schema.json#/$defs/contentHash" },
           "byteLength": { "type": "integer", "minimum": 0 }
         }
@@ -66,8 +67,31 @@
         "versionPointerCount": { "type": "integer", "minimum": 0 },
         "approvalRecordCount": { "type": "integer", "minimum": 0 },
         "idempotencyClaimCount": { "type": "integer", "minimum": 0 },
-        "executionOutputCount": { "type": "integer", "minimum": 0 }
+        "executionOutputCount": { "type": "integer", "minimum": 0 },
+        "referenceBlobCount": { "type": "integer", "minimum": 0 }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "contractVersion": { "const": "2.3.1" } }, "required": ["contractVersion"] },
+      "then": {
+        "properties": {
+          "bundleFormatVersion": { "const": "1.0.0" },
+          "contentPolicy": { "not": { "required": ["containsReferenceMedia"] } },
+          "summary": { "not": { "required": ["referenceBlobCount"] } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "contractVersion": { "const": "2.4.0" } }, "required": ["contractVersion"] },
+      "then": {
+        "properties": {
+          "bundleFormatVersion": { "const": "1.1.0" },
+          "contentPolicy": { "required": ["containsReferenceMedia"] },
+          "summary": { "required": ["referenceBlobCount"] }
+        }
+      }
+    }
+  ]
 }

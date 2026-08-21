@@ -1,5 +1,6 @@
 {
   "kind": "cineweave_codex_reference_set",
+  "contractVersion": "2.0.0",
   "worldId": "world-cloud-dynasty",
   "skillReceipt": {
     "repository": "https://github.com/owner/repository",

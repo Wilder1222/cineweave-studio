@@ -682,6 +682,157 @@ function exactRefKey(ref) {
   return `${ref?.kind}/${ref?.id}@${ref?.version}:${ref?.contentHash}`;
 }
 
+function validateReferenceAsset(payload, errors) {
+  const media = payload?.media || {};
+  const blob = payload?.blob || {};
+  const source = payload?.source || {};
+  const digest = String(media.contentHash || "").replace(/^sha256:/, "");
+  const expectedPath = `reference-blobs/sha256/${digest.slice(0, 2)}/${digest}.blob`;
+  const expectedAssetId = `reference.${source.sourceClass}.${digest}`;
+  const formats = {
+    png: { kinds: ["image"], types: ["image/png"], extension: ".png" },
+    jpeg: { kinds: ["image"], types: ["image/jpeg"], extension: ".jpg" },
+    webp: { kinds: ["image"], types: ["image/webp"], extension: ".webp" },
+    mp4: { kinds: ["video"], types: ["video/mp4"], extension: ".mp4" },
+    quicktime: { kinds: ["video"], types: ["video/quicktime"], extension: ".mov" },
+    webm: { kinds: ["video"], types: ["video/webm"], extension: ".webm" }
+  };
+  const format = formats[media.format];
+  push(errors, Boolean(format), "ReferenceAsset format must be supported");
+  if (format) {
+    push(errors, format.kinds.includes(media.mediaKind), "ReferenceAsset media kind must match format");
+    push(errors, format.types.includes(media.mediaType), "ReferenceAsset media type must match format");
+    push(errors, format.extension === media.sourceExtension, "ReferenceAsset canonical source extension must match format");
+  }
+  push(errors, media.contentHash === blob.contentHash, "ReferenceAsset media and blob hashes must match");
+  push(errors, media.byteLength === blob.byteLength, "ReferenceAsset media and blob byte lengths must match");
+  push(errors, blob.relativePath === expectedPath, "ReferenceAsset blob path must match its SHA-256 digest and shard");
+  push(errors, payload?.assetId === expectedAssetId, "ReferenceAsset ID must bind source class and byte digest");
+  push(errors, payload?.label === `${media.mediaKind}-reference-${digest.slice(0, 12)}`, "ReferenceAsset label must be generated from media kind and digest");
+  push(errors, source.sourceLocatorStored === false && source.originalFilenameStored === false && source.importCreatesRights === false, "ReferenceAsset must not retain source locators or imply rights");
+  push(errors, payload?.privacy?.sourcePathStored === false && payload?.privacy?.originalBytesRetained === true, "ReferenceAsset privacy state must match immutable byte storage");
+  push(errors, payload?.safety?.extensionAllowlisted === true && payload?.safety?.signatureMatched === true && payload?.safety?.activeContentExecuted === false, "ReferenceAsset safety state must record allow-listing, signature matching and no active execution");
+  push(errors, payload?.rights?.requiresSeparateLicenseProfile === true, "ReferenceAsset rights require a separate LicenseProfile");
+  const credentials = payload?.provenance?.contentCredentials || {};
+  if (["not_checked", "absent"].includes(credentials.status)) push(errors, credentials.trust === "unknown" && !credentials.manifestHash && !credentials.specVersion, "ReferenceAsset unchecked or absent content credentials cannot claim manifest or trust evidence");
+  if (credentials.status === "present_unverified") push(errors, ["unknown", "untrusted"].includes(credentials.trust), "ReferenceAsset unverified content credentials cannot claim a valid or trusted signer");
+  if (credentials.status === "valid") push(errors, ["valid_untrusted_signer", "trusted"].includes(credentials.trust) && Boolean(credentials.manifestHash) && Boolean(credentials.specVersion), "ReferenceAsset valid content credentials require manifest, spec and signer-trust evidence");
+  if (credentials.status === "invalid") push(errors, credentials.trust === "untrusted", "ReferenceAsset invalid content credentials must be untrusted");
+  if (payload?.rights?.status === "unknown") {
+    for (const key of ["assetOwnership", "generationUse", "redistribution", "trainingUse", "likenessConsent"]) push(errors, payload.rights[key] === "unknown", `ReferenceAsset unknown rights cannot claim ${key}`);
+    push(errors, !payload.rights.licenseProfileRef, "ReferenceAsset unknown rights cannot cite a resolved LicenseProfile");
+  }
+  if (payload?.rights?.status === "verified") {
+    push(errors, payload.rights.licenseProfileRef?.kind === "cineweave_codex_license_profile", "ReferenceAsset verified rights require an exact LicenseProfile");
+    for (const key of ["assetOwnership", "generationUse", "redistribution", "trainingUse", "likenessConsent"]) push(errors, payload.rights[key] !== "unknown", `ReferenceAsset verified rights must resolve ${key}`);
+  }
+  if (media.mediaKind === "image") {
+    push(errors, media.technical?.probeLevel === "signature_and_dimensions", "ReferenceAsset image must have signature and dimension evidence");
+    push(errors, Number.isSafeInteger(media.technical?.width) && Number.isSafeInteger(media.technical?.height), "ReferenceAsset image dimensions must be known");
+    if (Number.isSafeInteger(media.technical?.width) && Number.isSafeInteger(media.technical?.height)) {
+      push(errors, media.technical.width <= 65535 && media.technical.height <= 65535 && media.technical.width * media.technical.height <= 100_000_000, "ReferenceAsset image dimensions must remain inside the runtime safety budget");
+    }
+    push(errors, media.byteLength <= 64 * 1024 * 1024, "ReferenceAsset image byte length must remain inside the runtime safety budget");
+  } else {
+    push(errors, media.technical?.probeLevel === "container_signature_only", "ReferenceAsset video ingest must not overstate its probe depth");
+    push(errors, media.technical?.width === undefined && media.technical?.height === undefined, "ReferenceAsset video container probe cannot claim decoded dimensions");
+  }
+}
+
+function validateReferenceObservation(payload, errors, referenceAsset) {
+  const selector = payload?.selector || {};
+  const transfer = payload?.transfer || {};
+  push(errors, payload?.assetRef?.kind === "cineweave_codex_reference_asset", "ReferenceObservation must bind an exact ReferenceAsset");
+  if (referenceAsset) {
+    push(errors, payload?.assetRef?.id === referenceAsset.assetId && payload?.assetRef?.version === referenceAsset.version, "ReferenceObservation asset ref must match the supplied ReferenceAsset");
+  }
+  const expectedFields = {
+    full_asset: [],
+    spatial_rect: ["normalizedRect"],
+    temporal_range: ["temporalRange"],
+    spatiotemporal_rect: ["normalizedRect", "temporalRange"],
+    mask_asset: ["maskAssetRef"]
+  };
+  const required = expectedFields[selector.type] || [];
+  for (const field of ["normalizedRect", "temporalRange", "maskAssetRef"]) push(errors, required.includes(field) === (selector[field] !== undefined), `ReferenceObservation selector ${selector.type} has inconsistent ${field}`);
+  if (selector.normalizedRect) {
+    const { x, y, width, height } = selector.normalizedRect;
+    push(errors, x + width <= 1.000000001 && y + height <= 1.000000001, "ReferenceObservation normalized rectangle must remain inside the asset");
+  }
+  if (selector.temporalRange) {
+    push(errors, selector.temporalRange.startMs < selector.temporalRange.endMs, "ReferenceObservation temporal range must have positive duration");
+    if (referenceAsset?.media?.mediaKind) push(errors, referenceAsset.media.mediaKind === "video", "ReferenceObservation temporal selectors require video media");
+  }
+  if (selector.maskAssetRef) push(errors, selector.maskAssetRef.kind === "cineweave_codex_reference_asset", "ReferenceObservation mask must be an exact ReferenceAsset ref");
+  const extract = transfer.extract || [];
+  const ignore = new Set((transfer.ignore || []).map((item) => String(item).trim().toLocaleLowerCase()));
+  push(errors, extract.every((item) => !ignore.has(String(item).trim().toLocaleLowerCase())), "ReferenceObservation extract and ignore lists must be disjoint");
+  const authorityDomain = {
+    identity: "identity", face_identity: "identity", body_identity: "identity",
+    appearance: "appearance", makeup: "appearance", hair: "appearance", costume: "appearance", prop: "appearance",
+    expression: "performance", pose: "performance", motion: "performance", performance: "performance",
+    composition: "capture", lighting: "capture", camera_motion: "capture",
+    palette: "style", material: "style", style: "style",
+    environment: "environment", geography: "environment", architecture: "environment", prop_layout: "environment", atmosphere: "environment", temporal_atmosphere: "environment"
+  }[payload?.role];
+  if (authorityDomain) push(errors, (payload?.authority?.[authorityDomain] || 0) > 0, `ReferenceObservation primary role requires nonzero ${authorityDomain} authority`);
+  const gate = payload?.rightsGate || {};
+  if (["unknown", "restricted", "blocked"].includes(gate.status)) {
+    push(errors, gate.allowedForProduction === false && gate.allowedForRedistribution === false, "ReferenceObservation unresolved or restricted rights must block production and redistribution");
+  }
+  if (gate.status === "verified") push(errors, gate.licenseProfileRef?.kind === "cineweave_codex_license_profile", "ReferenceObservation verified rights require an exact LicenseProfile ref");
+}
+
+function validateReferenceReview(payload, errors) {
+  if (payload?.source?.assetRef) push(errors, payload.source.assetRef.kind === "cineweave_codex_reference_asset", "ReferenceReview source asset must be an exact ReferenceAsset");
+  const dimensions = (payload?.scores || []).map((item) => item?.dimension);
+  push(errors, unique(dimensions), "ReferenceReview score dimensions must be unique");
+  const contract = payload?.referenceContract || {};
+  const groups = ["preserve", "borrow", "exclude"].map((key) => new Set((contract[key] || []).map((item) => String(item).trim().toLocaleLowerCase())));
+  for (let left = 0; left < groups.length; left += 1) for (let right = left + 1; right < groups.length; right += 1) {
+    push(errors, [...groups[left]].every((item) => !groups[right].has(item)), "ReferenceReview preserve, borrow and exclude lists must be disjoint");
+  }
+}
+
+function validateReferenceBindingSet(payload, errors, observations = []) {
+  const bindings = payload?.bindings || [];
+  const keys = bindings.map((binding) => exactRefKey(binding?.observationRef));
+  push(errors, unique(keys), "ReferenceBindingSet observation refs must be unique");
+  for (const binding of bindings) push(errors, binding?.observationRef?.kind === "cineweave_codex_reference_observation", "ReferenceBindingSet bindings must reference ReferenceObservation artifacts");
+  const targetKeys = (payload?.targetRefs || []).map(exactRefKey);
+  push(errors, unique(targetKeys), "ReferenceBindingSet target refs must be unique");
+  const order = payload?.resolutionOrder || [];
+  push(errors, unique(order), "ReferenceBindingSet resolution order must not repeat roles");
+  push(errors, bindings.every((binding) => order.includes(binding?.role)), "ReferenceBindingSet resolution order must include every bound role");
+  if (payload?.conflictPolicy?.sameRoleConflict === "explicit_priority") {
+    const priorities = new Map();
+    for (const binding of bindings) {
+      const values = priorities.get(binding.role) || [];
+      values.push(binding.priority);
+      priorities.set(binding.role, values);
+    }
+    for (const [role, values] of priorities) push(errors, unique(values), `ReferenceBindingSet ${role} conflicts require distinct priorities`);
+  }
+  push(errors, payload?.conflictPolicy?.identityCannotBeOverridden === true && payload?.conflictPolicy?.geographyCannotBeOverridden === true, "ReferenceBindingSet must protect identity and geography");
+  const rights = payload?.rightsPolicy || {};
+  const unresolved = rights.unresolvedObservationIds || [];
+  push(errors, rights.allProfilesResolved === (unresolved.length === 0), "ReferenceBindingSet resolved status must match unresolved observations");
+  if (rights.redistributionAllowed) push(errors, rights.allProfilesResolved === true && unresolved.length === 0, "ReferenceBindingSet redistribution requires all profiles resolved");
+  if (["active", "locked"].includes(payload?.status)) {
+    push(errors, rights.allProfilesResolved === true && unresolved.length === 0, "Active or locked ReferenceBindingSet cannot contain unresolved rights");
+    push(errors, rights.unresolvedBehavior !== "warn_exploration", "Active or locked ReferenceBindingSet cannot use an exploration-only rights warning");
+  }
+  if (observations.length) {
+    const byKey = new Map(observations.map((item) => [exactRefKey(item.artifactRef), item.payload || item]));
+    for (const binding of bindings) {
+      const observation = byKey.get(exactRefKey(binding.observationRef));
+      if (!observation) continue;
+      push(errors, observation.role === binding.role, "ReferenceBindingSet role must match its exact observation");
+      if (["active", "locked"].includes(payload?.status)) push(errors, observation.status === "approved", "Active or locked bindings require approved observations");
+    }
+  }
+}
+
 function validateArtifactGraph(payload, errors) {
   const nodes = payload?.nodes || [];
   const edges = payload?.edges || [];
@@ -727,7 +878,8 @@ function validateProjectBundleManifest(payload, errors) {
     version_pointer: "versionPointerCount",
     approval_record: "approvalRecordCount",
     idempotency_claim: "idempotencyClaimCount",
-    execution_output: "executionOutputCount"
+    execution_output: "executionOutputCount",
+    reference_blob: "referenceBlobCount"
   };
   const expected = {
     fileCount: entries.length,
@@ -737,9 +889,16 @@ function validateProjectBundleManifest(payload, errors) {
     versionPointerCount: 0,
     approvalRecordCount: 0,
     idempotencyClaimCount: 0,
-    executionOutputCount: 0
+    executionOutputCount: 0,
+    ...(payload?.bundleFormatVersion === "1.1.0" ? { referenceBlobCount: 0 } : {})
   };
-  for (const entry of entries) if (categories[entry?.category]) expected[categories[entry.category]] += 1;
+  for (const entry of entries) {
+    if (entry?.category === "reference_blob") {
+      const digest = String(entry.contentHash || "").replace(/^sha256:/, "");
+      push(errors, entry.path === `store/reference-blobs/sha256/${digest.slice(0, 2)}/${digest}.blob`, "ProjectBundleManifest reference blob path must match its digest");
+    }
+    if (categories[entry?.category] && categories[entry.category] in expected) expected[categories[entry.category]] += 1;
+  }
   push(errors, Object.entries(expected).every(([key, value]) => payload?.summary?.[key] === value), "ProjectBundleManifest summary must match entries");
   const hashInput = {
     bundleFormatVersion: payload?.bundleFormatVersion,
@@ -752,6 +911,7 @@ function validateProjectBundleManifest(payload, errors) {
   };
   push(errors, payload?.bundleHash === sha256Canonical(hashInput), "ProjectBundleManifest bundle hash must match canonical contents");
   push(errors, payload?.contentPolicy?.redistributionAuthorized === false && payload?.contentPolicy?.rightsApprovalImplied === false, "ProjectBundleManifest must not imply redistribution or rights approval");
+  if (payload?.bundleFormatVersion === "1.1.0") push(errors, payload?.contentPolicy?.containsReferenceMedia === entries.some((entry) => entry?.category === "reference_blob"), "ProjectBundleManifest reference-media policy must match its entries");
 }
 
 function validateByKind(payload, context = {}) {
@@ -799,6 +959,10 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_shot_lighting_plan": validateShotLightingPlan(payload, errors, context.sceneLightState); break;
     case "cineweave_codex_temporal_spec": validateTemporalSpec(payload, errors); break;
     case "cineweave_codex_prompt_repair": validatePromptRepair(payload, errors); break;
+    case "cineweave_codex_reference_asset": validateReferenceAsset(payload, errors); break;
+    case "cineweave_codex_reference_observation": validateReferenceObservation(payload, errors, context.referenceAsset); break;
+    case "cineweave_codex_reference_review": validateReferenceReview(payload, errors); break;
+    case "cineweave_codex_reference_binding_set": validateReferenceBindingSet(payload, errors, context.referenceObservations); break;
     case "cineweave_codex_creative_brief": validateCreativeBrief(payload, errors); break;
     case "cineweave_codex_workflow_plan": validateWorkflowPlan(payload, errors); break;
     case "cineweave_artifact_graph": validateArtifactGraph(payload, errors); break;
@@ -816,6 +980,10 @@ async function runSelfTest(mode = "all") {
   const sceneSpec = await readJson("examples/scene-spec.json");
   const sceneLightState = await readJson("examples/scene-light-state.json");
   const controlSet = await readJson("examples/control-channel-set.json");
+  const referenceAsset = await readJson("examples/reference-asset.json");
+  const referenceObservation = await readJson("examples/reference-observation.json");
+  const referenceBindingSet = await readJson("examples/reference-binding-set.json");
+  const referenceObservations = [{ artifactRef: referenceBindingSet.bindings[0].observationRef, payload: referenceObservation }];
   const cases = [
     ["examples/character-spec.json", {}], ["examples/character-exploration-brief.json", {}], ["examples/character-option-set.json", {}], ["examples/character-preference-feedback.json", {}], ["examples/character-binding.json", {}], ["examples/character-reference-plan.json", {}], ["examples/character-appearance-state.json", {}], ["examples/character-review.json", {}], ["examples/character-repair.json", {}],
   ];
@@ -827,10 +995,11 @@ async function runSelfTest(mode = "all") {
     ["examples/asset-recipe.json", { controlSet }], ["examples/control-channel-set.json", {}], ["examples/evidence-bundle.json", {}], ["examples/capability-profile.json", {}], ["examples/license-profile.json", {}], ["examples/control-benchmark.json", {}],
     ["examples/adapter-descriptor.json", {}], ["examples/execution-request.json", {}], ["examples/execution-receipt.json", {}], ["examples/execution-receipt-blocked.json", {}], ["examples/skill-evaluation-run.json", {}],
     ["examples/artifact-graph.json", {}], ["examples/project-bundle-manifest.json", {}],
+    ["examples/reference-asset.json", {}], ["examples/reference-observation.json", { referenceAsset }], ["examples/reference-review.json", {}], ["examples/reference-binding-set.json", { referenceObservations }],
     ["examples/integrated-image-prompt.json", { sceneSpec }], ["examples/integrated-storyboard.json", { sceneSpec }], ["examples/prompt-record.json", {}],
     ["examples/style-package.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
     ["examples/shot-spec.json", {}], ["examples/shot-lighting-plan.json", { sceneLightState }], ["examples/temporal-spec.json", {}], ["examples/prompt-repair.json", {}],
-    ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}],
+    ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}], ["examples/workflow-plan-reference-prompt.json", {}],
   );
 
   let ok = true;
@@ -875,6 +1044,13 @@ async function runSelfTest(mode = "all") {
   const badEvaluationRun = await readJson("examples/skill-evaluation-run.json"); badEvaluationRun.summary.passed = 1; negative.push(["reject inconsistent SkillEvaluationRun summary", badEvaluationRun, {}]);
   const badArtifactGraph = await readJson("examples/artifact-graph.json"); badArtifactGraph.summary.supersededReferenceCount = 0; negative.push(["reject inconsistent ArtifactGraph summary", badArtifactGraph, {}]);
   const badProjectBundle = await readJson("examples/project-bundle-manifest.json"); badProjectBundle.contentPolicy.redistributionAuthorized = true; negative.push(["reject ProjectBundleManifest rights implication", badProjectBundle, {}]);
+  const badReferenceAsset = await readJson("examples/reference-asset.json"); badReferenceAsset.blob.relativePath = badReferenceAsset.blob.relativePath.replace("/11/", "/22/"); negative.push(["reject ReferenceAsset digest/path mismatch", badReferenceAsset, {}]);
+  const badReferencePixels = await readJson("examples/reference-asset.json"); badReferencePixels.media.technical.width = 20000; badReferencePixels.media.technical.height = 10000; negative.push(["reject ReferenceAsset excessive pixel dimensions", badReferencePixels, {}]);
+  const badReferenceProvenance = await readJson("examples/reference-asset.json"); badReferenceProvenance.provenance.contentCredentials.trust = "trusted"; negative.push(["reject unchecked ReferenceAsset provenance trust", badReferenceProvenance, {}]);
+  const badReferenceObservation = await readJson("examples/reference-observation.json"); badReferenceObservation.selector = { type: "spatial_rect", normalizedRect: { x: 0.8, y: 0.2, width: 0.4, height: 0.4 } }; negative.push(["reject ReferenceObservation region outside asset", badReferenceObservation, { referenceAsset }]);
+  const badReferenceRights = await readJson("examples/reference-observation.json"); badReferenceRights.rightsGate.allowedForProduction = true; negative.push(["reject unresolved reference rights promoted to production", badReferenceRights, { referenceAsset }]);
+  const badReferenceBinding = await readJson("examples/reference-binding-set.json"); badReferenceBinding.rightsPolicy.allProfilesResolved = true; negative.push(["reject inconsistent ReferenceBindingSet rights resolution", badReferenceBinding, { referenceObservations }]);
+  const badReferenceBundlePolicy = await readJson("examples/project-bundle-manifest.json"); badReferenceBundlePolicy.contentPolicy.containsReferenceMedia = !badReferenceBundlePolicy.contentPolicy.containsReferenceMedia; negative.push(["reject inconsistent project bundle reference-media policy", badReferenceBundlePolicy, {}]);
 
   if (mode === "all") for (const [label, payload, context] of negative) {
     const errors = validateByKind(payload, context);

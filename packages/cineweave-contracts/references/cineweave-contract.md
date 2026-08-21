@@ -13,6 +13,8 @@ CreativeBrief → WorkflowPlan
 CharacterSpec → AppearanceState → CharacterBinding
 SceneSpec     → SceneState      → SceneBinding → InteractionConstraintSet
 StylePackage  → StyleCompile    → StyleReview
+Reference outputs: ReferenceAsset → ReferenceObservation → ReferenceReview
+                   → ReferenceBindingSet
 Story outputs: StoryBrief, BeatSheet, ScriptScene, ContinuityLedger
 Director outputs: ShotSpec, ShotLightingPlan, TemporalSpec, Storyboard, RenderPlan
 Prompt outputs: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief,
@@ -30,14 +32,17 @@ contracts from other Skills.
 ## Shared invariants
 
 - Every V2 exchange record uses its schema-declared contract version. The
-  V2.3.1 package preserves 2.0, 2.2 and 2.3.0 contract versions for compatible
-  records while the package manifest and runtime are versioned 2.3.1.
+  V2.4 package preserves 2.0, 2.2, 2.3.0 and 2.3.1 contract versions for
+  compatible records while new reference lifecycle records use 2.4.0.
 - A dependent contract names an exact asset identity, version and content hash
   where that asset is already defined.
 - A newer version does not invalidate an exact old ref or inherit its approval.
   Staleness is an explicit graph state and becomes blocking only under a
   declared current-version policy.
 - A reference input has one explicit role, scope, preserve list and ignore list.
+- A reference asset binds exact bytes; an observation binds one role and
+  selector; a binding set resolves ordering, conflicts and rights for exact
+  downstream targets. Byte integrity does not establish authorship or rights.
 - Identity, appearance, geography, style representation and camera treatment
   remain separate ownership domains.
 - External execution requires approval of the exact stored request plus explicit
@@ -47,6 +52,8 @@ contracts from other Skills.
   does not imply permission.
 - A project bundle is a byte-verified local transfer container. Its manifest
   explicitly does not imply redistribution permission or rights approval.
+  V2.4 format 1.1 can carry exact reference blobs; legacy V2.3.1 format 1.0
+  remains readable without rewriting its project manifest.
 
 ## Composition boundary
 

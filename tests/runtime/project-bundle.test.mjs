@@ -26,6 +26,8 @@ test("project bundle export and import preserve immutable records and execution 
     assert.equal(exported.manifest.summary.artifactEnvelopeCount, 1);
     assert.equal(exported.manifest.summary.approvalRecordCount, 1);
     assert.equal(exported.manifest.summary.executionOutputCount, 1);
+    assert.equal(exported.manifest.summary.referenceBlobCount, 0);
+    assert.equal(exported.manifest.contentPolicy.containsReferenceMedia, false);
     assert.equal((await verifyProjectBundle(bundle)).valid, true);
 
     const imported = await importProjectBundle(bundle, target);
@@ -138,7 +140,7 @@ test("bundle integrity alone cannot bypass staged project semantic verification"
   } finally { await rm(sandbox, { recursive: true, force: true }); }
 });
 
-test("V2.3.1 bundles carry a V2.2 project without rewriting its manifest", async () => {
+test("V2.4 bundles carry a V2.2 project without rewriting its manifest", async () => {
   const sandbox = await mkdtemp(join(tmpdir(), "cineweave-bundle-v22-"));
   try {
     const source = join(sandbox, "source-project");
@@ -158,5 +160,35 @@ test("V2.3.1 bundles carry a V2.2 project without rewriting its manifest", async
     await exportProjectBundle(source, bundle, { createdAt });
     await importProjectBundle(bundle, target);
     assert.deepEqual(JSON.parse(await readFile(join(target, ".cineweave", "project.json"), "utf8")), legacy);
+  } finally { await rm(sandbox, { recursive: true, force: true }); }
+});
+
+test("runtime continues to verify and import legacy V2.3.1 bundle manifests", async () => {
+  const sandbox = await mkdtemp(join(tmpdir(), "cineweave-bundle-v231-"));
+  try {
+    const source = join(sandbox, "source-project");
+    const bundle = join(sandbox, "transfer-bundle");
+    const target = join(sandbox, "target-project");
+    await initProject(source, { projectId: "project.bundle-v231", createdAt });
+    await exportProjectBundle(source, bundle, { createdAt });
+    const manifestPath = join(bundle, BUNDLE_MANIFEST_NAME);
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+    manifest.contractVersion = "2.3.1";
+    manifest.bundleFormatVersion = "1.0.0";
+    delete manifest.contentPolicy.containsReferenceMedia;
+    delete manifest.summary.referenceBlobCount;
+    manifest.bundleHash = sha256Canonical({
+      bundleFormatVersion: manifest.bundleFormatVersion,
+      sourceProject: manifest.sourceProject,
+      purpose: manifest.purpose,
+      contentPolicy: manifest.contentPolicy,
+      storeDirectory: manifest.storeDirectory,
+      entries: manifest.entries,
+      summary: manifest.summary
+    });
+    await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+    assert.equal((await verifyProjectBundle(bundle)).valid, true);
+    const imported = await importProjectBundle(bundle, target);
+    assert.equal(imported.verification.valid, true);
   } finally { await rm(sandbox, { recursive: true, force: true }); }
 });

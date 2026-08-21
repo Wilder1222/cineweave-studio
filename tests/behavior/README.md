@@ -34,7 +34,7 @@ The grader checks declared activation, route, output ownership, forbidden output
 
 ## Live Codex smoke evaluations
 
-`live-cases.json` adds synthetic, representative requests for all eight Skills
+`live-cases.json` adds synthetic, representative requests for all nine Skills
 plus a should-not-activate case. Unlike `cases.json`, the live harness captures
 the model's complete schema-constrained final response, hashes it and evaluates
 activation, route, contract choice, observable output requirements and safety

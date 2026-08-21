@@ -4,6 +4,30 @@
 
 No unreleased changes.
 
+## 2.4.0 — 2026-08-22
+
+- added the standalone and composable `$cineweave-reference` Skill, bringing the
+  suite to nine Skills;
+- added content-addressed `ReferenceAsset`, atomic `ReferenceObservation` and
+  exact `ReferenceBindingSet` contracts while retaining explicit V2.0
+  `ReferenceSet` compatibility;
+- moved reference ingestion, verification, role scoping, suitability review and
+  binding ownership out of Director;
+- added bounded local PNG, JPEG, WebP, MP4/M4V, MOV and WebM ingestion with
+  extension/signature matching, image-dimension limits, generated blob names,
+  non-executable storage and no retained source path or original filename;
+- separated byte integrity, content credentials, copyright, likeness, training,
+  publication, provider-transfer and redistribution decisions;
+- added spatial, temporal, spatiotemporal and mask selectors, one-role-per-
+  observation transfer rules and identity/geography conflict protection;
+- added project-bundle format 1.1 with exact reference-blob transfer and
+  continued verification/import support for V2.3.1 format 1.0 bundles;
+- added reference-ingest and reference-verify CLI commands plus tamper, dedupe,
+  malformed-container, rights-gate, graph and bundle tests;
+- expanded the release gate to 63 contracts, 61 uniquely owned routes, 28
+  behavior cases, 11 deterministic live replay cases and 37 runtime tests
+  across all nine Skills.
+
 ## 2.3.1 — 2026-08-21
 
 - added strict `ArtifactGraph` and `ProjectBundleManifest` suite contracts;

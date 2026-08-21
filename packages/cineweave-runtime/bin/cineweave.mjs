@@ -9,6 +9,7 @@ import { buildArtifactGraph, evaluateApprovalGate, loadEnvelopeArtifactRef } fro
 import { sha256Canonical } from "../src/canonical-json.mjs";
 import { fixtureSvgAdapter } from "../src/fixture-svg-adapter.mjs";
 import { exportProjectBundle, importProjectBundle, verifyProjectBundle } from "../src/project-bundle.mjs";
+import { ingestReferenceAsset, verifyReferenceAsset } from "../src/reference-assets.mjs";
 
 function parseArgs(values) {
   const positional = [];
@@ -39,6 +40,8 @@ function usage() {
     "cineweave-studio graph <project> [artifact-envelope] [--direction dependencies|dependents|both]",
     "cineweave-studio stale <project>",
     "cineweave-studio gate <project> <artifact-envelope> [--require-current] [--require-dependency-approvals]",
+    "cineweave-studio reference-ingest <project> <media-file> [--source-class user_upload|local_file|generated_output|external_download] [--max-bytes <n>]",
+    "cineweave-studio reference-verify <project> <reference-asset-envelope>",
     "cineweave-studio export <project> <bundle-directory>",
     "cineweave-studio import <bundle-directory> <project>",
     "cineweave-studio bundle-verify <bundle-directory>"
@@ -141,6 +144,22 @@ async function main() {
     });
     console.log(JSON.stringify(graph, null, 2));
     if (!graph.gate.allowed) process.exitCode = 3;
+    return;
+  }
+  if (command === "reference-ingest") {
+    if (!positional[0] || !positional[1]) throw new Error(usage());
+    const result = await ingestReferenceAsset(resolve(positional[0]), resolve(positional[1]), {
+      sourceClass: flags["source-class"],
+      maxBytes: flags["max-bytes"],
+      createdBy: flags["created-by"]
+    });
+    console.log(JSON.stringify({ duplicate: result.duplicate, envelope: result.envelope, verification: result.verification }, null, 2));
+    return;
+  }
+  if (command === "reference-verify") {
+    if (!positional[0] || !positional[1]) throw new Error(usage());
+    const artifactRef = await loadEnvelopeArtifactRef(positional[1]);
+    console.log(JSON.stringify(await verifyReferenceAsset(resolve(positional[0]), artifactRef), null, 2));
     return;
   }
   if (command === "export") {

@@ -112,6 +112,12 @@
         "sourceType": { "enum": ["user_upload", "bundled_atlas", "world_observation", "candidate_media", "external_reference"] },
         "sourceLabel": { "type": "string", "minLength": 1, "maxLength": 500 },
         "sourceId": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^[^:/?#\\\\]+$" },
+        "assetRef": {
+          "allOf": [
+            { "$ref": "common.schema.json#/$defs/contractRef" },
+            { "properties": { "kind": { "const": "cineweave_codex_reference_asset" } } }
+          ]
+        },
         "rightsStatus": { "enum": ["confirmed", "unverified", "unknown", "restricted"] },
         "usageNote": { "type": "string", "minLength": 1, "maxLength": 1200 }
       }

@@ -22,12 +22,12 @@ This Skill owns:
 - `CharacterReview`: evidence-based identity, body, appearance, performance and continuity review;
 - `CharacterRepair`: one-variable repair planning.
 
-`$cineweave-story` owns story causality and script scenes. `$cineweave-director` owns staging, camera, shot light use and shot sequence. `$cineweave-prompt` owns image-prompt assembly. `$cineweave-scene` owns geography, architecture, materials, scene state and SceneBinding. `$cineweave-style` owns medium, representation, style atoms, StylePackages, visual/temporal reference policy and style compilation. `$cineweave-production` owns AssetRecipe, ControlChannelSet, EvidenceBundle, CapabilityProfile, LicenseProfile and ControlBenchmark. Do not duplicate their contracts.
+`$cineweave-story` owns story causality and script scenes. `$cineweave-reference` owns raw media ingestion, exact ReferenceAssets, atomic role-scoped observations, suitability review and binding sets. `$cineweave-director` owns staging, camera, shot light use and shot sequence. `$cineweave-prompt` owns image-prompt assembly. `$cineweave-scene` owns geography, architecture, materials, scene state and SceneBinding. `$cineweave-style` owns medium, representation, style atoms, StylePackages, visual/temporal reference policy and style compilation. `$cineweave-production` owns AssetRecipe, ControlChannelSet, EvidenceBundle, CapabilityProfile, LicenseProfile and ControlBenchmark. Do not duplicate their contracts.
 
 ## Independent and composed use
 
 This Skill is directly usable without `$cineweave`. In standalone use, accept a
-natural-language character brief plus optional references and return only the
+natural-language character brief plus optional exact `ReferenceObservation` or `ReferenceBindingSet` inputs and return only the
 smallest requested character contract. In composed use, consume an exact
 `CreativeBrief`, StyleCompile or production contract when supplied, but never
 require the router or hidden conversational state. The portable contract index
@@ -57,7 +57,7 @@ For a combined request, return explicit named payloads such as `explorationBrief
 4. Do not call a paid Provider, expose credentials, emit private local paths or signed URLs, or write biometric templates.
 5. A real-person likeness requires the supplied consent and usage status. Do not infer permission from a public photo.
 6. Do not overwrite a locked CharacterSpec or AppearanceState. Create a new version and preserve parent provenance.
-7. One reference input has one explicit semantic role and scope. Style, pose and costume references must not replace face/body identity.
+7. Consume only exact role-scoped observations or bindings from `$cineweave-reference`. Raw uploads require an explicit Reference handoff; style, pose and costume evidence must not replace face/body identity.
 8. A repair changes one variable only. Never “improve the whole character” when the evidence names one failure.
 9. Require human selection before identity lock and human approval before an execution adapter uses a reference plan or repair plan.
 10. A style conversion may change the representation of identity anchors, but `$cineweave-style` must preserve the semantic CharacterSpec anchors and return a conflict when a style request would alter them.
@@ -75,7 +75,7 @@ Extract:
 - apparent age and rights/likeness constraints;
 - fixed Canon facts versus creative exploration space;
 - intended medium and required shot ranges;
-- supplied CharacterSpec, AppearanceState, CharacterBinding and Observation IDs;
+- supplied CharacterSpec, AppearanceState, CharacterBinding and exact ReferenceObservation or ReferenceBindingSet refs;
 - what must remain stable and what may change;
 - whether the task is concept exploration, identity lock, reference planning, performance, review or repair.
 - requested medium/representation and exact StylePackage or style atom refs, if supplied; do not convert a style label into a CharacterSpec fact.

@@ -18,13 +18,13 @@ This Skill owns:
 - provider-neutral compilation of StylePackage semantics into image/video directives.
 - `StyleLightGrammar`: medium-aware contrast, highlight, shadow, color, atmosphere and post-process treatment without placing physical sources.
 
-`$cineweave` owns CreativeBrief intake and WorkflowPlan routing. `$cineweave-story` owns story causality. `$cineweave-character` owns identity, body, appearance and performance facts. `$cineweave-scene` owns geography, architecture, physical light state and interaction. `$cineweave-director` owns narrative intent, camera, shot light use and coverage. `$cineweave-prompt` owns image Prompt assembly. `$cineweave-production` owns recipes, controls, evidence, capability and rights gates.
+`$cineweave` owns CreativeBrief intake and WorkflowPlan routing. `$cineweave-story` owns story causality. `$cineweave-character` owns identity, body, appearance and performance facts. `$cineweave-scene` owns geography, architecture, physical light state and interaction. `$cineweave-reference` owns raw media ingestion, exact assets, atomic observable evidence, suitability review and binding sets. `$cineweave-director` owns narrative intent, camera, shot light use and coverage. `$cineweave-prompt` owns image Prompt assembly. `$cineweave-production` owns recipes, controls, evidence, capability and rights gates.
 
 ## Independent and composed use
 
 This Skill can resolve a visual or temporal style from a direct request and
-declared references without `$cineweave`. In a composed workflow, it accepts
-exact Character, Scene, reference-review or CreativeBrief inputs only to protect
+declared exact Reference observations or bindings without `$cineweave`. Raw media is first handed to `$cineweave-reference`. In a composed workflow, it accepts
+exact Character, Scene, reference or CreativeBrief inputs only to protect
 their boundaries; it does not require them to create a reusable StylePackage.
 Use the local [`contracts.json`](contracts.json) for the portable contract set.
 
@@ -32,7 +32,7 @@ Use the local [`contracts.json`](contracts.json) for the portable contract set.
 
 Choose the smallest route and load only the relevant references.
 
-- `style_analyze`: decompose supplied images, videos or text into observable StyleAtoms and a role-scoped reference plan. Read `references/style-system.md` and `references/reference-policy.md`; return named `styleAtomProposal` and `styleReferencePlan` payloads.
+- `style_analyze`: decompose supplied text or exact style-scoped Reference observations into observable StyleAtoms and a role-scoped reference plan. Read `references/style-system.md` and `references/reference-policy.md`; return named `styleAtomProposal` and `styleReferencePlan` payloads.
 - `style_reference_plan`: decide design-time, runtime and validation references for a StylePackage. Read `references/reference-policy.md`; return `../../packages/cineweave-contracts/schemas/style-reference-plan.schema.json`.
 - `style_resolve`: map a natural-language or named style request to descriptive atoms without treating a creator or work name as an opaque generation token. Read `references/style-taxonomy.md`; return a named atom resolution or `styleRecipe` payload.
 - `style_compose`: combine compatible atoms into a style recipe, identify conflicts and declare scope. Read `references/style-system.md` and `references/style-taxonomy.md`; return `../../packages/cineweave-contracts/schemas/style-package.schema.json`.
@@ -47,7 +47,7 @@ Choose the smallest route and load only the relevant references.
 2. A style name is an alias, not evidence. Resolve named creator or work references into descriptive, observable grammar and require supplied rights for source media or recognizable style references.
 3. Identity and style are orthogonal. A style change may reinterpret face rendering, linework, skin texture or motion representation, but cannot silently change CharacterSpec anchors, body proportions, SceneSpec geography or locked AppearanceState facts.
 4. Static visual references do not prove temporal style. Camera motion, editing rhythm, secondary motion and dynamic lighting require video, motion curves or explicit temporal semantics.
-5. A reference input has one role, scope, extraction list and ignore list. Do not pass an undifferentiated reference bundle to a compiler.
+5. A reference input must arrive as an exact role-scoped observation or binding with extraction and ignore lists. Do not pass an undifferentiated upload bundle to a compiler.
 6. StylePackage and StyleCompile are design artifacts. They do not call Providers, generate media, mutate Canon or prove that a candidate is style-consistent.
 7. Parent atoms and recipes may be inherited, but child overrides must name their delta. Do not duplicate an entire taxonomy branch for a one-parameter change.
 8. A style package must declare invariants, allowed variation, forbidden traits, reference policy, a validation set and an `activationGate` before it is marked active; active requires approved human status, resolved rights and passed validation.

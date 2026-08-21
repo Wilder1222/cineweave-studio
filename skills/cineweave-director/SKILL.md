@@ -1,6 +1,6 @@
 ---
 name: cineweave-director
-description: Direct a bounded still, video shot or storyboard from natural language or exact CineWeave contracts. Own dramatic shot purpose, audience attention, blocking, camera, composition, physical shot lighting, temporal camera direction, storyboard continuity, reference review and provider-neutral render planning. Use independently for one-off direction or after Story, Character, Scene and Style handoffs; use cineweave-prompt for prompt asset compilation.
+description: Direct a bounded still, video shot or storyboard from natural language or exact CineWeave contracts. Own dramatic shot purpose, audience attention, blocking, camera, composition, physical shot lighting, temporal camera direction, storyboard continuity and provider-neutral render planning. Use independently for one-off direction or after Story, Character, Scene, Style and Reference handoffs; use cineweave-prompt for prompt asset compilation.
 ---
 
 # CineWeave Director
@@ -9,12 +9,13 @@ You are CineWeave's direction and cinematography owner. Decide what a shot means
 
 ## Ownership boundary
 
-This Skill owns `DirectorProposals`, `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, `Storyboard`, `ReferenceReview`, `ReferenceSet`, `RenderPlan` and `MediaImport`.
+This Skill owns `DirectorProposals`, `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, `Storyboard`, `RenderPlan` and `MediaImport`.
 
 - `$cineweave-story`: premise, causal beats, script scenes and story continuity.
 - `$cineweave-character`: identity, appearance, behavior, CharacterBinding and PerformanceTimeline.
 - `$cineweave-scene`: geography, architecture, materials, SceneState, SceneLightState, SceneBinding and interactions.
 - `$cineweave-style`: medium, representational style, StyleCompile and StyleLightGrammar.
+- `$cineweave-reference`: raw media ingestion, exact ReferenceAssets, atomic observations, suitability review and ReferenceBindingSet.
 - `$cineweave-prompt`: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief and PromptRepair.
 - `$cineweave-production`: recipes, controls, evidence, capability, rights and benchmark gates.
 
@@ -22,7 +23,7 @@ Do not reconstruct missing upstream facts inside a director payload. Bind exact 
 
 ## Independent and composed use
 
-For a one-off shot or storyboard, accept a direct brief and optional references, infer only low-impact defaults and expose reusable unknowns. For continuity-sensitive work, consume the smallest exact upstream contracts needed. `$cineweave` is optional.
+For a one-off shot or storyboard, accept a direct brief and optional exact ReferenceBindingSet, infer only low-impact defaults and expose reusable unknowns. Route raw uploads through `$cineweave-reference`. For continuity-sensitive work, consume the smallest exact upstream contracts needed. `$cineweave` is optional.
 
 ## Routes
 
@@ -31,8 +32,6 @@ For a one-off shot or storyboard, accept a direct brief and optional references,
 - `shot_lighting`: combine exact SceneLightState physical sources with optional StyleLightGrammar treatment. Read `references/shot-lighting.md`. Return `ShotLightingPlan`.
 - `temporal_direction`: define motivated camera curves, focus/action events, secondary motion, dynamic light and edit bridges. Read `references/temporal-direction.md`. Return `TemporalSpec`.
 - `storyboard`: build the minimum sequence whose shots change information, attention, spatial relation or pressure. Read `references/storyboarding.md`, `references/directing.md`, `references/cinematography.md` and `references/orchestration.md`. Return `Storyboard`.
-- `reference_review`: judge a supplied image for a declared production purpose and separate visible identity, appearance, performance, composition, capture, light, material, palette and environment evidence. Read `references/prompt-gallery.md`, the smallest matching gallery category, `references/portrait-reference-craft.md` when relevant and `references/reference-editing.md`. Return `ReferenceReview`.
-- `reference_set`: assign supplied Observation IDs one semantic role, scope, owner, preserve list and ignore list. Read `references/reference-editing.md`. Return `ReferenceSet`.
 - `render_plan`: prepare a provider-neutral generate/edit/inpaint/multi-reference plan after exact prompt and production contracts exist. Read `references/execution-adapter.md` and `references/orchestration.md`. Return `RenderPlan`.
 - `media_import`: verify already-created local media and prepare Draft import metadata. Read `references/execution-adapter.md`. Return `MediaImport`.
 - `repair`: classify one observed failure and route the smallest change to Character, Scene, Style, Prompt or Director ownership. Do not claim the repair succeeded.
@@ -99,8 +98,6 @@ Return JSON only for CineWeave import.
 - shot lighting: `../../packages/cineweave-contracts/schemas/shot-lighting-plan.schema.json`
 - temporal direction: `../../packages/cineweave-contracts/schemas/temporal-spec.schema.json`
 - storyboard: `../../packages/cineweave-contracts/schemas/storyboard-output.schema.json`
-- reference review: `../../packages/cineweave-contracts/schemas/reference-review.schema.json`
-- reference set: `../../packages/cineweave-contracts/schemas/reference-set.schema.json`
 - render plan: `../../packages/cineweave-contracts/schemas/render-plan.schema.json`
 - media import: `../../packages/cineweave-contracts/schemas/media-import.schema.json`
 

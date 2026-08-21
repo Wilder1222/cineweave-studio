@@ -7,7 +7,7 @@
   "required": ["kind", "contractVersion", "generatedAt", "project", "scope", "nodes", "edges", "cycles", "gate", "summary"],
   "properties": {
     "kind": { "const": "cineweave_artifact_graph" },
-    "contractVersion": { "const": "2.3.1" },
+    "contractVersion": { "const": "2.4.0" },
     "generatedAt": { "type": "string", "format": "date-time" },
     "project": {
       "type": "object",
@@ -16,7 +16,7 @@
       "properties": {
         "projectId": { "$ref": "common.schema.json#/$defs/identifier" },
         "projectManifestHash": { "$ref": "common.schema.json#/$defs/contentHash" },
-        "runtimeVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1"] }
+        "runtimeVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1", "2.4.0"] }
       }
     },
     "scope": {

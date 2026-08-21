@@ -1,0 +1,10 @@
+{
+  "caseId": "live.reference.atomic-style-role",
+  "selectedSkill": "cineweave-reference",
+  "route": "reference_observe",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_codex_reference_observation"],
+  "response": "建立单一主角色为 style 的原子观察。提取：低饱和色盘、真实皮肤微纹理、柔和侧光。忽略：来源人物长相与身份、服装、姿势、背景和具体构图。授权状态保持未知：可在项目策略允许时用于私下探索，但在精确 LicenseProfile 解决前阻断生产提升、外部传输和重新分发。",
+  "questions": [],
+  "unsupportedClaims": []
+}

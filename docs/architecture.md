@@ -1,4 +1,4 @@
-# CineWeave Studio v2.3.1 architecture
+# CineWeave Studio v2.4 architecture
 
 ## Design contract
 
@@ -12,9 +12,11 @@ The optional `$cineweave` Skill is an intake router, not a creative super-Skill.
 ## Layers
 
 ```text
-Intent and declared reference roles
+Intent and optional untrusted reference media
               ↓
 Optional CreativeBrief / WorkflowPlan
+              ↓
+ReferenceAsset → atomic Observation / Review / BindingSet
               ↓
 Story ─ Character ─ Scene ─ Style
               ↓
@@ -46,11 +48,26 @@ phases without an artifact referencing its own downstream output.
 | identity, appearance and actor behavior | `cineweave-character` | medium, camera or scene geography |
 | geography, materials, interaction and physical light | `cineweave-scene` | post-process look or shot source selection |
 | representational visual and temporal grammar | `cineweave-style` | identity, geography or physical source placement |
+| reference bytes, observations, suitability and role bindings | `cineweave-reference` | character/scene/style design, rights grants or provider execution |
 | blocking, camera, shot light use and time | `cineweave-director` | persistent identity or general prompt library |
 | text-to-image prompt assets | `cineweave-prompt` | story causality or shot invention when a ShotSpec is required |
 | recipes, evidence, capability, rights, execution intent and QA | `cineweave-production` | creative facts, credentials, endpoints or claims that execution succeeded |
 
-## Three separations with high leverage
+## Four separations with high leverage
+
+### Reference evidence
+
+`ReferenceAsset` binds one exact local byte sequence. `ReferenceObservation`
+binds one role and one full, spatial, temporal, spatiotemporal or mask selector.
+`ReferenceReview` judges suitability for a declared purpose.
+`ReferenceBindingSet` orders exact observations, resolves role conflicts and
+applies rights gates for exact target contracts. Character, Scene, Style,
+Director and Prompt consume these records without taking ownership of ingest or
+silently treating one upload as identity, costume, pose and style at once.
+
+SHA-256 answers “are these the same bytes?” only. Content-credential trust,
+copyright, license scope, likeness consent, training, publication and
+redistribution remain separate evidence and policy decisions.
 
 ### Light
 
@@ -94,7 +111,13 @@ visibility, compatibility and control value.
   policies are explicit opt-ins.
 - Project bundles list every allowed store file with a byte hash and reject
   links, traversal, unknown or unexpected files and existing target stores.
-  Import verifies a staged project before atomically installing its store.
+  V2.4 format 1.1 includes exact reference blobs; import verifies a staged
+  project before atomically installing its store.
+- Reference ingestion allow-lists PNG, JPEG, WebP, MP4/M4V, MOV and WebM,
+  compares extension with a bounded signature/container probe, limits bytes and
+  image dimensions and stores generated non-executable content-addressed names.
+  It does not decode content, scan malware, inspect embedded metadata or infer
+  rights.
 - Idempotency claims bind one key to one exact `ExecutionRequest`.
 - Adapter implementations come from a trusted in-process registry and must
   match the hash declared by their `AdapterDescriptor`.
@@ -114,16 +137,16 @@ boundaries.
 
 ## Contracts and portable bundles
 
-The canonical manifest owns 60 contract kinds. Each Skill declares its portable
+The canonical manifest owns 63 contract kinds. Each Skill declares its portable
 subset in `skills/<skill>/contracts.json`. Bundle construction copies only the
 needed schemas and recipes and rewrites local references, so a specialist bundle
 does not depend on the repository layout.
 
-Old 2.0, 2.2 and 2.3.0 contract schemas remain valid where their data shape did
-not break. Adapter, execution and evaluation-run records retain their declared
-`contractVersion: 2.3.0`; V2.3.1 adds ArtifactGraph and ProjectBundleManifest
-contracts while the suite, runtime and plugin version move to 2.3.1. Existing
-project manifests and immutable artifacts are not rewritten.
+Old 2.0, 2.2, 2.3.0 and 2.3.1 contract schemas remain valid where their data
+shape did not break. New reference lifecycle records, ArtifactGraph and the
+suite runtime use `contractVersion: 2.4.0`; ProjectBundle format 1.1 carries
+reference blobs while the runtime still parses legacy V2.3.1 format 1.0
+bundles. Existing project manifests and immutable artifacts are not rewritten.
 
 ## Verification model
 
@@ -140,6 +163,9 @@ Release validation covers:
   mismatched dependencies;
 - project-bundle round trips, V2.2 compatibility, tamper detection, duplicate
   entries, unexpected files and traversal/backslash rejection;
+- reference-media extension/signature mismatch, malformed ISO-BMFF/WebM,
+  bounded dimensions, deduplication, blob tamper/orphan detection, selectors,
+  role authority, rights gates and exact bundle transfer;
 - deterministic partial board assembly;
 - trusted-adapter matching, idempotent execution, exact-request authorization,
   retry-cost accounting and output-byte verification;
@@ -147,6 +173,7 @@ Release validation covers:
   Skill and a should-not-activate case;
 - standalone bundles, links, security and distributable media rights.
 
-See [V2.3.1 graph and bundle decisions](research/2026-08-21-v2.3.1-artifact-graph-and-project-bundles.md),
+See [V2.4 reference decisions](research/2026-08-22-v2.4-reference-assets-and-bindings.md),
+[V2.3.1 graph and bundle decisions](research/2026-08-21-v2.3.1-artifact-graph-and-project-bundles.md),
 [V2.3 execution decisions](research/2026-08-21-v2.3-execution-and-live-evals.md)
 and [roadmap](roadmap.md).

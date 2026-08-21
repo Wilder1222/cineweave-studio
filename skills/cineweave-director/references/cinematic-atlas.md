@@ -44,11 +44,11 @@ The atlas is a teaching reference, not a prompt dump. Prefer a small set of high
 
 The public plugin does not bundle user uploads or third-party production stills.
 Analyze those inputs only when the user supplies them at runtime and record their
-rights status before adding them to a ReferenceSet. A future bundled case must be
+rights status before `$cineweave-reference` adds atomic observations to a ReferenceBindingSet. A future bundled case must be
 original or redistributable, carry explicit provenance and pass the distributable
 asset audit.
 
 When an authorized atlas case is selected, read its metadata before adding it to
-a ReferenceSet. Keep one explicit semantic role and scope per input, state the
+a ReferenceBindingSet. Keep one explicit semantic role and scope per observation, state the
 preserve contract and separate stylized character evidence from photographic
 camera or realism evidence.

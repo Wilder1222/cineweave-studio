@@ -4,7 +4,7 @@ import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { readStrictJson, verifyProject } from "./artifact-store.mjs";
 import { parseJsonStrict, sha256Bytes, sha256Canonical } from "./canonical-json.mjs";
 
-export const BUNDLE_FORMAT_VERSION = "1.0.0";
+export const BUNDLE_FORMAT_VERSION = "1.1.0";
 export const BUNDLE_MANIFEST_NAME = "cineweave-bundle.json";
 const MAX_BUNDLE_ENTRIES = 500000;
 const contentHashPattern = /^sha256:[0-9a-f]{64}$/;
@@ -14,6 +14,7 @@ const versionPointerPattern = new RegExp(`^artifacts/${identifier}/${identifier}
 const approvalPattern = /^approvals\/[0-9a-f]{64}\.json$/;
 const idempotencyPattern = /^idempotency\/[0-9a-f]{64}\.json$/;
 const executionPattern = new RegExp(`^executions/${identifier}/[a-zA-Z0-9][a-zA-Z0-9._-]{0,159}$`);
+const referenceBlobPattern = /^reference-blobs\/sha256\/[0-9a-f]{2}\/[0-9a-f]{64}\.blob$/;
 
 function slashPath(value) {
   return value.split(sep).join("/");
@@ -45,6 +46,7 @@ export function classifyStorePath(value) {
   if (approvalPattern.test(path)) return "approval_record";
   if (idempotencyPattern.test(path)) return "idempotency_claim";
   if (executionPattern.test(path)) return "execution_output";
+  if (referenceBlobPattern.test(path)) return "reference_blob";
   throw new Error(`Project store contains an unsupported path: ${path}`);
 }
 
@@ -72,7 +74,7 @@ async function walkRegularFiles(root) {
   return files.sort((left, right) => slashPath(relative(root, left)).localeCompare(slashPath(relative(root, right))));
 }
 
-function summaryFor(entries) {
+function summaryFor(entries, bundleFormatVersion = BUNDLE_FORMAT_VERSION) {
   const summary = {
     fileCount: entries.length,
     totalBytes: entries.reduce((total, entry) => total + entry.byteLength, 0),
@@ -81,7 +83,8 @@ function summaryFor(entries) {
     versionPointerCount: 0,
     approvalRecordCount: 0,
     idempotencyClaimCount: 0,
-    executionOutputCount: 0
+    executionOutputCount: 0,
+    ...(bundleFormatVersion === "1.1.0" ? { referenceBlobCount: 0 } : {})
   };
   const fields = {
     project_manifest: "projectManifestCount",
@@ -89,9 +92,14 @@ function summaryFor(entries) {
     version_pointer: "versionPointerCount",
     approval_record: "approvalRecordCount",
     idempotency_claim: "idempotencyClaimCount",
-    execution_output: "executionOutputCount"
+    execution_output: "executionOutputCount",
+    reference_blob: "referenceBlobCount"
   };
-  for (const entry of entries) summary[fields[entry.category]] += 1;
+  for (const entry of entries) {
+    const field = fields[entry.category];
+    if (!(field in summary)) throw new TypeError(`Bundle format ${bundleFormatVersion} does not support ${entry.category}`);
+    summary[field] += 1;
+  }
   return summary;
 }
 
@@ -110,7 +118,8 @@ function bundleHashInput(manifest) {
 function assertBundleManifest(manifest) {
   assertPlainObject(manifest, "bundle manifest");
   assertExactKeys(manifest, ["kind", "contractVersion", "bundleFormatVersion", "bundleHash", "createdAt", "sourceProject", "purpose", "contentPolicy", "storeDirectory", "entries", "summary"], [], "bundle manifest");
-  if (manifest.kind !== "cineweave_project_bundle_manifest" || manifest.contractVersion !== "2.3.1" || manifest.bundleFormatVersion !== BUNDLE_FORMAT_VERSION) throw new TypeError("Unsupported CineWeave bundle manifest version");
+  const supportedPair = manifest.contractVersion === "2.3.1" && manifest.bundleFormatVersion === "1.0.0" || manifest.contractVersion === "2.4.0" && manifest.bundleFormatVersion === "1.1.0";
+  if (manifest.kind !== "cineweave_project_bundle_manifest" || !supportedPair) throw new TypeError("Unsupported CineWeave bundle manifest version");
   if (!contentHashPattern.test(manifest.bundleHash || "")) throw new TypeError("bundleHash must be a lowercase SHA-256 hash");
   if (Number.isNaN(Date.parse(manifest.createdAt))) throw new TypeError("createdAt must be an ISO date-time");
   if (manifest.purpose !== "local_transfer" || manifest.storeDirectory !== "store") throw new TypeError("Bundle purpose or store directory is unsupported");
@@ -119,10 +128,12 @@ function assertBundleManifest(manifest) {
   assertExactKeys(manifest.sourceProject, ["projectId", "projectManifestHash", "runtimeVersion"], [], "sourceProject");
   if (!new RegExp(`^${identifier}$`).test(manifest.sourceProject.projectId || "")) throw new TypeError("sourceProject.projectId is invalid");
   if (!contentHashPattern.test(manifest.sourceProject.projectManifestHash || "")) throw new TypeError("sourceProject.projectManifestHash is invalid");
-  if (!["2.2.0", "2.3.0", "2.3.1"].includes(manifest.sourceProject.runtimeVersion)) throw new TypeError("sourceProject.runtimeVersion is unsupported");
+  if (!["2.2.0", "2.3.0", "2.3.1", "2.4.0"].includes(manifest.sourceProject.runtimeVersion)) throw new TypeError("sourceProject.runtimeVersion is unsupported");
   assertPlainObject(manifest.contentPolicy, "contentPolicy");
-  assertExactKeys(manifest.contentPolicy, ["containsProjectContent", "redistributionAuthorized", "rightsApprovalImplied"], [], "contentPolicy");
+  const contentPolicyKeys = manifest.bundleFormatVersion === "1.1.0" ? ["containsProjectContent", "containsReferenceMedia", "redistributionAuthorized", "rightsApprovalImplied"] : ["containsProjectContent", "redistributionAuthorized", "rightsApprovalImplied"];
+  assertExactKeys(manifest.contentPolicy, contentPolicyKeys, [], "contentPolicy");
   if (manifest.contentPolicy.containsProjectContent !== true || manifest.contentPolicy.redistributionAuthorized !== false || manifest.contentPolicy.rightsApprovalImplied !== false) throw new TypeError("Bundle content policy must not imply redistribution or rights approval");
+  if (manifest.bundleFormatVersion === "1.1.0" && typeof manifest.contentPolicy.containsReferenceMedia !== "boolean") throw new TypeError("containsReferenceMedia must be boolean");
   if (!Array.isArray(manifest.entries) || !manifest.entries.length || manifest.entries.length > MAX_BUNDLE_ENTRIES) throw new TypeError(`Bundle entries must contain 1 to ${MAX_BUNDLE_ENTRIES} items`);
 
   const paths = new Set();
@@ -143,10 +154,12 @@ function assertBundleManifest(manifest) {
   if (!paths.has("store/project.json")) throw new TypeError("Bundle is missing store/project.json");
   if (manifest.entries.find((entry) => entry.path === "store/project.json").contentHash !== manifest.sourceProject.projectManifestHash) throw new TypeError("Bundle project entry hash does not match sourceProject.projectManifestHash");
   assertPlainObject(manifest.summary, "summary");
-  assertExactKeys(manifest.summary, ["fileCount", "totalBytes", "projectManifestCount", "artifactEnvelopeCount", "versionPointerCount", "approvalRecordCount", "idempotencyClaimCount", "executionOutputCount"], [], "summary");
-  const expectedSummary = summaryFor(manifest.entries);
+  const summaryKeys = ["fileCount", "totalBytes", "projectManifestCount", "artifactEnvelopeCount", "versionPointerCount", "approvalRecordCount", "idempotencyClaimCount", "executionOutputCount", ...(manifest.bundleFormatVersion === "1.1.0" ? ["referenceBlobCount"] : [])];
+  assertExactKeys(manifest.summary, summaryKeys, [], "summary");
+  const expectedSummary = summaryFor(manifest.entries, manifest.bundleFormatVersion);
   if (!Number.isSafeInteger(expectedSummary.totalBytes)) throw new TypeError("Bundle total byte length exceeds the safe integer range");
   for (const [key, value] of Object.entries(expectedSummary)) if (manifest.summary[key] !== value) throw new TypeError("Bundle summary does not match its entries");
+  if (manifest.bundleFormatVersion === "1.1.0" && manifest.contentPolicy.containsReferenceMedia !== manifest.entries.some((entry) => entry.category === "reference_blob")) throw new TypeError("Bundle reference-media policy does not match its entries");
   if (sha256Canonical(bundleHashInput(manifest)) !== manifest.bundleHash) throw new TypeError("Bundle hash does not match its manifest entries");
   return manifest;
 }
@@ -189,7 +202,7 @@ export async function exportProjectBundle(projectRoot, bundleDirectory, options 
     const projectManifest = await readStrictJson(join(store, "project.json"));
     const manifest = {
       kind: "cineweave_project_bundle_manifest",
-      contractVersion: "2.3.1",
+      contractVersion: "2.4.0",
       bundleFormatVersion: BUNDLE_FORMAT_VERSION,
       bundleHash: "",
       createdAt: options.createdAt || new Date().toISOString(),
@@ -201,12 +214,13 @@ export async function exportProjectBundle(projectRoot, bundleDirectory, options 
       purpose: "local_transfer",
       contentPolicy: {
         containsProjectContent: true,
+        containsReferenceMedia: entries.some((entry) => entry.category === "reference_blob"),
         redistributionAuthorized: false,
         rightsApprovalImplied: false
       },
       storeDirectory: "store",
       entries,
-      summary: summaryFor(entries)
+      summary: summaryFor(entries, BUNDLE_FORMAT_VERSION)
     };
     manifest.bundleHash = sha256Canonical(bundleHashInput(manifest));
     assertBundleManifest(manifest);

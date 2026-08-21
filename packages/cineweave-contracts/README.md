@@ -1,7 +1,7 @@
-# CineWeave Contracts 2.3.1
+# CineWeave Contracts 2.4.0
 
 `cineweave-contracts` is the canonical exchange layer for CineWeave Studio. Its
-manifest records 60 contract kinds, one owner per contract and one owner per
+manifest records 63 contract kinds, one owner per contract and one owner per
 Skill route.
 
 ## Domains
@@ -12,8 +12,10 @@ Skill route.
   review and repair.
 - Scene: geography, state, physical SceneLightState, interaction and repair.
 - Style: StylePackage, reference policy, StyleCompile and StyleLightGrammar.
+- Reference: byte-bound assets, atomic observations, suitability reviews and
+  exact role-scoped binding sets.
 - Director: proposals, ShotSpec, ShotLightingPlan, TemporalSpec, storyboard,
-  reference review and render planning.
+  reference consumption and render planning.
 - Prompt: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief and PromptRepair.
 - Production: recipes, controls, evidence, capability, rights, adapter
   descriptors, exact execution requests, receipts and benchmarks.
@@ -35,8 +37,8 @@ repository layout.
 
 ## Evolution policy
 
-Artifacts are immutable. Additive 2.2, 2.3.0 and 2.3.1 schemas do not rewrite
-valid 2.0, 2.2 or 2.3.0 payloads.
+Artifacts are immutable. Additive 2.2, 2.3.0, 2.3.1 and 2.4.0 schemas do not
+rewrite valid earlier payloads.
 A dependent artifact references exact kind, ID, version and content hash; it
 never means “latest.” Breaking data-shape changes require a new contract version
 and a non-destructive migration report.
@@ -46,3 +48,6 @@ causal beats, non-overlapping performance phases, physical/style light
 separation, source-bound shot lighting, ordered temporal events, one-variable
 repair, deterministic grids, execution authorization/cost integrity, artifact-
 graph summaries, safe bundle manifests and evaluation-summary consistency.
+Reference semantics additionally enforce exact asset paths and hashes, bounded
+selectors, disjoint extract/ignore scopes, role authority, rights gates,
+binding conflict resolution and reference-media bundle policy.

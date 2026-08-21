@@ -1,11 +1,11 @@
 {
   "kind": "cineweave_artifact_graph",
-  "contractVersion": "2.3.1",
+  "contractVersion": "2.4.0",
   "generatedAt": "2026-08-21T10:00:00.000Z",
   "project": {
     "projectId": "project.graph-example",
     "projectManifestHash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-    "runtimeVersion": "2.3.1"
+    "runtimeVersion": "2.4.0"
   },
   "scope": {
     "mode": "artifact_closure",

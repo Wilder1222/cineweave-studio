@@ -1,13 +1,14 @@
-import { link, mkdir, readFile, readdir, stat, unlink, writeFile } from "node:fs/promises";
+import { link, lstat, mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { basename, dirname, join, resolve, sep } from "node:path";
 import { randomUUID } from "node:crypto";
 import { parseJsonStrict, sha256Bytes, sha256Canonical } from "./canonical-json.mjs";
+import { assertReferenceBlobRelativePath, listReferenceBlobFiles, verifyReferenceBlob } from "./reference-media.mjs";
 
-export const RUNTIME_VERSION = "2.3.1";
+export const RUNTIME_VERSION = "2.4.0";
 const identifierPattern = /^[a-z0-9][a-z0-9._-]{1,159}$/;
 const contentHashPattern = /^sha256:[0-9a-f]{64}$/;
-const supportedStoreVersions = new Set(["2.2.0", "2.3.0", "2.3.1"]);
+const supportedStoreVersions = new Set(["2.2.0", "2.3.0", "2.3.1", "2.4.0"]);
 
 function assertIdentifier(value, label) {
   if (!identifierPattern.test(value || "")) throw new TypeError(`${label} must match ${identifierPattern}`);
@@ -43,7 +44,8 @@ function projectManifestErrors(project) {
   if (typeof project?.name !== "string" || !project.name.trim() || project.name.length > 240) errors.push("project name is invalid");
   if (Number.isNaN(Date.parse(project?.createdAt))) errors.push("project createdAt is invalid");
   if (project?.storage?.mode !== "local_immutable" || project.storage.artifactDirectory !== "artifacts" || project.storage.approvalDirectory !== "approvals") errors.push("project storage directories are invalid");
-  if (["2.3.0", "2.3.1"].includes(project?.contractVersion) && (project.storage.executionDirectory !== "executions" || project.storage.idempotencyDirectory !== "idempotency")) errors.push("V2.3 project execution/idempotency directories are invalid");
+  if (["2.3.0", "2.3.1", "2.4.0"].includes(project?.contractVersion) && (project.storage.executionDirectory !== "executions" || project.storage.idempotencyDirectory !== "idempotency")) errors.push("V2.3+ project execution/idempotency directories are invalid");
+  if (project?.contractVersion === "2.4.0" && project.storage.referenceBlobDirectory !== "reference-blobs") errors.push("V2.4 project reference blob directory is invalid");
   return errors;
 }
 
@@ -72,6 +74,7 @@ export async function initProject(projectRoot, options = {}) {
   await mkdir(join(root, "approvals"), { recursive: true });
   await mkdir(join(root, "executions"), { recursive: true });
   await mkdir(join(root, "idempotency"), { recursive: true });
+  await mkdir(join(root, "reference-blobs"), { recursive: true });
   if (existsSync(projectPath)) return readStrictJson(projectPath);
   const createdAt = options.createdAt || new Date().toISOString();
   const name = options.name || "Untitled CineWeave Project";
@@ -89,7 +92,8 @@ export async function initProject(projectRoot, options = {}) {
       artifactDirectory: "artifacts",
       approvalDirectory: "approvals",
       executionDirectory: "executions",
-      idempotencyDirectory: "idempotency"
+      idempotencyDirectory: "idempotency",
+      referenceBlobDirectory: "reference-blobs"
     }
   };
   try { await writeImmutable(projectPath, project); }
@@ -275,7 +279,7 @@ export async function verifyProject(projectRoot) {
   const root = storeRoot(projectRoot);
   const projectPath = join(root, "project.json");
   const errors = [];
-  if (!existsSync(projectPath)) return { valid: false, artifacts: 0, approvals: 0, errors: ["Missing .cineweave/project.json"] };
+  if (!existsSync(projectPath)) return { valid: false, artifacts: 0, approvals: 0, referenceBlobs: 0, errors: ["Missing .cineweave/project.json"] };
   try {
     const project = await readStrictJson(projectPath);
     for (const error of projectManifestErrors(project)) errors.push(`Invalid project manifest: ${error}`);
@@ -283,6 +287,7 @@ export async function verifyProject(projectRoot) {
   const artifactPaths = (await walkJson(join(root, "artifacts"))).filter((path) => /^v\d+-[0-9a-f]{16}\.json$/.test(basename(path)));
   const known = new Set();
   const versions = new Map();
+  const referencedBlobs = new Set();
   for (const path of artifactPaths) {
     try {
       const envelope = await readStrictJson(path);
@@ -316,6 +321,10 @@ export async function verifyProject(projectRoot) {
           if (sha256Bytes(bytes) !== output.contentHash) errors.push(`Execution output hash mismatch: ${output.storageRef}`);
           if (bytes.byteLength !== output.byteLength) errors.push(`Execution output byte length mismatch: ${output.storageRef}`);
         }
+      }
+      if (envelope.payload?.kind === "cineweave_codex_reference_asset") {
+        const verification = await verifyReferenceBlob(projectRoot, envelope.payload);
+        referencedBlobs.add(verification.relativePath);
       }
     } catch (error) { errors.push(`Invalid artifact ${path}: ${error.message}`); }
   }
@@ -360,17 +369,26 @@ export async function verifyProject(projectRoot) {
     try {
       const claim = await readStrictJson(path);
       if (claim.kind !== "cineweave_idempotency_claim") errors.push(`Invalid idempotency claim kind: ${path}`);
-      if (!["2.3.0", "2.3.1"].includes(claim.contractVersion) || !contentHashPattern.test(claim.keyHash || "") || Number.isNaN(Date.parse(claim.claimedAt))) errors.push(`Invalid idempotency claim metadata: ${path}`);
+      if (!["2.3.0", "2.3.1", "2.4.0"].includes(claim.contractVersion) || !contentHashPattern.test(claim.keyHash || "") || Number.isNaN(Date.parse(claim.claimedAt))) errors.push(`Invalid idempotency claim metadata: ${path}`);
       if (basename(path) !== `${String(claim.keyHash || "").replace(/^sha256:/, "")}.json`) errors.push(`Idempotency path does not match its key hash: ${path}`);
       const ref = assertArtifactRef(claim.requestArtifactRef);
       const key = `${ref.kind}/${ref.id}@${ref.version}:${ref.contentHash}`;
       if (!known.has(key)) errors.push(`Idempotency claim references a missing exact request: ${path}`);
     } catch (error) { errors.push(`Invalid idempotency claim ${path}: ${error.message}`); }
   }
-  return { valid: errors.length === 0, artifacts: artifactPaths.length, approvals: approvalPaths.length, errors };
+  let referenceBlobPaths = [];
+  try {
+    referenceBlobPaths = await listReferenceBlobFiles(projectRoot);
+    for (const path of referenceBlobPaths) {
+      assertReferenceBlobRelativePath(path);
+      if (!referencedBlobs.has(path)) errors.push(`Orphaned reference blob is not bound to an exact ReferenceAsset: ${path}`);
+    }
+    for (const path of referencedBlobs) if (!referenceBlobPaths.includes(path)) errors.push(`ReferenceAsset blob is missing from project storage: ${path}`);
+  } catch (error) { errors.push(`Invalid reference blob storage: ${error.message}`); }
+  return { valid: errors.length === 0, artifacts: artifactPaths.length, approvals: approvalPaths.length, referenceBlobs: referenceBlobPaths.length, errors };
 }
 
 export async function assertRegularFile(path) {
-  const info = await stat(path);
-  if (!info.isFile()) throw new Error(`Expected a file: ${path}`);
+  const info = await lstat(path);
+  if (info.isSymbolicLink() || !info.isFile()) throw new Error(`Expected a regular non-link file: ${path}`);
 }

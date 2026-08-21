@@ -1,6 +1,6 @@
 {
   "suite": "cineweave-skill-behavior",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "categories": ["direct", "indirect", "incomplete", "negative", "edge"],
   "cases": [
     {
@@ -172,6 +172,51 @@
       "mustProduce": ["cineweave_codex_scene_spec"],
       "mustNotProduce": ["cineweave_codex_style_package"],
       "behaviorAssertions": ["routes physical geometry changes to Scene"]
+    },
+    {
+      "id": "reference.direct.ingest",
+      "category": "direct",
+      "targetSkill": "cineweave-reference",
+      "request": "Use $cineweave-reference to ingest this local PNG as an exact reusable reference asset without retaining its original path or filename.",
+      "expectedSkill": "cineweave-reference",
+      "expectedRoute": "reference_ingest",
+      "mustProduce": ["cineweave_codex_reference_asset"],
+      "mustNotProduce": ["cineweave_codex_reference_observation", "cineweave_codex_image_prompt"],
+      "behaviorAssertions": ["binds exact bytes by content hash", "does not imply rights or malware scanning"]
+    },
+    {
+      "id": "reference.edge.role-split",
+      "category": "edge",
+      "targetSkill": "cineweave-reference",
+      "request": "This portrait should supply both face identity and soft side lighting. Create separate scoped observations so the lighting reference cannot copy the source person's face.",
+      "expectedSkill": "cineweave-reference",
+      "expectedRoute": "reference_observe",
+      "mustProduce": ["cineweave_codex_reference_observation"],
+      "mustNotProduce": ["cineweave_codex_character_spec", "cineweave_codex_style_package"],
+      "behaviorAssertions": ["creates one primary role per observation", "keeps extract and ignore scopes disjoint"]
+    },
+    {
+      "id": "reference.incomplete.unknown-rights",
+      "category": "incomplete",
+      "targetSkill": "cineweave-reference",
+      "request": "Bind these style and costume observations for private exploration; their source and likeness rights are still unknown.",
+      "expectedSkill": "cineweave-reference",
+      "expectedRoute": "reference_bind",
+      "mustProduce": ["cineweave_codex_reference_binding_set"],
+      "mustNotProduce": ["cineweave_execution_request"],
+      "behaviorAssertions": ["keeps unknown rights unresolved", "blocks production promotion and redistribution"]
+    },
+    {
+      "id": "reference.negative.shot-design",
+      "category": "negative",
+      "targetSkill": "cineweave-reference",
+      "request": "The exact references are already bound. Now choose the dramatic blocking, 50mm camera position and final focus pull for the scene.",
+      "expectedSkill": "cineweave-director",
+      "expectedRoute": "shot_direction",
+      "mustNotActivate": ["cineweave-reference"],
+      "mustProduce": ["cineweave_codex_shot_spec"],
+      "mustNotProduce": ["cineweave_codex_reference_binding_set"],
+      "behaviorAssertions": ["routes dramatic camera decisions to Director"]
     },
     {
       "id": "director.direct.shot",

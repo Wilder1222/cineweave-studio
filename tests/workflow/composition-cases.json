@@ -1,5 +1,5 @@
 {
-  "version": "2.3.1",
+  "version": "2.4.0",
   "cases": [
     {
       "id": "character-style-director-keyframe",
@@ -21,6 +21,18 @@
         "cineweave_codex_character_option_set",
         "cineweave_codex_asset_recipe",
         "cineweave_codex_character_preference_feedback"
+      ]
+    },
+    {
+      "id": "reference-to-style-prompt",
+      "workflowExample": "packages/cineweave-contracts/examples/workflow-plan-reference-prompt.json",
+      "requiresSkills": ["cineweave-reference", "cineweave-style", "cineweave-prompt"],
+      "requiresOutputs": [
+        "cineweave_codex_reference_asset",
+        "cineweave_codex_reference_observation",
+        "cineweave_codex_reference_binding_set",
+        "cineweave_codex_style_compile",
+        "cineweave_codex_image_prompt"
       ]
     }
   ]

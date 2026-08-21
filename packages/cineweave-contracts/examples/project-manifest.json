@@ -1,15 +1,16 @@
 {
   "kind": "cineweave_project_manifest",
-  "contractVersion": "2.3.1",
+  "contractVersion": "2.4.0",
   "projectId": "project.song-courtyard",
   "name": "Song Courtyard Study",
   "createdAt": "2026-08-21T00:00:00.000Z",
-  "runtimeVersion": "2.3.1",
+  "runtimeVersion": "2.4.0",
   "storage": {
     "mode": "local_immutable",
     "artifactDirectory": "artifacts",
     "approvalDirectory": "approvals",
     "executionDirectory": "executions",
-    "idempotencyDirectory": "idempotency"
+    "idempotencyDirectory": "idempotency",
+    "referenceBlobDirectory": "reference-blobs"
   }
 }

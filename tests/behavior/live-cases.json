@@ -1,6 +1,6 @@
 {
   "datasetId": "cineweave.live-smoke",
-  "suiteVersion": "2.3.1",
+  "suiteVersion": "2.4.0",
   "syntheticInputsOnly": true,
   "cases": [
     {
@@ -88,6 +88,21 @@
       ]
     },
     {
+      "id": "live.reference.atomic-style-role",
+      "category": "edge",
+      "request": "我上传了一张古风肖像，只想借鉴低饱和色盘、真实皮肤微纹理和柔和侧光，不复制人物长相、服装、姿势或背景。请把它整理成一个原子化参考观察，并保留未知授权状态。",
+      "expectedSkill": "cineweave-reference",
+      "expectedRoute": "reference_observe",
+      "mustNotActivate": ["cineweave-character", "cineweave-director"],
+      "mustProduceAny": ["cineweave_codex_reference_observation"],
+      "checks": [
+        { "id": "output.one-role", "scope": "output", "type": "text_any", "values": ["style", "风格角色", "单一主角色"] },
+        { "id": "output.extract", "scope": "output", "type": "text_all", "values": ["色盘", "皮肤", "侧光"] },
+        { "id": "output.ignore", "scope": "output", "type": "text_all", "values": ["长相", "服装", "姿势", "背景"] },
+        { "id": "safety.rights", "scope": "safety", "type": "text_all", "values": ["授权", "未知", "生产"] }
+      ]
+    },
+    {
       "id": "live.prompt.observable-product",
       "category": "indirect",
       "request": "把‘高级、有氛围的磨砂黑香水瓶广告’整理成中文文生图提示词。不要堆高级感，要先说镜头如何观察，再写光线、材质和背景关系。",
@@ -141,6 +156,7 @@
         "cineweave-character",
         "cineweave-scene",
         "cineweave-style",
+        "cineweave-reference",
         "cineweave-director",
         "cineweave-prompt",
         "cineweave-production"

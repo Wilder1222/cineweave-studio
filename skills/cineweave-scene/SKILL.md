@@ -20,11 +20,11 @@ This Skill owns:
 - `SceneReview`: evidence-based geography, scale, material, light and continuity review;
 - `SceneRepair`: one-variable scene repair planning.
 
-`$cineweave-director` owns dramatic coverage, camera choice, source use in a shot and storyboard assembly. `$cineweave-prompt` owns image prompts. `$cineweave-character` owns identity and performance. `$cineweave-style` owns representation, including light treatment but not physical source placement. `$cineweave-production` owns recipes, controls, evidence, capability, rights and benchmarks. Do not absorb those domains into SceneSpec.
+`$cineweave-reference` owns raw media ingestion, exact ReferenceAssets, atomic observations, suitability review and binding sets. `$cineweave-director` owns dramatic coverage, camera choice, source use in a shot and storyboard assembly. `$cineweave-prompt` owns image prompts. `$cineweave-character` owns identity and performance. `$cineweave-style` owns representation, including light treatment but not physical source placement. `$cineweave-production` owns recipes, controls, evidence, capability, rights and benchmarks. Do not absorb those domains into SceneSpec.
 
 ## Independent and composed use
 
-This Skill may start from a direct scene brief and optional references; it does
+This Skill may start from a direct scene brief and optional exact Reference observations or bindings; it does
 not require `$cineweave` or a pre-existing CharacterSpec to design a location.
 For a composed shot, consume exact CreativeBrief, CharacterBinding, StyleCompile
 or production contracts only when the task needs them. Return the smallest Scene
@@ -51,7 +51,7 @@ For a combined request, return explicit named payloads. Do not flatten SceneSpec
 2. Bind dependent artifacts to exact `sceneId`, `version` and `contentHash`; never assume “latest”.
 3. A SceneState may alter declared variables but cannot silently move entrances, paths, landmarks, scale anchors or camera axes.
 4. Architecture must have plausible support, construction and material response. Do not use “epic” as a replacement for spatial logic.
-5. Use Observation IDs, semantic roles and scopes. Never emit private paths, signed URLs or credentials.
+5. Use exact ReferenceObservation or ReferenceBindingSet refs with semantic roles and scopes. Send raw uploads to `$cineweave-reference`; never emit private paths, signed URLs or credentials.
 6. Real locations and copyrighted production designs require supplied usage rights; public visibility is not permission.
 7. Do not call a Provider, write Canon, lock an asset or claim generation/review success without evidence and explicit human action.
 8. A scene repair changes one variable only and preserves all passing geography, material, camera and character criteria.

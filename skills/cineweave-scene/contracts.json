@@ -1,11 +1,11 @@
 {
-  "contractPackage": "cineweave-contracts@2.3.1",
+  "contractPackage": "cineweave-contracts@2.4.0",
   "standalone": {
-    "accepts": ["NaturalLanguageBrief", "OptionalReferenceAssets", "OptionalWorldContext"],
+    "accepts": ["NaturalLanguageBrief", "OptionalReferenceBindingSet", "OptionalWorldContext"],
     "produces": ["SceneSpec", "SceneReferencePlan", "SceneState", "SceneLightState", "SceneBinding", "InteractionConstraintSet", "SceneReview", "SceneRepair"]
   },
   "composed": {
-    "consumes": ["CreativeBrief", "StoryBrief", "CharacterBinding", "StyleCompile", "AssetRecipe", "ControlChannelSet", "EvidenceBundle", "LicenseProfile"],
+    "consumes": ["CreativeBrief", "StoryBrief", "ReferenceObservation", "ReferenceBindingSet", "CharacterBinding", "StyleCompile", "AssetRecipe", "ControlChannelSet", "EvidenceBundle", "LicenseProfile"],
     "produces": ["SceneSpec", "SceneReferencePlan", "SceneState", "SceneLightState", "SceneBinding", "InteractionConstraintSet", "SceneReview", "SceneRepair"]
   },
   "contractKinds": [
@@ -24,6 +24,8 @@
     "cineweave_codex_asset_recipe",
     "cineweave_codex_control_channel_set",
     "cineweave_codex_evidence_bundle",
-    "cineweave_codex_license_profile"
+    "cineweave_codex_license_profile",
+    "cineweave_codex_reference_observation",
+    "cineweave_codex_reference_binding_set"
   ]
 }

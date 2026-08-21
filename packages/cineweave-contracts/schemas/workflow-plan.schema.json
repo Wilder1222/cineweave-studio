@@ -46,6 +46,7 @@
               "cineweave-character",
               "cineweave-scene",
               "cineweave-style",
+              "cineweave-reference",
               "cineweave-director",
               "cineweave-prompt",
               "cineweave-production"

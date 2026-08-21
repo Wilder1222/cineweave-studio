@@ -1,12 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { initProject, putArtifact, recordApproval } from "../../packages/cineweave-runtime/src/artifact-store.mjs";
 
 const cli = resolve("packages/cineweave-runtime/bin/cineweave.mjs");
+const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64");
 
 function run(args) {
   return spawnSync(process.execPath, [cli, ...args], { encoding: "utf8" });
@@ -35,6 +36,21 @@ test("runtime CLI exposes graph, stale, gate and verified bundle transfer", asyn
     const allowed = run(["gate", source, artifact.path]);
     assert.equal(allowed.status, 0, allowed.stderr);
     assert.equal(JSON.parse(allowed.stdout).gate.allowed, true);
+
+    const referencePath = join(sandbox, "reference.png");
+    await writeFile(referencePath, png);
+    const ingested = run(["reference-ingest", source, referencePath]);
+    assert.equal(ingested.status, 0, ingested.stderr);
+    const ingestedBody = JSON.parse(ingested.stdout);
+    assert.equal(ingestedBody.envelope.payload.kind, "cineweave_codex_reference_asset");
+    assert.equal(ingestedBody.envelope.payload.rights.status, "unknown");
+    const listed = run(["list", source]);
+    assert.equal(listed.status, 0, listed.stderr);
+    const referenceEnvelope = JSON.parse(listed.stdout).find((item) => item.artifactRef.kind === "cineweave_codex_reference_asset");
+    assert(referenceEnvelope?.path);
+    const referenceVerified = run(["reference-verify", source, referenceEnvelope.path]);
+    assert.equal(referenceVerified.status, 0, referenceVerified.stderr);
+    assert.equal(JSON.parse(referenceVerified.stdout).verification.valid, true);
 
     const exported = run(["export", source, bundle]);
     assert.equal(exported.status, 0, exported.stderr);

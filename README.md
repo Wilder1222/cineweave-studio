@@ -5,19 +5,19 @@
 <h1 align="center">CineWeave Studio</h1>
 
 <p align="center">
-  Composable Codex Skills for story, character, scene, style, direction, image prompting and production control.
+  Composable Codex Skills for story, character, scene, style, references, direction, image prompting and production control.
 </p>
 
 <p align="center">
   <a href="https://github.com/Wilder1222/cineweave-studio/actions/workflows/validate.yml"><img alt="Validation" src="https://img.shields.io/github/actions/workflow/status/Wilder1222/cineweave-studio/validate.yml?branch=main&style=flat-square&label=validation"></a>
   <img alt="Codex plugin" src="https://img.shields.io/badge/Codex-Plugin-1D6FFF?style=flat-square">
-  <img alt="Version 2.3.1" src="https://img.shields.io/badge/version-2.3.1-14B8A6?style=flat-square">
+  <img alt="Version 2.4.0" src="https://img.shields.io/badge/version-2.4.0-14B8A6?style=flat-square">
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-111827?style=flat-square">
 </p>
 
 <p align="center">
   <a href="#install-in-codex">Install</a> ·
-  <a href="#eight-independent-skills">Skills</a> ·
+  <a href="#nine-independent-skills">Skills</a> ·
   <a href="#how-composition-works">Architecture</a> ·
   <a href="#deterministic-local-runtime">Runtime</a> ·
   <a href="docs/roadmap.md">Roadmap</a>
@@ -46,7 +46,7 @@ the director system no longer owns general prompt management.
 | “I only know how the character should feel.” | Comparable identity directions under one neutral fixture—no automatic beauty score or identity lock. |
 | “Turn this premise into a real scene.” | Dramatic question, causal beats, playable action, subtext and continuity facts. |
 | “Use this courtyard in several shots.” | Versioned geography, material, weather, physical light and interaction constraints. |
-| “I like this look but not the depicted person.” | Role-scoped style evidence with explicit preserve and ignore rules. |
+| “I like this look but not the depicted person.” | A byte-bound reference asset, atomic style observation and explicit identity ignore rules. |
 | “Make the shot feel intimate.” | Blocking, attention order, lens, depth, motivated shot lighting and a stable temporal end state. |
 | “Write the actual image prompt.” | A reusable Chinese, English or bilingual PromptRecord with a visibility budget and testable constraints. |
 | “Build a 3×3 sheet reliably.” | Independent tile tasks and deterministic external assembly with per-tile hashes. |
@@ -56,14 +56,14 @@ the director system no longer owns general prompt management.
 Install the immutable release tag:
 
 ```bash
-codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.3.1
+codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.4.0
 codex plugin add cineweave-studio@cineweave-studio
 ```
 
-Start a new Codex task after installation so the eight Skills are discovered.
+Start a new Codex task after installation so the nine Skills are discovered.
 Release tags are immutable; development on `main` is not the installation pin.
 
-## Eight independent Skills
+## Nine independent Skills
 
 Every specialist works directly from a bounded brief and may also consume exact
 upstream contract refs. The `$cineweave` router is optional.
@@ -75,6 +75,7 @@ upstream contract refs. The `$cineweave` router is optional.
 | `$cineweave-character` | identity, appearance, behavior and actor timing | exploration contracts, `CharacterSpec`, `CharacterBinding`, `PerformanceTimeline` |
 | `$cineweave-scene` | geography, architecture, materials, physical light and interaction | `SceneSpec`, `SceneState`, `SceneLightState`, bindings and reviews |
 | `$cineweave-style` | medium and representational visual/temporal grammar | `StylePackage`, `StyleCompile`, `StyleLightGrammar` |
+| `$cineweave-reference` | content-addressed media, atomic observations, suitability and exact role bindings | `ReferenceAsset`, `ReferenceObservation`, `ReferenceReview`, `ReferenceBindingSet` |
 | `$cineweave-director` | shot purpose, blocking, camera, shot light use and time | `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, storyboard |
 | `$cineweave-prompt` | general text-to-image prompt assets | `PromptRecord`, `ImagePrompt`, hypotheses and one-variable repairs |
 | `$cineweave-production` | recipes, controls, evidence, capabilities, rights, execution intent and QA | `AssetRecipe`, capability/license profiles, `AdapterDescriptor`, `ExecutionRequest`, `ExecutionReceipt` |
@@ -86,6 +87,15 @@ Use $cineweave-character. I want an adult historical woman who feels restrained
 but quietly warm. I do not know facial terminology. Give me four comparable
 identity directions with the same neutral light, pose, hair and simple clothing.
 Do not rank beauty or lock an identity.
+```
+
+### Bind a reference without contamination
+
+```text
+Use $cineweave-reference. Ingest this image once, then create one observation
+for palette and light only. Ignore the depicted person's identity, costume,
+pose, background content and composition. Keep rights unresolved and block
+production promotion until an exact LicenseProfile is approved.
 ```
 
 ### Develop story before shots
@@ -118,41 +128,44 @@ keep one primary target and make variants change one hypothesis each.
 ## How composition works
 
 ```text
-natural language + declared reference roles
-                     │
-              optional $cineweave
-                     │
-          CreativeBrief + WorkflowPlan
-                     │
-        ┌────────────┼────────────┐
-        ▼            ▼            ▼
-      Story      Character      Scene
-        └────────────┼────────────┘
-                     ▼
-                   Style
-                     ▼
-                  Director
-                     ▼
-                   Prompt
-                     ▼
-                 Production
-                     ▼
-          immutable local artifact store
-                     ▼
-        exact-request human approval
-          (external execution only)
-                     ▼
-        trusted registered adapter runtime
-                     ▼
-       verified output + execution receipt
+natural language + optional untrusted media
+                       │
+                optional $cineweave
+                       │
+            CreativeBrief + WorkflowPlan
+                       │
+          ┌────────────┼─────────────┐
+          ▼            ▼             ▼
+       Story       Reference     Character / Scene
+                       │             │
+                       └──────┬──────┘
+                              ▼
+                            Style
+                              ▼
+                           Director
+                              ▼
+                            Prompt
+                              ▼
+                          Production
+                              ▼
+             immutable artifacts + reference blobs
+                              ▼
+           exact-request human approval when needed
+                              ▼
+              trusted registered adapter runtime
+                              ▼
+             verified output + execution receipt
 ```
 
 This is a default dependency direction, not a requirement to invoke every
 Skill. A product prompt can go directly to Prompt; a script rewrite can go
-directly to Story; a rights audit can go directly to Production.
+directly to Story; a reference suitability review can go directly to Reference;
+a rights audit can go directly to Production.
 
-Three boundaries prevent common drift:
+Four boundaries prevent common drift:
 
+- Reference binds exact bytes and one role per observation; downstream Skills
+  decide how accepted evidence affects their own domain.
 - Scene places physical light sources; Style defines how light is represented;
   Director chooses how existing sources function in one shot.
 - Character defines actor behavior timing; Director aligns camera timing without
@@ -165,10 +178,10 @@ resolves “latest” or relies on hidden conversation state.
 
 ## Deterministic local runtime
 
-V2.3.1 includes a dependency-free Node.js runtime for immutable local
-artifacts, exact dependency graphs, hash-bound approval gates, safe project
-transfer, deterministic board assembly and trusted adapter execution with
-byte-verifiable receipts.
+V2.4.0 includes a dependency-free Node.js runtime for immutable local
+artifacts, bounded content-addressed reference ingestion, exact dependency
+graphs, hash-bound approval gates, safe project transfer, deterministic board
+assembly and trusted adapter execution with byte-verifiable receipts.
 
 ```bash
 npm test
@@ -177,6 +190,8 @@ node packages/cineweave-runtime/bin/cineweave.mjs put ./demo ./story-brief.json 
 node packages/cineweave-runtime/bin/cineweave.mjs verify ./demo
 node packages/cineweave-runtime/bin/cineweave.mjs graph ./demo
 node packages/cineweave-runtime/bin/cineweave.mjs gate ./demo ./story-envelope.json --require-current
+node packages/cineweave-runtime/bin/cineweave.mjs reference-ingest ./demo ./reference.png --source-class user_upload
+node packages/cineweave-runtime/bin/cineweave.mjs reference-verify ./demo ./reference-asset-envelope.json
 node packages/cineweave-runtime/bin/cineweave.mjs export ./demo ./demo-transfer
 node packages/cineweave-runtime/bin/cineweave.mjs bundle-verify ./demo-transfer
 node packages/cineweave-runtime/bin/cineweave.mjs import ./demo-transfer ./demo-copy
@@ -186,6 +201,13 @@ node packages/cineweave-runtime/bin/cineweave.mjs adapters
 Artifacts are canonicalized with RFC-8785-compatible JSON rules and stored
 under `.cineweave/`. One kind/ID/version can bind to only one content hash.
 Approvals reference that exact hash.
+
+Reference ingestion allow-lists PNG, JPEG, WebP, MP4/M4V, MOV and WebM,
+requires extension/signature agreement, limits bytes and image dimensions and
+stores generated non-executable blob names without retaining source paths or
+original filenames. This is a bounded byte probe—not media decoding, malware
+scanning, provenance authentication or a license grant. Embedded metadata is
+preserved but uninspected until a separate privacy review.
 
 `graph` reports resolved, missing and same-version hash-mismatched refs. An old
 exact ref remains valid but is labeled superseded when a newer version exists.
@@ -214,10 +236,11 @@ image model to invent the grid, labels and all panels in a single pass.
 
 ## Verification
 
-The V2.3.1 gate validates 60 contracts and 57 uniquely owned routes, all
-schema/example pairs, semantic positive and negative cases, 24 static behavior
-cases, a 10-case live-evaluation replay set, 29 deterministic runtime tests,
-standalone bundles, reference links, rights boundaries and distributable assets.
+The V2.4.0 gate validates 63 contracts and 61 uniquely owned routes, all
+schema/example pairs, semantic positive and negative cases, 28 static behavior
+cases, an 11-case live-evaluation replay set and 37 deterministic runtime test
+definitions, plus standalone bundles, reference links, rights boundaries,
+media-ingestion threats and distributable assets.
 
 ```bash
 npm test
@@ -232,9 +255,9 @@ and [V2.2 → V2.3 migration](docs/migration/v2.2-to-v2.3.md).
 ## Repository map
 
 ```text
-skills/                         eight independently invocable Codex Skills
+skills/                         nine independently invocable Codex Skills
 packages/cineweave-contracts/   schemas, examples, ownership and recipes
-packages/cineweave-runtime/     immutable store and deterministic board tools
+packages/cineweave-runtime/     immutable store, reference blobs and deterministic tools
 tests/                          runtime, behavior, activation and workflow tests
 scripts/                        release, bundle, semantic and security checks
 docs/                           architecture, research, roadmap and migration
