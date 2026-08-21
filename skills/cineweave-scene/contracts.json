@@ -1,5 +1,5 @@
 {
-  "contractPackage": "cineweave-contracts@2.3.0",
+  "contractPackage": "cineweave-contracts@2.3.1",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalReferenceAssets", "OptionalWorldContext"],
     "produces": ["SceneSpec", "SceneReferencePlan", "SceneState", "SceneLightState", "SceneBinding", "InteractionConstraintSet", "SceneReview", "SceneRepair"]

@@ -20,7 +20,7 @@ Prompt outputs: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief,
 Production outputs: AssetRecipe, ControlChannelSet, EvidenceBundle,
                     CapabilityProfile, LicenseProfile, ControlBenchmark,
                     AdapterDescriptor, ExecutionRequest, ExecutionReceipt
-Suite evidence:     SkillEvaluationRun
+Suite evidence:     ArtifactGraph, ProjectBundleManifest, SkillEvaluationRun
 ```
 
 `WorkflowPlan` names handoffs but does not execute them. A specialist may run
@@ -29,11 +29,14 @@ contracts from other Skills.
 
 ## Shared invariants
 
-- Every V2 exchange record uses its schema-declared contract version. The V2.3
-  package preserves 2.0 and 2.2 contract versions for compatible creative
-  records while the package manifest and runtime are versioned 2.3.0.
+- Every V2 exchange record uses its schema-declared contract version. The
+  V2.3.1 package preserves 2.0, 2.2 and 2.3.0 contract versions for compatible
+  records while the package manifest and runtime are versioned 2.3.1.
 - A dependent contract names an exact asset identity, version and content hash
   where that asset is already defined.
+- A newer version does not invalidate an exact old ref or inherit its approval.
+  Staleness is an explicit graph state and becomes blocking only under a
+  declared current-version policy.
 - A reference input has one explicit role, scope, preserve list and ignore list.
 - Identity, appearance, geography, style representation and camera treatment
   remain separate ownership domains.
@@ -42,6 +45,8 @@ contracts from other Skills.
   cites evidence.
 - Rights, consent and capability support are explicit records; public visibility
   does not imply permission.
+- A project bundle is a byte-verified local transfer container. Its manifest
+  explicitly does not imply redistribution permission or rights approval.
 
 ## Composition boundary
 

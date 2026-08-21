@@ -2,7 +2,7 @@
   "kind": "cineweave_execution_receipt",
   "contractVersion": "2.3.0",
   "receiptId": "receipt.fixture-portrait",
-  "runtimeVersion": "2.3.0",
+  "runtimeVersion": "2.3.1",
   "status": "succeeded",
   "executionMode": "fixture",
   "requestArtifactRef": {

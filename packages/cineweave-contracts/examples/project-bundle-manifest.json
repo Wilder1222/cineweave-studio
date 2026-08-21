@@ -1,0 +1,37 @@
+{
+  "kind": "cineweave_project_bundle_manifest",
+  "contractVersion": "2.3.1",
+  "bundleFormatVersion": "1.0.0",
+  "bundleHash": "sha256:7816336f61c049e93865943b625c98ffe1ee2ef6ab7e6066af7669e93056fc2b",
+  "createdAt": "2026-08-21T10:00:00.000Z",
+  "sourceProject": {
+    "projectId": "project.bundle-example",
+    "projectManifestHash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "runtimeVersion": "2.3.1"
+  },
+  "purpose": "local_transfer",
+  "contentPolicy": {
+    "containsProjectContent": true,
+    "redistributionAuthorized": false,
+    "rightsApprovalImplied": false
+  },
+  "storeDirectory": "store",
+  "entries": [
+    {
+      "path": "store/project.json",
+      "category": "project_manifest",
+      "contentHash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "byteLength": 512
+    }
+  ],
+  "summary": {
+    "fileCount": 1,
+    "totalBytes": 512,
+    "projectManifestCount": 1,
+    "artifactEnvelopeCount": 0,
+    "versionPointerCount": 0,
+    "approvalRecordCount": 0,
+    "idempotencyClaimCount": 0,
+    "executionOutputCount": 0
+  }
+}

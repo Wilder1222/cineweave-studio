@@ -4,6 +4,23 @@
 
 No unreleased changes.
 
+## 2.3.1 — 2026-08-21
+
+- added strict `ArtifactGraph` and `ProjectBundleManifest` suite contracts;
+- added structural exact-ref discovery, dependency/dependent closures, stale-ref
+  reporting, same-version hash-mismatch detection and deterministic cycle
+  analysis;
+- added exact approval-gate queries whose decisions never transfer between
+  versions, with optional current-version and dependency-approval policies;
+- added graph, stale, gate, export, import and bundle-verification CLI commands;
+- added directory-based project transfer with per-file byte hashes, fixed path
+  categories, link and traversal rejection, staged verification, atomic install
+  and no-overwrite behavior;
+- preserved V2.2 and V2.3.0 projects and artifacts without mutation;
+- expanded runtime coverage to 29 deterministic tests, including CLI, bundle
+  round-trip, tamper, duplicate, unexpected-file and path-escape cases;
+- expanded the release gate to 60 contracts and 57 uniquely owned routes.
+
 ## 2.3.0 — 2026-08-21
 
 - added provider-neutral `AdapterDescriptor`, exact `ExecutionRequest` and

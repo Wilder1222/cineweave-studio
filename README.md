@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/Wilder1222/cineweave-studio/actions/workflows/validate.yml"><img alt="Validation" src="https://img.shields.io/github/actions/workflow/status/Wilder1222/cineweave-studio/validate.yml?branch=main&style=flat-square&label=validation"></a>
   <img alt="Codex plugin" src="https://img.shields.io/badge/Codex-Plugin-1D6FFF?style=flat-square">
-  <img alt="Version 2.3.0" src="https://img.shields.io/badge/version-2.3.0-14B8A6?style=flat-square">
+  <img alt="Version 2.3.1" src="https://img.shields.io/badge/version-2.3.1-14B8A6?style=flat-square">
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-111827?style=flat-square">
 </p>
 
@@ -56,7 +56,7 @@ the director system no longer owns general prompt management.
 Install the immutable release tag:
 
 ```bash
-codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.3.0
+codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.3.1
 codex plugin add cineweave-studio@cineweave-studio
 ```
 
@@ -165,21 +165,36 @@ resolves “latest” or relies on hidden conversation state.
 
 ## Deterministic local runtime
 
-V2.3 includes a dependency-free Node.js runtime for immutable local artifacts,
-hash-bound approvals, deterministic board assembly and trusted adapter
-execution with byte-verifiable receipts.
+V2.3.1 includes a dependency-free Node.js runtime for immutable local
+artifacts, exact dependency graphs, hash-bound approval gates, safe project
+transfer, deterministic board assembly and trusted adapter execution with
+byte-verifiable receipts.
 
 ```bash
 npm test
 node packages/cineweave-runtime/bin/cineweave.mjs init ./demo --id project.demo --name "Demo"
 node packages/cineweave-runtime/bin/cineweave.mjs put ./demo ./story-brief.json --id story.demo --version 1
 node packages/cineweave-runtime/bin/cineweave.mjs verify ./demo
+node packages/cineweave-runtime/bin/cineweave.mjs graph ./demo
+node packages/cineweave-runtime/bin/cineweave.mjs gate ./demo ./story-envelope.json --require-current
+node packages/cineweave-runtime/bin/cineweave.mjs export ./demo ./demo-transfer
+node packages/cineweave-runtime/bin/cineweave.mjs bundle-verify ./demo-transfer
+node packages/cineweave-runtime/bin/cineweave.mjs import ./demo-transfer ./demo-copy
 node packages/cineweave-runtime/bin/cineweave.mjs adapters
 ```
 
 Artifacts are canonicalized with RFC-8785-compatible JSON rules and stored
 under `.cineweave/`. One kind/ID/version can bind to only one content hash.
 Approvals reference that exact hash.
+
+`graph` reports resolved, missing and same-version hash-mismatched refs. An old
+exact ref remains valid but is labeled superseded when a newer version exists.
+`gate` never transfers approval from one version to another; optional policies
+can also require current dependencies and dependency approvals. Export creates
+a directory bundle with a manifest and byte hash for every file. Import rejects
+links, unsupported paths, unexpected files, digest changes and existing target
+stores before atomically installing the verified `.cineweave` directory. A
+bundle is local transfer evidence—not permission to redistribute its content.
 
 The core ships one zero-cost, network-free SVG fixture adapter for deterministic
 tests. Contracts cannot provide commands, module paths, endpoints or credential
@@ -199,11 +214,10 @@ image model to invent the grid, labels and all panels in a single pass.
 
 ## Verification
 
-The V2.3 gate validates 58 contracts and 57 uniquely owned routes, all
+The V2.3.1 gate validates 60 contracts and 57 uniquely owned routes, all
 schema/example pairs, semantic positive and negative cases, 24 static behavior
-cases, a 10-case live-evaluation replay set, deterministic runtime and adapter
-tests, standalone bundles, reference links, rights boundaries and distributable
-assets.
+cases, a 10-case live-evaluation replay set, 29 deterministic runtime tests,
+standalone bundles, reference links, rights boundaries and distributable assets.
 
 ```bash
 npm test

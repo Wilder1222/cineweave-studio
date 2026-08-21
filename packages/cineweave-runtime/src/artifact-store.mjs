@@ -4,9 +4,10 @@ import { basename, dirname, join, resolve, sep } from "node:path";
 import { randomUUID } from "node:crypto";
 import { parseJsonStrict, sha256Bytes, sha256Canonical } from "./canonical-json.mjs";
 
-export const RUNTIME_VERSION = "2.3.0";
+export const RUNTIME_VERSION = "2.3.1";
 const identifierPattern = /^[a-z0-9][a-z0-9._-]{1,159}$/;
 const contentHashPattern = /^sha256:[0-9a-f]{64}$/;
+const supportedStoreVersions = new Set(["2.2.0", "2.3.0", "2.3.1"]);
 
 function assertIdentifier(value, label) {
   if (!identifierPattern.test(value || "")) throw new TypeError(`${label} must match ${identifierPattern}`);
@@ -32,6 +33,18 @@ function assertArtifactRef(value) {
 
 function sameArtifactRef(left, right) {
   return left.kind === right.kind && left.id === right.id && left.version === right.version && left.contentHash === right.contentHash;
+}
+
+function projectManifestErrors(project) {
+  const errors = [];
+  if (project?.kind !== "cineweave_project_manifest") errors.push("project kind must be cineweave_project_manifest");
+  if (!supportedStoreVersions.has(project?.contractVersion) || project?.runtimeVersion !== project?.contractVersion) errors.push("project contract/runtime version pair is unsupported");
+  if (!identifierPattern.test(project?.projectId || "")) errors.push("projectId is invalid");
+  if (typeof project?.name !== "string" || !project.name.trim() || project.name.length > 240) errors.push("project name is invalid");
+  if (Number.isNaN(Date.parse(project?.createdAt))) errors.push("project createdAt is invalid");
+  if (project?.storage?.mode !== "local_immutable" || project.storage.artifactDirectory !== "artifacts" || project.storage.approvalDirectory !== "approvals") errors.push("project storage directories are invalid");
+  if (["2.3.0", "2.3.1"].includes(project?.contractVersion) && (project.storage.executionDirectory !== "executions" || project.storage.idempotencyDirectory !== "idempotency")) errors.push("V2.3 project execution/idempotency directories are invalid");
+  return errors;
 }
 
 async function writeImmutable(path, value) {
@@ -60,12 +73,16 @@ export async function initProject(projectRoot, options = {}) {
   await mkdir(join(root, "executions"), { recursive: true });
   await mkdir(join(root, "idempotency"), { recursive: true });
   if (existsSync(projectPath)) return readStrictJson(projectPath);
+  const createdAt = options.createdAt || new Date().toISOString();
+  const name = options.name || "Untitled CineWeave Project";
+  if (Number.isNaN(Date.parse(createdAt))) throw new TypeError("createdAt must be an ISO date-time");
+  if (typeof name !== "string" || !name.trim() || name.length > 240) throw new TypeError("name must contain 1 to 240 characters");
   const project = {
     kind: "cineweave_project_manifest",
     contractVersion: RUNTIME_VERSION,
     projectId: assertIdentifier(options.projectId || `project.${randomUUID().toLowerCase()}`, "projectId"),
-    name: options.name || "Untitled CineWeave Project",
-    createdAt: options.createdAt || new Date().toISOString(),
+    name,
+    createdAt,
     runtimeVersion: RUNTIME_VERSION,
     storage: {
       mode: "local_immutable",
@@ -90,6 +107,12 @@ export async function putArtifact(projectRoot, payload, options = {}) {
   const id = assertIdentifier(options.id, "id");
   const version = Number(options.version || 1);
   if (!Number.isSafeInteger(version) || version < 1) throw new TypeError("version must be a positive safe integer");
+  const status = options.status || "draft";
+  const createdAt = options.createdAt || new Date().toISOString();
+  const createdBy = options.createdBy || "cineweave-runtime";
+  if (!["draft", "candidate", "approved", "rejected", "archived", "dry_run", "succeeded", "failed", "blocked"].includes(status)) throw new TypeError("status is invalid");
+  if (Number.isNaN(Date.parse(createdAt))) throw new TypeError("createdAt must be an ISO date-time");
+  if (typeof createdBy !== "string" || !createdBy.trim() || createdBy.length > 240) throw new TypeError("createdBy must contain 1 to 240 characters");
   const contentHash = sha256Canonical(payload);
   const shortHash = contentHash.slice("sha256:".length, "sha256:".length + 16);
   const directory = artifactDirectory(projectRoot, kind, id);
@@ -107,9 +130,9 @@ export async function putArtifact(projectRoot, payload, options = {}) {
     kind: "cineweave_artifact_envelope",
     contractVersion: RUNTIME_VERSION,
     artifactRef,
-    status: options.status || "draft",
-    createdAt: options.createdAt || new Date().toISOString(),
-    createdBy: options.createdBy || "cineweave-runtime",
+    status,
+    createdAt,
+    createdBy,
     payload
   };
   const path = join(directory, expectedName);
@@ -150,16 +173,21 @@ export async function recordApproval(projectRoot, artifactRef, options = {}) {
   const exactRef = assertArtifactRef(artifactRef);
   await findArtifact(projectRoot, exactRef);
   if (!['approved', 'rejected'].includes(options.decision)) throw new TypeError("decision must be approved or rejected");
-  if (!options.actor) throw new TypeError("actor is required");
+  if (typeof options.actor !== "string" || !options.actor.trim() || options.actor.length > 240) throw new TypeError("actor must contain 1 to 240 characters");
+  const approvalId = assertIdentifier(options.approvalId || `approval.${randomUUID().toLowerCase()}`, "approvalId");
+  const decidedAt = options.decidedAt || new Date().toISOString();
+  const rationale = options.rationale || "No rationale supplied.";
+  if (Number.isNaN(Date.parse(decidedAt))) throw new TypeError("decidedAt must be an ISO date-time");
+  if (typeof rationale !== "string" || !rationale.trim() || rationale.length > 2000) throw new TypeError("rationale must contain 1 to 2000 characters");
   const body = {
     kind: "cineweave_approval_record",
     contractVersion: RUNTIME_VERSION,
-    approvalId: options.approvalId || `approval.${randomUUID().toLowerCase()}`,
+    approvalId,
     artifactRef: exactRef,
     decision: options.decision,
     actor: options.actor,
-    decidedAt: options.decidedAt || new Date().toISOString(),
-    rationale: options.rationale || "No rationale supplied."
+    decidedAt,
+    rationale
   };
   const approvalHash = sha256Canonical(body);
   const record = { ...body, approvalHash };
@@ -248,7 +276,10 @@ export async function verifyProject(projectRoot) {
   const projectPath = join(root, "project.json");
   const errors = [];
   if (!existsSync(projectPath)) return { valid: false, artifacts: 0, approvals: 0, errors: ["Missing .cineweave/project.json"] };
-  try { await readStrictJson(projectPath); } catch (error) { errors.push(`Invalid project manifest: ${error.message}`); }
+  try {
+    const project = await readStrictJson(projectPath);
+    for (const error of projectManifestErrors(project)) errors.push(`Invalid project manifest: ${error}`);
+  } catch (error) { errors.push(`Invalid project manifest: ${error.message}`); }
   const artifactPaths = (await walkJson(join(root, "artifacts"))).filter((path) => /^v\d+-[0-9a-f]{16}\.json$/.test(basename(path)));
   const known = new Set();
   const versions = new Map();
@@ -257,6 +288,9 @@ export async function verifyProject(projectRoot) {
       const envelope = await readStrictJson(path);
       const expected = sha256Canonical(envelope.payload);
       const ref = assertArtifactRef(envelope.artifactRef);
+      if (!supportedStoreVersions.has(envelope.contractVersion)) errors.push(`Artifact envelope version is unsupported: ${path}`);
+      if (!["draft", "candidate", "approved", "rejected", "archived", "dry_run", "succeeded", "failed", "blocked"].includes(envelope.status)) errors.push(`Artifact envelope status is invalid: ${path}`);
+      if (Number.isNaN(Date.parse(envelope.createdAt)) || typeof envelope.createdBy !== "string" || !envelope.createdBy.trim()) errors.push(`Artifact envelope provenance is invalid: ${path}`);
       if (envelope.kind !== "cineweave_artifact_envelope" || expected !== ref.contentHash) errors.push(`Artifact hash mismatch: ${path}`);
       const expectedDirectory = artifactDirectory(projectRoot, ref.kind, ref.id);
       if (dirname(path) !== expectedDirectory) errors.push(`Artifact directory does not match its reference: ${path}`);
@@ -310,6 +344,10 @@ export async function verifyProject(projectRoot) {
     try {
       const record = await readStrictJson(path);
       const { approvalHash, ...body } = record;
+      if (record.kind !== "cineweave_approval_record" || !supportedStoreVersions.has(record.contractVersion)) errors.push(`Approval record kind/version is invalid: ${path}`);
+      if (!identifierPattern.test(record.approvalId || "") || !["approved", "rejected"].includes(record.decision)) errors.push(`Approval identity/decision is invalid: ${path}`);
+      if (typeof record.actor !== "string" || !record.actor.trim() || Number.isNaN(Date.parse(record.decidedAt))) errors.push(`Approval actor/time is invalid: ${path}`);
+      if (!contentHashPattern.test(approvalHash || "")) errors.push(`Approval hash format is invalid: ${path}`);
       if (sha256Canonical(body) !== approvalHash) errors.push(`Approval hash mismatch: ${path}`);
       if (basename(path) !== `${String(approvalHash || "").replace(/^sha256:/, "")}.json`) errors.push(`Approval path does not match its hash: ${path}`);
       const ref = assertArtifactRef(record.artifactRef);
@@ -322,6 +360,7 @@ export async function verifyProject(projectRoot) {
     try {
       const claim = await readStrictJson(path);
       if (claim.kind !== "cineweave_idempotency_claim") errors.push(`Invalid idempotency claim kind: ${path}`);
+      if (!["2.3.0", "2.3.1"].includes(claim.contractVersion) || !contentHashPattern.test(claim.keyHash || "") || Number.isNaN(Date.parse(claim.claimedAt))) errors.push(`Invalid idempotency claim metadata: ${path}`);
       if (basename(path) !== `${String(claim.keyHash || "").replace(/^sha256:/, "")}.json`) errors.push(`Idempotency path does not match its key hash: ${path}`);
       const ref = assertArtifactRef(claim.requestArtifactRef);
       const key = `${ref.kind}/${ref.id}@${ref.version}:${ref.contentHash}`;

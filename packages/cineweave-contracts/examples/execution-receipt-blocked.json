@@ -2,7 +2,7 @@
   "kind": "cineweave_execution_receipt",
   "contractVersion": "2.3.0",
   "receiptId": "receipt.blocked-external",
-  "runtimeVersion": "2.3.0",
+  "runtimeVersion": "2.3.1",
   "status": "blocked",
   "executionMode": "external",
   "requestArtifactRef": {

@@ -1,4 +1,4 @@
-# CineWeave Studio v2.3 architecture
+# CineWeave Studio v2.3.1 architecture
 
 ## Design contract
 
@@ -86,6 +86,15 @@ visibility, compatibility and control value.
 - Canonical hashes are object-order independent.
 - One kind/ID/version has one immutable content hash, including concurrent writes.
 - Approval records bind exact artifact hashes and are independently hashed.
+- ArtifactGraph discovers contract refs structurally inside payloads, supports
+  dependency/dependent closures and distinguishes missing refs, same-version
+  hash mismatches and valid-but-superseded refs.
+- Approval gates evaluate the latest decision for one exact artifact; approval
+  never transfers to a newer version. Current-version and dependency-approval
+  policies are explicit opt-ins.
+- Project bundles list every allowed store file with a byte hash and reject
+  links, traversal, unknown or unexpected files and existing target stores.
+  Import verifies a staged project before atomically installing its store.
 - Idempotency claims bind one key to one exact `ExecutionRequest`.
 - Adapter implementations come from a trusted in-process registry and must
   match the hash declared by their `AdapterDescriptor`.
@@ -105,15 +114,16 @@ boundaries.
 
 ## Contracts and portable bundles
 
-The canonical manifest owns 58 contract kinds. Each Skill declares its portable
+The canonical manifest owns 60 contract kinds. Each Skill declares its portable
 subset in `skills/<skill>/contracts.json`. Bundle construction copies only the
 needed schemas and recipes and rewrites local references, so a specialist bundle
 does not depend on the repository layout.
 
-Old 2.0 and 2.2 contract schemas remain valid where their data shape did not
-break. V2.3 adds adapter, execution and evaluation-run contracts using
-`contractVersion: 2.3.0`; the suite, runtime and plugin version are 2.3.0. This
-is additive contract evolution, not a silent rewrite of old artifacts.
+Old 2.0, 2.2 and 2.3.0 contract schemas remain valid where their data shape did
+not break. Adapter, execution and evaluation-run records retain their declared
+`contractVersion: 2.3.0`; V2.3.1 adds ArtifactGraph and ProjectBundleManifest
+contracts while the suite, runtime and plugin version move to 2.3.1. Existing
+project manifests and immutable artifacts are not rewritten.
 
 ## Verification model
 
@@ -126,6 +136,10 @@ Release validation covers:
 - activation, indirect, incomplete, negative and edge behavior definitions;
 - workflow DAG and output-owner consistency;
 - canonicalization, immutable writes, concurrent conflicts and approvals;
+- graph closures, stale refs, exact gate decisions, cycles and missing/hash-
+  mismatched dependencies;
+- project-bundle round trips, V2.2 compatibility, tamper detection, duplicate
+  entries, unexpected files and traversal/backslash rejection;
 - deterministic partial board assembly;
 - trusted-adapter matching, idempotent execution, exact-request authorization,
   retry-cost accounting and output-byte verification;
@@ -133,5 +147,6 @@ Release validation covers:
   Skill and a should-not-activate case;
 - standalone bundles, links, security and distributable media rights.
 
-See [V2.3 research decisions](research/2026-08-21-v2.3-execution-and-live-evals.md)
+See [V2.3.1 graph and bundle decisions](research/2026-08-21-v2.3.1-artifact-graph-and-project-bundles.md),
+[V2.3 execution decisions](research/2026-08-21-v2.3-execution-and-live-evals.md)
 and [roadmap](roadmap.md).

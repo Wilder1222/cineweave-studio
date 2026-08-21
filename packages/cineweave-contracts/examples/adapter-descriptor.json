@@ -9,7 +9,7 @@
   "adapterClass": "fixture",
   "skillReceipt": {
     "repository": "https://github.com/Wilder1222/cineweave-studio",
-    "ref": "v2.3.0",
+    "ref": "v2.3.1",
     "commit": "0123456789abcdef0123456789abcdef01234567",
     "contentHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "installedBy": "codex-environment",

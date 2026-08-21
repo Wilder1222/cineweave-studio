@@ -3,6 +3,7 @@
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { sha256Canonical } from "../packages/cineweave-runtime/src/canonical-json.mjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -677,6 +678,82 @@ function validatePromptRepair(payload, errors) {
   push(errors, payload?.validation?.parentImmutable === true, "PromptRepair keeps its parent immutable");
 }
 
+function exactRefKey(ref) {
+  return `${ref?.kind}/${ref?.id}@${ref?.version}:${ref?.contentHash}`;
+}
+
+function validateArtifactGraph(payload, errors) {
+  const nodes = payload?.nodes || [];
+  const edges = payload?.edges || [];
+  const nodeKeys = new Set(nodes.map((node) => node?.key));
+  push(errors, nodeKeys.size === nodes.length, "ArtifactGraph node keys must be unique");
+  for (const node of nodes) push(errors, node?.key === exactRefKey(node?.artifactRef), `ArtifactGraph node key must match its exact ref: ${node?.key}`);
+  for (const edge of edges) {
+    push(errors, nodeKeys.has(exactRefKey(edge?.sourceArtifactRef)), "ArtifactGraph edge source must exist in scope");
+    if (edge?.status === "resolved") push(errors, nodeKeys.has(exactRefKey(edge?.targetArtifactRef)), "ArtifactGraph resolved edge target must exist in scope");
+    if (edge?.status !== "resolved") push(errors, edge?.targetVersionState === "unresolved", "ArtifactGraph unresolved edge must have unresolved version state");
+  }
+  const summary = payload?.summary || {};
+  const approvals = { unreviewed: 0, approved: 0, rejected: 0 };
+  for (const node of nodes) if (node?.approval?.state in approvals) approvals[node.approval.state] += 1;
+  push(errors, summary.artifactCount === nodes.length, "ArtifactGraph artifact count must match nodes");
+  push(errors, summary.referenceCount === edges.length, "ArtifactGraph reference count must match edges");
+  push(errors, summary.resolvedReferenceCount === edges.filter((edge) => edge?.status === "resolved").length, "ArtifactGraph resolved count must match edges");
+  push(errors, summary.missingReferenceCount === edges.filter((edge) => edge?.status === "missing").length, "ArtifactGraph missing count must match edges");
+  push(errors, summary.hashMismatchReferenceCount === edges.filter((edge) => edge?.status === "hash_mismatch").length, "ArtifactGraph hash mismatch count must match edges");
+  push(errors, summary.supersededArtifactCount === nodes.filter((node) => node?.versionState === "superseded").length, "ArtifactGraph superseded artifact count must match nodes");
+  push(errors, summary.supersededReferenceCount === edges.filter((edge) => edge?.status === "resolved" && edge?.targetVersionState === "superseded").length, "ArtifactGraph superseded reference count must match edges");
+  push(errors, summary.rootCount === nodes.filter((node) => node?.inboundReferenceCount === 0).length, "ArtifactGraph root count must match nodes");
+  push(errors, summary.leafCount === nodes.filter((node) => node?.outboundReferenceCount === 0).length, "ArtifactGraph leaf count must match nodes");
+  push(errors, summary.cycleCount === (payload?.cycles || []).length, "ArtifactGraph cycle count must match cycles");
+  push(errors, JSON.stringify(summary.approvalCounts) === JSON.stringify(approvals), "ArtifactGraph approval counts must match nodes");
+  if (payload?.gate) {
+    push(errors, payload.gate.allowed === (payload.gate.blockingReasons.length === 0), "ArtifactGraph gate allowed state must match blocking reasons");
+    push(errors, nodeKeys.has(exactRefKey(payload.gate.artifactRef)), "ArtifactGraph gate artifact must exist in scope");
+  }
+}
+
+function validateProjectBundleManifest(payload, errors) {
+  const entries = payload?.entries || [];
+  const paths = entries.map((entry) => entry?.path);
+  push(errors, unique(paths), "ProjectBundleManifest entry paths must be unique");
+  push(errors, paths.every((path, index) => index === 0 || paths[index - 1].localeCompare(path) < 0), "ProjectBundleManifest entries must be sorted");
+  const projectEntry = entries.find((entry) => entry?.path === "store/project.json");
+  push(errors, Boolean(projectEntry), "ProjectBundleManifest requires store/project.json");
+  push(errors, projectEntry?.contentHash === payload?.sourceProject?.projectManifestHash, "ProjectBundleManifest project hash must match its project entry");
+  const categories = {
+    project_manifest: "projectManifestCount",
+    artifact_envelope: "artifactEnvelopeCount",
+    version_pointer: "versionPointerCount",
+    approval_record: "approvalRecordCount",
+    idempotency_claim: "idempotencyClaimCount",
+    execution_output: "executionOutputCount"
+  };
+  const expected = {
+    fileCount: entries.length,
+    totalBytes: entries.reduce((total, entry) => total + (entry?.byteLength || 0), 0),
+    projectManifestCount: 0,
+    artifactEnvelopeCount: 0,
+    versionPointerCount: 0,
+    approvalRecordCount: 0,
+    idempotencyClaimCount: 0,
+    executionOutputCount: 0
+  };
+  for (const entry of entries) if (categories[entry?.category]) expected[categories[entry.category]] += 1;
+  push(errors, Object.entries(expected).every(([key, value]) => payload?.summary?.[key] === value), "ProjectBundleManifest summary must match entries");
+  const hashInput = {
+    bundleFormatVersion: payload?.bundleFormatVersion,
+    sourceProject: payload?.sourceProject,
+    purpose: payload?.purpose,
+    contentPolicy: payload?.contentPolicy,
+    storeDirectory: payload?.storeDirectory,
+    entries: payload?.entries,
+    summary: payload?.summary
+  };
+  push(errors, payload?.bundleHash === sha256Canonical(hashInput), "ProjectBundleManifest bundle hash must match canonical contents");
+  push(errors, payload?.contentPolicy?.redistributionAuthorized === false && payload?.contentPolicy?.rightsApprovalImplied === false, "ProjectBundleManifest must not imply redistribution or rights approval");
+}
+
 function validateByKind(payload, context = {}) {
   const errors = [];
   switch (payload?.kind) {
@@ -724,6 +801,8 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_prompt_repair": validatePromptRepair(payload, errors); break;
     case "cineweave_codex_creative_brief": validateCreativeBrief(payload, errors); break;
     case "cineweave_codex_workflow_plan": validateWorkflowPlan(payload, errors); break;
+    case "cineweave_artifact_graph": validateArtifactGraph(payload, errors); break;
+    case "cineweave_project_bundle_manifest": validateProjectBundleManifest(payload, errors); break;
     default:
       if (payload?.characterSpecRef && payload?.performanceState) validateCharacterBinding(payload, errors);
       else if (payload?.sceneSpecRef && payload?.cameraPlacement) validateSceneBinding(payload, errors, context.sceneSpec);
@@ -747,6 +826,7 @@ async function runSelfTest(mode = "all") {
     ["examples/scene-light-state.json", {}],
     ["examples/asset-recipe.json", { controlSet }], ["examples/control-channel-set.json", {}], ["examples/evidence-bundle.json", {}], ["examples/capability-profile.json", {}], ["examples/license-profile.json", {}], ["examples/control-benchmark.json", {}],
     ["examples/adapter-descriptor.json", {}], ["examples/execution-request.json", {}], ["examples/execution-receipt.json", {}], ["examples/execution-receipt-blocked.json", {}], ["examples/skill-evaluation-run.json", {}],
+    ["examples/artifact-graph.json", {}], ["examples/project-bundle-manifest.json", {}],
     ["examples/integrated-image-prompt.json", { sceneSpec }], ["examples/integrated-storyboard.json", { sceneSpec }], ["examples/prompt-record.json", {}],
     ["examples/style-package.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
     ["examples/shot-spec.json", {}], ["examples/shot-lighting-plan.json", { sceneLightState }], ["examples/temporal-spec.json", {}], ["examples/prompt-repair.json", {}],
@@ -793,6 +873,8 @@ async function runSelfTest(mode = "all") {
   const badExecutionRequest = await readJson("examples/execution-request.json"); badExecutionRequest.parameters.push({ name: "api_key", value: "not-a-real-value", sensitive: false }); negative.push(["reject sensitive execution parameter", badExecutionRequest, {}]);
   const badExecutionReceipt = await readJson("examples/execution-receipt.json"); badExecutionReceipt.costSummary.actualAmount = 1; negative.push(["reject receipt cost that omits attempt accounting", badExecutionReceipt, {}]);
   const badEvaluationRun = await readJson("examples/skill-evaluation-run.json"); badEvaluationRun.summary.passed = 1; negative.push(["reject inconsistent SkillEvaluationRun summary", badEvaluationRun, {}]);
+  const badArtifactGraph = await readJson("examples/artifact-graph.json"); badArtifactGraph.summary.supersededReferenceCount = 0; negative.push(["reject inconsistent ArtifactGraph summary", badArtifactGraph, {}]);
+  const badProjectBundle = await readJson("examples/project-bundle-manifest.json"); badProjectBundle.contentPolicy.redistributionAuthorized = true; negative.push(["reject ProjectBundleManifest rights implication", badProjectBundle, {}]);
 
   if (mode === "all") for (const [label, payload, context] of negative) {
     const errors = validateByKind(payload, context);

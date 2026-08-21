@@ -5,8 +5,10 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { initProject, listArtifacts, putArtifact, readStrictJson, recordApproval, verifyProject } from "../src/artifact-store.mjs";
 import { createAdapterRegistry, executeRequest } from "../src/adapter-runtime.mjs";
+import { buildArtifactGraph, evaluateApprovalGate, loadEnvelopeArtifactRef } from "../src/artifact-graph.mjs";
 import { sha256Canonical } from "../src/canonical-json.mjs";
 import { fixtureSvgAdapter } from "../src/fixture-svg-adapter.mjs";
+import { exportProjectBundle, importProjectBundle, verifyProjectBundle } from "../src/project-bundle.mjs";
 
 function parseArgs(values) {
   const positional = [];
@@ -33,7 +35,13 @@ function usage() {
     "cineweave-studio adapters",
     "cineweave-studio execute <project> <execution-request-envelope>",
     "cineweave-studio list <project>",
-    "cineweave-studio verify <project>"
+    "cineweave-studio verify <project>",
+    "cineweave-studio graph <project> [artifact-envelope] [--direction dependencies|dependents|both]",
+    "cineweave-studio stale <project>",
+    "cineweave-studio gate <project> <artifact-envelope> [--require-current] [--require-dependency-approvals]",
+    "cineweave-studio export <project> <bundle-directory>",
+    "cineweave-studio import <bundle-directory> <project>",
+    "cineweave-studio bundle-verify <bundle-directory>"
   ].join("\n");
 }
 
@@ -100,6 +108,56 @@ async function main() {
     const report = await verifyProject(resolve(positional[0]));
     console.log(JSON.stringify(report, null, 2));
     if (!report.valid) process.exitCode = 1;
+    return;
+  }
+  if (command === "graph") {
+    if (!positional[0]) throw new Error(usage());
+    const rootArtifactRef = positional[1] ? await loadEnvelopeArtifactRef(positional[1]) : null;
+    const graph = await buildArtifactGraph(resolve(positional[0]), {
+      rootArtifactRef,
+      direction: flags.direction || (rootArtifactRef ? "dependencies" : "both")
+    });
+    console.log(JSON.stringify(graph, null, 2));
+    return;
+  }
+  if (command === "stale") {
+    if (!positional[0]) throw new Error(usage());
+    const graph = await buildArtifactGraph(resolve(positional[0]));
+    const staleReferences = graph.edges.filter((edge) => edge.status === "resolved" && edge.targetVersionState === "superseded");
+    console.log(JSON.stringify({
+      projectId: graph.project.projectId,
+      generatedAt: graph.generatedAt,
+      staleReferenceCount: staleReferences.length,
+      staleReferences
+    }, null, 2));
+    return;
+  }
+  if (command === "gate") {
+    if (!positional[0] || !positional[1]) throw new Error(usage());
+    const artifactRef = await loadEnvelopeArtifactRef(positional[1]);
+    const graph = await evaluateApprovalGate(resolve(positional[0]), artifactRef, {
+      requireCurrent: flags["require-current"] === true,
+      requireDependencyApprovals: flags["require-dependency-approvals"] === true
+    });
+    console.log(JSON.stringify(graph, null, 2));
+    if (!graph.gate.allowed) process.exitCode = 3;
+    return;
+  }
+  if (command === "export") {
+    if (!positional[0] || !positional[1]) throw new Error(usage());
+    const result = await exportProjectBundle(resolve(positional[0]), resolve(positional[1]));
+    console.log(JSON.stringify({ path: result.path, manifest: result.manifest }, null, 2));
+    return;
+  }
+  if (command === "import") {
+    if (!positional[0] || !positional[1]) throw new Error(usage());
+    const result = await importProjectBundle(resolve(positional[0]), resolve(positional[1]));
+    console.log(JSON.stringify({ path: result.path, manifest: result.manifest, verification: result.verification }, null, 2));
+    return;
+  }
+  if (command === "bundle-verify") {
+    if (!positional[0]) throw new Error(usage());
+    console.log(JSON.stringify(await verifyProjectBundle(resolve(positional[0])), null, 2));
     return;
   }
   throw new Error(usage());

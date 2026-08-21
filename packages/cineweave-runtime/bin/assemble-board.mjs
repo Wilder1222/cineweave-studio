@@ -86,7 +86,7 @@ export async function assembleBoard(manifestPath, outputPath, options = {}) {
   await writeFile(absoluteOutput, svg, "utf8");
   const provenance = {
     kind: "cineweave_board_provenance",
-    contractVersion: "2.3.0",
+    contractVersion: "2.3.1",
     boardId: manifest.boardId,
     manifestHash: sha256Canonical(manifest),
     boardHash: sha256Bytes(Buffer.from(svg, "utf8")),

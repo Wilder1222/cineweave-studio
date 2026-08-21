@@ -1,6 +1,6 @@
 {
   "suite": "cineweave-studio",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "repository": "https://github.com/Wilder1222/cineweave-studio",
   "entrySkill": "cineweave",
   "skills": [
@@ -131,6 +131,8 @@
     { "kind": "cineweave_execution_receipt", "schema": "schemas/execution-receipt.schema.json", "example": "examples/execution-receipt.json", "owner": "cineweave-production" },
 
     { "kind": "cineweave_project_manifest", "schema": "schemas/project-manifest.schema.json", "example": "examples/project-manifest.json", "owner": "suite" },
+    { "kind": "cineweave_artifact_graph", "schema": "schemas/artifact-graph.schema.json", "example": "examples/artifact-graph.json", "owner": "suite" },
+    { "kind": "cineweave_project_bundle_manifest", "schema": "schemas/project-bundle-manifest.schema.json", "example": "examples/project-bundle-manifest.json", "owner": "suite" },
     { "kind": "cineweave_artifact_envelope", "schema": "schemas/artifact-envelope.schema.json", "example": "examples/artifact-envelope.json", "owner": "suite" },
     { "kind": "cineweave_approval_record", "schema": "schemas/approval-record.schema.json", "example": "examples/approval-record.json", "owner": "suite" },
     { "kind": "cineweave_board_provenance", "schema": "schemas/board-provenance.schema.json", "example": "examples/board-provenance.json", "owner": "suite" },
@@ -151,7 +153,10 @@
     "deterministicBoardAssembly": true,
     "adapterProtocol": "1.0.0",
     "externalExecutionDefaultDenied": true,
-    "executionReceipts": true
+    "executionReceipts": true,
+    "exactArtifactGraph": true,
+    "approvalGateQueries": true,
+    "safeProjectBundles": true
   },
   "composition": {
     "workflowContract": "cineweave_codex_workflow_plan",

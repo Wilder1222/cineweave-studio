@@ -12,7 +12,7 @@
   "beatRefs": ["beat.pressure", "beat.choice"],
   "skillReceipt": {
     "repository": "https://github.com/Wilder1222/cineweave-studio",
-    "ref": "v2.3.0",
+    "ref": "v2.3.1",
     "commit": "0123456789abcdef0123456789abcdef01234567",
     "installedBy": "codex-environment",
     "usedAt": "2026-08-21T01:10:00.000Z"

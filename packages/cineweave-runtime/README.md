@@ -4,11 +4,16 @@ This package provides the deterministic local control plane used by CineWeave
 Studio contracts. Core ships no image/video provider or credential; execution
 is possible only through a trusted registered adapter.
 
-The runtime owns six mechanical operations that Skills must not improvise:
+The runtime owns mechanical operations that Skills must not improvise:
 
 - RFC 8785-compatible JSON canonicalization and `sha256:` content hashes;
 - immutable artifact envelopes keyed by exact `kind`, `id`, `version` and hash;
 - human approval records bound to one exact artifact reference;
+- dependency and dependent closure queries with missing, hash-mismatched and
+  superseded-reference detection;
+- exact approval gates with optional current-version and dependency-approval
+  policies;
+- byte-verified, path-scoped project bundle export, verification and import;
 - deterministic SVG board assembly with per-tile provenance;
 - trusted in-process adapter registration with implementation-hash matching;
 - idempotent execution, exact-request authorization, constrained output writes
@@ -22,7 +27,29 @@ to publish a sanitized fixture.
 node packages/cineweave-runtime/bin/cineweave.mjs init . --id demo --name "Demo"
 node packages/cineweave-runtime/bin/cineweave.mjs put . brief.json --id brief.demo --version 1
 node packages/cineweave-runtime/bin/cineweave.mjs verify .
+node packages/cineweave-runtime/bin/cineweave.mjs graph .
+node packages/cineweave-runtime/bin/cineweave.mjs stale .
+node packages/cineweave-runtime/bin/cineweave.mjs gate . artifact-envelope.json --require-current
 ```
+
+`graph` returns the strict `cineweave_artifact_graph` contract. By default an
+approved old artifact remains usable and emits a warning; `--require-current`
+turns a superseded root or dependency into a blocking reason.
+
+Project transfer uses a directory instead of arbitrary archive extraction:
+
+```powershell
+node packages/cineweave-runtime/bin/cineweave.mjs export . ../project-transfer
+node packages/cineweave-runtime/bin/cineweave.mjs bundle-verify ../project-transfer
+node packages/cineweave-runtime/bin/cineweave.mjs import ../project-transfer ../restored-project
+```
+
+Every regular store file is listed by safe relative path, category, byte length
+and SHA-256 digest in `cineweave-bundle.json`. Symbolic links, unknown store
+paths, unlisted files, duplicate paths, traversal syntax, changed bytes and an
+existing target `.cineweave` store are rejected. Successful import stages and
+verifies the complete store before one rename. The manifest explicitly does not
+grant redistribution or rights approval.
 
 The core package registers only a deterministic, zero-cost, no-network SVG
 fixture adapter. `adapters` prints its entrypoint ID and implementation hash.

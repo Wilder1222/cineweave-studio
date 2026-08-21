@@ -162,7 +162,7 @@ async function persistReceipt(projectRoot, receipt, receiptId) {
     kind: "cineweave_execution_receipt",
     id: receiptId,
     version: 1,
-    status: receipt.status,
+    status: "candidate",
     createdAt: receipt.timing.finishedAt,
     createdBy: "cineweave-adapter-runtime"
   });

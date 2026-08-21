@@ -24,3 +24,10 @@ CineWeave Skills and the local runtime do not grant provider credentials,
 commercial media rights or permission to publish a person's likeness. Unknown
 rights block production readiness. Artifact content hashes detect accidental or
 unauthorized mutation; they are not signatures and do not establish authorship.
+
+Project bundles accept only a fixed set of `.cineweave` store paths and regular
+files. Verification rejects symbolic links, traversal syntax, duplicate or
+unexpected entries, byte-length/hash changes and an existing import target.
+This protects the local transfer workflow from accidental overwrite and common
+archive-style path attacks; it does not authenticate the bundle author. Use a
+separate trusted signature channel when sender authenticity is required.

@@ -18,8 +18,8 @@ async function main() {
   const plugin = JSON.parse(await readFile(join(repoRoot, ".codex-plugin", "plugin.json"), "utf8"));
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   fail(errors, plugin.name === "cineweave-studio", "plugin package name must be cineweave-studio");
-  fail(errors, plugin.version === "2.3.0", "plugin version must be 2.3.0");
-  fail(errors, manifest.suite === "cineweave-studio" && manifest.version === "2.3.0", "contract package must be CineWeave Studio v2.3");
+  fail(errors, plugin.version === "2.3.1", "plugin version must be 2.3.1");
+  fail(errors, manifest.suite === "cineweave-studio" && manifest.version === "2.3.1", "contract package must be CineWeave Studio v2.3.1");
   fail(errors, manifest.entrySkill === "cineweave", "manifest entrySkill must be cineweave");
   fail(errors, manifest.composition?.specialistsMayRunWithoutRouter === true, "manifest must declare router-independent specialists");
   fail(errors, manifest.composition?.allowsImplicitConversationState === false, "manifest must forbid hidden conversational state");
@@ -50,7 +50,7 @@ async function main() {
     const index = JSON.parse(await readFile(contractsPath, "utf8"));
     fail(errors, skillText.includes(`name: ${skill.name}`), `${skill.name} frontmatter name mismatch`);
     fail(errors, !skillText.includes("../../schemas/"), `${skill.name} retains a V1 schema path`);
-    fail(errors, index.contractPackage === "cineweave-contracts@2.3.0", `${skill.name} must point to the V2.3 contract package`);
+    fail(errors, index.contractPackage === "cineweave-contracts@2.3.1", `${skill.name} must point to the V2.3.1 contract package`);
     fail(errors, Array.isArray(index.standalone?.accepts) && index.standalone.accepts.length > 0, `${skill.name} lacks standalone inputs`);
     fail(errors, Array.isArray(index.standalone?.produces) && index.standalone.produces.length > 0, `${skill.name} lacks standalone outputs`);
     fail(errors, Array.isArray(index.contractKinds) && index.contractKinds.length > 0, `${skill.name} must declare portable contracts`);
@@ -73,7 +73,7 @@ async function main() {
   fail(errors, !director.includes("`brief_compile`"), "Director must not own brief_compile in V2");
 
   if (errors.length) { console.error(errors.map((error) => `- ${error}`).join("\n")); process.exitCode = 1; return; }
-  console.log(`CineWeave Studio v2.3 architecture passes: ${skillNames.length} Skills, ${contractKinds.size} contracts and ${routes.length} owned routes.`);
+  console.log(`CineWeave Studio v2.3.1 architecture passes: ${skillNames.length} Skills, ${contractKinds.size} contracts and ${routes.length} owned routes.`);
 }
 
 main().catch((error) => { console.error(error instanceof Error ? error.stack || error.message : String(error)); process.exitCode = 2; });

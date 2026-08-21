@@ -27,24 +27,36 @@
   responses and deterministic committed replay grading;
 - semantic validation for execution and evaluation summary integrity.
 
+## Shipped in V2.3.1
+
+- strict `ArtifactGraph` contract with structural exact-ref discovery;
+- dependency, dependent and bidirectional closure queries;
+- resolved, missing, same-version hash-mismatch and superseded-ref states;
+- latest exact-decision approval gates with optional current-version and
+  dependency-approval policies;
+- deterministic cycle reporting and runtime CLI graph/stale/gate commands;
+- directory-based `ProjectBundleManifest` with byte hashes and explicit
+  non-redistribution semantics;
+- staged, verified, non-overwriting import plus bundle verification CLI;
+- tests for round trips, V2.2 preservation, tampering, unexpected files,
+  duplicate entries, path traversal, backslashes and CLI behavior.
+
 ## Next incremental priorities (V2.3.x)
 
 Priority remains based on user value and architectural risk.
 
-1. **Artifact graph CLI (P0).** Add dependency inspection, stale-ref detection,
-   approval-gate queries and safe export/import on top of the immutable store.
-2. **Reference ingestion (P0).** Create local observations with perceptual role,
+1. **Reference ingestion (P0).** Create local observations with perceptual role,
    region scope, content hash, source, consent and redistribution status; never
    copy user uploads into the public plugin.
-3. **Contract-aware repair runner (P1).** Execute one-variable repair plans while
+2. **Contract-aware repair runner (P1).** Execute one-variable repair plans while
    preserving passing immutable inputs and recording before/after evidence.
-4. **Original case atlas (P1).** Add rights-cleared, reproducible worked cases
+3. **Original case atlas (P1).** Add rights-cleared, reproducible worked cases
    for portrait, product, food, architecture, editorial, diagrams and exact-text
    layouts. Keep a small routing index, load only the matching category and
    attach prompt version, adapter context, candidate hash and review evidence.
-5. **Evaluation baselines (P1).** Retain versioned aggregate scores, compare
+4. **Evaluation baselines (P1).** Retain versioned aggregate scores, compare
    regressions by route and require human review for grader-definition changes.
-6. **Adapter conformance kit (P1).** Publish fixtures for timeout, partial output,
+5. **Adapter conformance kit (P1).** Publish fixtures for timeout, partial output,
    retryable billing, malformed metadata and cancellation without shipping any
    provider credential or paid adapter in core.
 
