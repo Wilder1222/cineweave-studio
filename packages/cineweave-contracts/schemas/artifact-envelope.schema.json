@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Wilder1222/cineweave-studio/schemas/artifact-envelope.schema.json",
+  "title": "CineWeave Immutable Artifact Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "contractVersion", "artifactRef", "status", "createdAt", "createdBy", "payload"],
+  "properties": {
+    "kind": { "const": "cineweave_artifact_envelope" },
+    "contractVersion": { "const": "2.2.0" },
+    "artifactRef": { "$ref": "common.schema.json#/$defs/contractRef" },
+    "status": { "enum": ["draft", "candidate", "approved", "rejected", "archived"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "createdBy": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "payload": { "type": ["object", "array", "string", "number", "boolean", "null"] }
+  }
+}

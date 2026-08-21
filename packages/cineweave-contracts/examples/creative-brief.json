@@ -19,7 +19,8 @@
     { "stageId": "stage.reference-review", "owner": "cineweave-director", "status": "approved", "purpose": "评审参考图用途、证据和权威度。", "gate": "角色、妆造、风格和摄影职责已分开。", "outputContracts": ["reference-review", "style-reference-plan"] },
     { "stageId": "stage.identity-lock", "owner": "cineweave-character", "status": "in_progress", "purpose": "通过中性正面、三分之四和全身证据锁定身份。", "gate": "至少三个结构性锚点经人工批准。", "outputContracts": ["character-spec", "character-reference-plan"] },
     { "stageId": "stage.style-compile", "owner": "cineweave-style", "status": "pending", "purpose": "将宋韵 StylePackage 编译为人物和画面表达规则。", "gate": "style invariants、禁用项和运行期参考策略已解析。", "outputContracts": ["style-compile"] },
-    { "stageId": "stage.shot-use", "owner": "cineweave-director", "status": "pending", "purpose": "绑定批准的人物和风格到宋韵正面镜头。", "gate": "CharacterBinding、SceneBinding 和 StyleCompile 精确引用已齐全。", "outputContracts": ["image-prompt", "render-plan"] }
+    { "stageId": "stage.shot-use", "owner": "cineweave-director", "status": "pending", "purpose": "绑定批准的人物、场景和风格到宋韵正面镜头。", "gate": "CharacterBinding、SceneBinding 和 StyleCompile 精确引用已齐全。", "outputContracts": ["shot-spec", "render-plan"] },
+    { "stageId": "stage.prompt-compile", "owner": "cineweave-prompt", "status": "pending", "purpose": "把批准的 ShotSpec 编译为可版本化的中文图像提示词。", "gate": "ShotSpec 与所有上游引用精确且未被提示词重写。", "outputContracts": ["image-prompt"] }
   ],
   "missingHighImpact": [
     { "path": "task.type", "impact": "high", "reason": "身份探索和完整定妆使用不同的参考强度。", "question": "这一步先探索容貌方向，还是直接生成完整定妆照？", "safeDefault": "先做身份探索" }

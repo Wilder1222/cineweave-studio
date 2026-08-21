@@ -30,6 +30,8 @@ async function main() {
   const composition = JSON.parse(await readFile(resolve(repoRoot, "tests/workflow/composition-cases.json"), "utf8"));
   const manifest = JSON.parse(await readFile(resolve(repoRoot, "packages/cineweave-contracts/contracts/manifest.json"), "utf8"));
   const knownSkills = new Set((manifest.skills || []).map((skill) => skill.name));
+  const routeOwners = new Map((manifest.skills || []).flatMap((skill) => (skill.owns || []).map((route) => [route, skill.name])));
+  const contractOwners = new Map((manifest.contracts || []).map((contract) => [contract.kind, contract.owner]));
   const errors = [];
   const activationIds = new Set();
   for (const test of activation.cases || []) {
@@ -45,9 +47,15 @@ async function main() {
     const workflow = JSON.parse(await readFile(resolve(repoRoot, test.workflowExample), "utf8"));
     validateDag(workflow, errors);
     const steps = new Set((workflow.steps || []).map((step) => step.skill));
+    const stepById = new Map((workflow.steps || []).map((step) => [step.stepId, step]));
     const outputs = new Set((workflow.outputs || []).map((output) => output.contractKind));
     for (const skill of test.requiresSkills || []) fail(errors, steps.has(skill), `${test.id} lacks composed Skill ${skill}`);
     for (const output of test.requiresOutputs || []) fail(errors, outputs.has(output), `${test.id} lacks output ${output}`);
+    for (const step of workflow.steps || []) fail(errors, routeOwners.get(step.route) === step.skill, `${test.id} route ${step.route} is not owned by ${step.skill}`);
+    for (const output of workflow.outputs || []) {
+      const producerSkill = stepById.get(output.producer)?.skill;
+      fail(errors, contractOwners.get(output.contractKind) === producerSkill, `${test.id} output ${output.contractKind} is not owned by producer ${producerSkill}`);
+    }
   }
   if (errors.length) { console.error(errors.map((error) => `- ${error}`).join("\n")); process.exitCode = 1; return; }
   console.log(`V2 activation and workflow tests pass: ${(activation.cases || []).length} activation cases, ${(composition.cases || []).length} composition cases.`);

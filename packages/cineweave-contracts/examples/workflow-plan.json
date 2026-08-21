@@ -31,18 +31,29 @@
     {
       "stepId": "director",
       "skill": "cineweave-director",
-      "route": "image_prompt",
+      "route": "shot_direction",
       "invocationMode": "composed",
       "requires": ["CreativeBrief", "CharacterSpec", "StyleCompile"],
-      "produces": ["ImagePrompt"],
+      "produces": ["ShotSpec"],
       "dependsOn": ["style", "character"],
+      "humanGate": "select"
+    },
+    {
+      "stepId": "prompt",
+      "skill": "cineweave-prompt",
+      "route": "prompt_compile",
+      "invocationMode": "composed",
+      "requires": ["CreativeBrief", "CharacterSpec", "StyleCompile", "ShotSpec"],
+      "produces": ["ImagePrompt"],
+      "dependsOn": ["style", "character", "director"],
       "humanGate": "approve"
     }
   ],
   "outputs": [
     { "contractKind": "cineweave_codex_style_compile", "producer": "style" },
     { "contractKind": "cineweave_codex_character_spec", "producer": "character" },
-    { "contractKind": "cineweave_codex_image_prompt", "producer": "director" }
+    { "contractKind": "cineweave_codex_shot_spec", "producer": "director" },
+    { "contractKind": "cineweave_codex_image_prompt", "producer": "prompt" }
   ],
   "questions": [
     "本次先探索人物身份，还是直接生成定妆关键帧？",
@@ -57,7 +68,7 @@
   },
   "skillReceipt": {
     "repository": "https://github.com/Wilder1222/cineweave-studio",
-    "ref": "v2.0.0",
+    "ref": "v2.2.0",
     "commit": "0123456789abcdef0123456789abcdef01234567",
     "contentHash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     "installedBy": "codex-environment",

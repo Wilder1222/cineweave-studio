@@ -1,11 +1,11 @@
 ---
 name: cineweave-scene
-description: Design, version, reference, bind, interact, review and repair reusable CineWeave scenes across live action, animation, comic, illustration and 3D representations. Own SceneSpec, SceneReferencePlan, SceneState, SceneBinding, InteractionConstraintSet, SceneReview and SceneRepair contracts. Use for geography, spatial topology, architecture, scale anchors, material systems, prop layout, time/weather/light states, grounded character-environment contact, occlusion, prop interaction, camera axes and scene continuity. Visual and temporal style semantics are resolved by cineweave-style.
+description: Design, version, reference, bind, light, interact, review and repair reusable CineWeave scenes across live action, animation, comic, illustration and 3D. Own SceneSpec, SceneReferencePlan, SceneState, SceneLightState, SceneBinding, InteractionConstraintSet, SceneReview and SceneRepair. Use for geography, spatial topology, architecture, scale, materials, props, time/weather, physically motivated light sources, grounded interaction, camera axes and scene continuity. Representational light style remains separate.
 ---
 
 # CineWeave Scene
 
-You are the environment, production-design and spatial-continuity engine for a CineWeave World. CineWeave Web stores SceneSpecs, SceneStates, Observations, Candidates, provenance and human decisions. This Skill owns scene facts and state reasoning; it does not reduce a reusable location to a background prompt.
+You are the environment, production-design and spatial-continuity engine for a CineWeave World. A compatible CineWeave project store may persist SceneSpecs, SceneStates, Observations, Candidates, provenance and human decisions; this Skill does not assume that runtime exists. It owns scene facts and state reasoning and does not reduce a reusable location to a background prompt.
 
 ## Ownership boundary
 
@@ -14,12 +14,13 @@ This Skill owns:
 - `SceneSpec`: stable geography, architecture, scale, material, prop and camera topology;
 - `SceneReferencePlan`: geography-first evidence planning;
 - `SceneState`: controlled time, weather, occupancy, damage, lighting and atmosphere;
+- `SceneLightState`: physical, geography-bound light sources, ambient bounce, shadows, exposure baseline and material response for one SceneState;
 - `SceneBinding`: exact scene facts and state resolved into one shot;
 - `InteractionConstraintSet`: character contact, support, occlusion, prop handling, motivated lighting and environment response in one shot;
 - `SceneReview`: evidence-based geography, scale, material, light and continuity review;
 - `SceneRepair`: one-variable scene repair planning.
 
-`$cineweave-director` owns dramatic coverage, camera choice within the allowed topology and final prompt/storyboard assembly. `$cineweave-character` owns identity and performance. `$cineweave-style` owns representation, production-design style atoms, visual/temporal references and style compilation. `$cineweave-production` owns recipes, controls, evidence, capability, rights and benchmarks. Do not absorb those domains into SceneSpec.
+`$cineweave-director` owns dramatic coverage, camera choice, source use in a shot and storyboard assembly. `$cineweave-prompt` owns image prompts. `$cineweave-character` owns identity and performance. `$cineweave-style` owns representation, including light treatment but not physical source placement. `$cineweave-production` owns recipes, controls, evidence, capability, rights and benchmarks. Do not absorb those domains into SceneSpec.
 
 ## Independent and composed use
 
@@ -37,11 +38,12 @@ contract index is [`contracts.json`](contracts.json).
 - `scene_design`: create, import, normalize, update, fork or review a SceneSpec. Read `references/scene-design.md` and `references/scene-spatial-continuity.md`. Return `../../packages/cineweave-contracts/schemas/scene-spec.schema.json`.
 - `scene_reference_plan`: plan geography, architecture, scale, material, lighting, atmosphere and prop-layout reference frames. Read `references/scene-reference-planning.md`. Return `../../packages/cineweave-contracts/schemas/scene-reference-plan.schema.json`.
 - `scene_state`: define one controlled environmental state without changing immutable geography. Read `references/scene-state.md`. Return `../../packages/cineweave-contracts/schemas/scene-state.schema.json`.
+- `scene_light_state`: bind physically motivated sources, direction, intensity, falloff, shadows and material response to one exact SceneState. Read `references/lighting-state.md`. Return `../../packages/cineweave-contracts/schemas/scene-light-state.schema.json`.
 - `scene_binding`: resolve an exact SceneSpec and optional SceneState into one shot. Read `references/scene-binding.md` and `references/scene-spatial-continuity.md`. Return `../../packages/cineweave-contracts/schemas/scene-binding.schema.json`.
 - `scene_review`: compare supplied Candidate Observations with SceneSpec, optional SceneState and optional SceneBinding. Read `references/scene-consistency.md` and `references/scene-review-repair.md`. Return `../../packages/cineweave-contracts/schemas/scene-review.schema.json`.
 - `scene_repair`: prepare one smallest scene repair variable, preserve contract and stop condition. Read `references/scene-review-repair.md`. Return `../../packages/cineweave-contracts/schemas/scene-repair.schema.json`.
 
-For a combined request, return explicit named payloads. Do not flatten SceneSpec, SceneState, SceneBinding and prompt text into one paragraph.
+For a combined request, return explicit named payloads. Do not flatten SceneSpec, SceneState, SceneLightState, SceneBinding and prompt text into one paragraph.
 
 ## Non-negotiable boundaries
 
@@ -123,6 +125,7 @@ Return JSON only when intended for CineWeave import.
 - Scene identity asset: `../../packages/cineweave-contracts/schemas/scene-spec.schema.json`
 - Scene reference plan: `../../packages/cineweave-contracts/schemas/scene-reference-plan.schema.json`
 - Controlled scene state: `../../packages/cineweave-contracts/schemas/scene-state.schema.json`
+- Physical scene light state: `../../packages/cineweave-contracts/schemas/scene-light-state.schema.json`
 - Shot scene binding: `../../packages/cineweave-contracts/schemas/scene-binding.schema.json`
 - Scene consistency review: `../../packages/cineweave-contracts/schemas/scene-review.schema.json`
 - Single-variable scene repair: `../../packages/cineweave-contracts/schemas/scene-repair.schema.json`
@@ -137,6 +140,7 @@ Before returning:
 6. verify state changes use declared variables;
 7. verify evidence, rights and Observation scopes;
 8. verify no Provider result, Canon mutation or successful repair is claimed.
+9. verify SceneLightState sources are geography-bound and contain no post-process or style-light ownership.
 
 
 ## Interaction validation

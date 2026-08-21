@@ -13,19 +13,25 @@ contracts, optional dependencies and human gate.
 
 ```text
 one-off prompt
+  → cineweave-prompt
+
+one-off shot direction
   → cineweave-director
+
+story or script scene
+  → cineweave-story
 
 reusable character
   → cineweave-character
 
 zero-prompt reusable character
-  → cineweave-character explore → director comparable prompts → production candidate board → character converge
+  → cineweave-character explore → prompt comparable candidates → production candidate board → character converge
 
 character keyframe with a defined visual system
-  → character + style → director
+  → character + style → director → prompt
 
 story scene with physical interaction
-  → character + scene + style → director → production
+  → story + character + scene + style → director → prompt → production
 ```
 
 Do not include Production for a low-risk exploration unless the user asks for a

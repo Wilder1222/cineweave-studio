@@ -21,7 +21,7 @@ Use this file as the routing index for visual examples and prompt patterns. Do n
 1. Read this index first.
 2. Load the smallest matching reference module.
 3. Read `character-design.md`, `character-performance.md` or `character-consistency.md` only when the request needs reusable identity, shot performance or drift review.
-4. Use `prompt-craft.md` for a weak prompt, dense layout, exact text, complex scene or prompt repair.
+4. Route weak prompts, dense layouts, exact text, complex image briefs and prompt repair to `$cineweave-prompt`; the atlas supplies evidence, not prompt ownership.
 5. Use `reference-editing.md` whenever a reference image, observation set or mask is involved.
 6. Do not treat a gallery pattern as a World fact, CharacterSpec fact, Canon fact or tested generation result.
 
@@ -40,8 +40,15 @@ Future atlas entries should preserve:
 
 The atlas is a teaching reference, not a prompt dump. Prefer a small set of high-signal CineWeave cases over a large generic image library.
 
-## Included recommended cases
+## Bundled-case policy
 
-- [`portrait-character-design/dark-fantasy-portrait-user-upload.json`](atlas/portrait-character-design/dark-fantasy-portrait-user-upload.json): a user-supplied dark-fantasy portrait. Use it primarily for bounded character-design evidence; use it only as supporting style or palette evidence for cinematic-realistic generation. Its rights status is unverified, so do not redistribute or publish the asset without confirming permission.
+The public plugin does not bundle user uploads or third-party production stills.
+Analyze those inputs only when the user supplies them at runtime and record their
+rights status before adding them to a ReferenceSet. A future bundled case must be
+original or redistributable, carry explicit provenance and pass the distributable
+asset audit.
 
-When an atlas case is selected, read its metadata before adding it to a ReferenceSet. Keep one explicit semantic role and scope per input, state the preserve contract and separate stylized character evidence from photographic camera or realism evidence.
+When an authorized atlas case is selected, read its metadata before adding it to
+a ReferenceSet. Keep one explicit semantic role and scope per input, state the
+preserve contract and separate stylized character evidence from photographic
+camera or realism evidence.

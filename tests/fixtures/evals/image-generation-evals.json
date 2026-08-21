@@ -7,7 +7,7 @@
       "id": "image-prompt-one-primary-target",
       "mode": "image_prompt",
       "prompt": "为同一个 World 场景生成电影感写实关键帧，女主第一次看见云上天宫。",
-      "loads": ["cinematic-atlas", "prompt-craft", "text-to-image", "cinematography", "visual-realism"],
+      "loads": ["cinematic-atlas", "cineweave-director", "prompt-architecture", "domain-recipes"],
       "expectedOutput": "image-prompt-output",
       "assertions": ["one primary target", "camera and light are explicit", "emotion is translated into observable composition and subject-state decisions", "realism anchors are observable", "provider neutral"]
     },
@@ -15,7 +15,7 @@
       "id": "portrait-capture-hypothesis",
       "mode": "image_prompt",
       "prompt": "根据一张古典幻想人物肖像，整理正面或越肩近景的中文生图提示词；把85mm、3:4、胶片颗粒、窗光和弱闪光当作需要验证的镜头/质感假设，而不是无条件的高级感词汇。",
-      "loads": ["portrait-reference-craft", "prompt-craft", "text-to-image", "cinematography"],
+      "loads": ["portrait-reference-craft", "cineweave-director", "prompt-architecture", "reference-bindings"],
       "expectedOutput": "image-prompt-output",
       "assertions": ["portrait layers are separated", "capture details are marked as hypotheses when inferred", "skin and textile realism use physical evidence", "emotion is observable in gaze/posture/hands", "provider neutral"]
     },
@@ -23,7 +23,7 @@
       "id": "render-plan-generate",
       "mode": "render_plan",
       "prompt": "准备一张 16:9 的草稿生成计划，不调用任何 Provider。",
-      "loads": ["execution-adapter", "prompt-craft"],
+      "loads": ["execution-adapter", "prompt-architecture"],
       "expectedOutput": "render-plan",
       "assertions": ["mode is generate", "human approval is required", "no provider name or API parameter", "preflight is pending"]
     },
@@ -87,7 +87,7 @@
       "id": "quality-budget",
       "mode": "render_plan",
       "prompt": "为十个构图变体做便宜探索，再为最终 Keyframe 做高质量重跑。",
-      "loads": ["execution-adapter", "prompt-craft"],
+      "loads": ["execution-adapter", "prompt-lifecycle"],
       "expectedOutput": "two linked render plans or one staged plan",
       "assertions": ["draft/explore/final stages are explicit", "variant count is bounded", "final requires human approval"]
     }

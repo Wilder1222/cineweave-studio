@@ -20,9 +20,9 @@
       "humanGate": "none"
     },
     {
-      "stepId": "director-candidate-prompts",
-      "skill": "cineweave-director",
-      "route": "image_prompt",
+      "stepId": "prompt-candidates",
+      "skill": "cineweave-prompt",
+      "route": "prompt_compile",
       "invocationMode": "composed",
       "requires": ["CharacterExplorationBrief", "CharacterOptionSet"],
       "produces": ["ImagePrompt"],
@@ -36,7 +36,7 @@
       "invocationMode": "composed",
       "requires": ["CharacterExplorationBrief", "CharacterOptionSet", "ImagePrompt"],
       "produces": ["AssetRecipe", "ControlChannelSet"],
-      "dependsOn": ["character-explore", "director-candidate-prompts"],
+      "dependsOn": ["character-explore", "prompt-candidates"],
       "humanGate": "approve"
     },
     {
@@ -69,7 +69,7 @@
   },
   "skillReceipt": {
     "repository": "https://github.com/Wilder1222/cineweave-studio",
-    "ref": "v2.0.0",
+    "ref": "v2.2.0",
     "commit": "0123456789abcdef0123456789abcdef01234567",
     "contentHash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     "installedBy": "codex-environment",

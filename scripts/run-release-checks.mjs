@@ -36,7 +36,13 @@ async function checkJson() {
 }
 
 async function checkNodeSyntax() {
-  const files = (await walk(join(repoRoot, "scripts"))).filter((path) => path.endsWith(".mjs"));
+  const roots = [
+    join(repoRoot, "scripts"),
+    join(repoRoot, "packages", "cineweave-runtime", "src"),
+    join(repoRoot, "packages", "cineweave-runtime", "bin"),
+    join(repoRoot, "tests", "runtime")
+  ];
+  const files = (await Promise.all(roots.map((root) => walk(root)))).flat().filter((path) => path.endsWith(".mjs"));
   for (const path of files) {
     const result = spawnSync(process.execPath, ["--check", path], { encoding: "utf8" });
     if (result.status !== 0) fail(`Node syntax failed ${relative(repoRoot, path)}: ${(result.stderr || result.stdout).trim()}`);
@@ -47,9 +53,9 @@ async function checkNodeSyntax() {
 async function checkManifestContracts() {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   const plugin = JSON.parse(await readFile(join(repoRoot, ".codex-plugin", "plugin.json"), "utf8"));
-  const pluginVersionIsV2Patch = /^2\.0\.\d+$/.test(plugin.version);
-  if (manifest.version !== "2.0.0" || !pluginVersionIsV2Patch || plugin.name !== "cineweave-studio") fail("contract manifest must be 2.0.0 and plugin version must be a 2.0.x CineWeave Studio release");
-  else pass(`contract manifest is 2.0.0 and plugin is CineWeave Studio v${plugin.version}`);
+  const packageJson = JSON.parse(await readFile(join(repoRoot, "package.json"), "utf8"));
+  if (manifest.version !== "2.2.0" || plugin.version !== manifest.version || packageJson.version !== manifest.version || plugin.name !== "cineweave-studio") fail("package, plugin and contract manifest versions must all be CineWeave Studio 2.2.0");
+  else pass(`package, plugin and contract manifest are CineWeave Studio v${plugin.version}`);
 
   const kinds = new Set();
   for (const item of manifest.contracts || []) {
@@ -88,7 +94,7 @@ async function checkManifestContracts() {
 async function checkRecipeCatalog() {
   const catalogPath = join(contractRoot, "recipes", "catalog.json");
   const catalog = JSON.parse(await readFile(catalogPath, "utf8"));
-  if (catalog.version !== "2.0.0") fail("recipe catalog version must be 2.0.0");
+  if (catalog.version !== "2.2.0") fail("recipe catalog version must be 2.2.0");
   const ids = new Set();
   for (const item of catalog.recipes || []) {
     if (ids.has(item.recipeId)) fail(`duplicate recipe ID: ${item.recipeId}`);
@@ -106,6 +112,15 @@ async function runScript(label, script, args = []) {
   process.stdout.write(result.stdout || "");
   process.stderr.write(result.stderr || "");
   if (result.status !== 0) fail(`${label} failed`); else pass(label);
+}
+
+async function checkRuntimeTests() {
+  const testFiles = (await walk(join(repoRoot, "tests", "runtime"))).filter((path) => path.endsWith(".test.mjs"));
+  const result = spawnSync(process.execPath, ["--test", ...testFiles], { cwd: repoRoot, encoding: "utf8" });
+  process.stdout.write(result.stdout || "");
+  process.stderr.write(result.stderr || "");
+  if (result.status !== 0) fail("deterministic runtime tests failed");
+  else pass(`${testFiles.length} deterministic runtime test files`);
 }
 
 async function checkMigration() {
@@ -150,12 +165,16 @@ async function main() {
   await checkNodeSyntax();
   await checkManifestContracts();
   await checkRecipeCatalog();
+  await checkRuntimeTests();
   await runScript("V2 architecture tests", "scripts/validate-v2-architecture.mjs");
   await runScript("V2 activation and workflow tests", "scripts/validate-v2-workflows.mjs");
   await runScript("contract semantic positive and negative tests", "scripts/validate-contract-semantics.mjs", ["--self-test"]);
   await runScript("ControlBench cross-contract tests", "scripts/validate-control-bench.mjs", ["--self-test"]);
   await runScript("source Skill link tests", "scripts/validate-skill-links.mjs", [join(repoRoot, "skills")]);
   await runScript("standalone Skill bundle tests", "scripts/build-skill-bundles.mjs", ["--check"]);
+  await runScript("focused Skill package tests", "scripts/validate-skill-packages.mjs");
+  await runScript("distributable asset audit", "scripts/audit-distributable-assets.mjs");
+  await runScript("behavior evaluation definition tests", "scripts/run-behavior-evals.mjs", ["--validate"]);
   await checkMigration();
   await checkSecurity();
   if (failures.length) {
@@ -164,7 +183,7 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  console.log("\nCineWeave Studio v2 release checks passed.");
+  console.log("\nCineWeave Studio v2.2 release checks passed.");
 }
 
 main().catch((error) => { console.error(error instanceof Error ? error.stack || error.message : String(error)); process.exitCode = 2; });

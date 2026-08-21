@@ -1,6 +1,6 @@
 ---
 name: cineweave-style
-description: Resolve, compose, analyze, compile and validate reusable style systems for image and video creation. Own provider-neutral StylePackages, multidimensional StyleAtoms, reference policies, visual and temporal reference plans, style reviews and style compilation. Use when a request names or designs a medium, culture, historical treatment, animation, comic, photography, color, lighting, cinematography, performance, motion or post-process style, or asks to preserve character identity while changing visual expression.
+description: Resolve, compose, analyze, compile and validate reusable style systems for image and video creation. Own StylePackages, multidimensional StyleAtoms, reference policy, StyleLightGrammar, visual/temporal plans, style review and compilation. Use for medium, culture, historical treatment, animation, comic, photography, color, representational lighting, cinematography, performance, motion or post-process style while preserving character identity, scene geography and physical light sources.
 ---
 
 # CineWeave Style
@@ -16,8 +16,9 @@ This Skill owns:
 - visual and temporal reference policy and role-scoped reference plans;
 - style review dimensions, drift evidence and one-variable style repair proposals;
 - provider-neutral compilation of StylePackage semantics into image/video directives.
+- `StyleLightGrammar`: medium-aware contrast, highlight, shadow, color, atmosphere and post-process treatment without placing physical sources.
 
-`$cineweave` owns CreativeBrief intake and WorkflowPlan routing. `$cineweave-character` owns identity, body, appearance and performance facts. `$cineweave-scene` owns geography, architecture, state and interaction. `$cineweave-director` owns narrative intent, camera decisions, shot coverage, Prompt and Storyboard assembly. `$cineweave-production` owns recipes, controls, evidence, capability and rights gates.
+`$cineweave` owns CreativeBrief intake and WorkflowPlan routing. `$cineweave-story` owns story causality. `$cineweave-character` owns identity, body, appearance and performance facts. `$cineweave-scene` owns geography, architecture, physical light state and interaction. `$cineweave-director` owns narrative intent, camera, shot light use and coverage. `$cineweave-prompt` owns image Prompt assembly. `$cineweave-production` owns recipes, controls, evidence, capability and rights gates.
 
 ## Independent and composed use
 
@@ -37,6 +38,7 @@ Choose the smallest route and load only the relevant references.
 - `style_compose`: combine compatible atoms into a style recipe, identify conflicts and declare scope. Read `references/style-system.md` and `references/style-taxonomy.md`; return `../../packages/cineweave-contracts/schemas/style-package.schema.json`.
 - `style_package`: create, version, import, fork or activate a reusable StylePackage with references, policy, compiler profiles and validation cases. Read `references/style-system.md` and `references/reference-policy.md`; return `../../packages/cineweave-contracts/schemas/style-package.schema.json`.
 - `style_compile`: compile a StylePackage for a declared image or video target while keeping character identity, scene facts and camera decisions separate. Read `references/style-compiler.md`; return `../../packages/cineweave-contracts/schemas/style-compile.schema.json`.
+- `style_light_grammar`: define how approved physical light is represented in the selected medium without placing or moving sources. Read `references/lighting-grammar.md`; return `../../packages/cineweave-contracts/schemas/style-light-grammar.schema.json`.
 - `style_review`: compare candidate Observation IDs against StylePackage invariants, forbidden traits and medium/temporal rules. Read `references/style-review.md`; return `../../packages/cineweave-contracts/schemas/style-review.schema.json`.
 
 ## Non-negotiable boundaries
@@ -67,5 +69,6 @@ Choose the smallest route and load only the relevant references.
 - Load `reference-policy.md` when deciding whether a style needs image references, video references, runtime references or a validation set.
 - Load `style-compiler.md` when compiling for an image/video target or mixing style with exact Character/Scene/Shot bindings.
 - Load `style-review.md` when reviewing drift, contamination, identity preservation or temporal stability.
+- Load `lighting-grammar.md` when separating physical SceneLightState from contrast, rolloff, color treatment and post-process.
 
 Return only the matching schema object for an importable route. Use named payloads for a combined analysis/compile request and preserve every exact ref and receipt.

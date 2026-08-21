@@ -1,132 +1,119 @@
-# CineWeave Studio v2 architecture
+# CineWeave Studio v2.2 architecture
 
-## Core rule
+## Design contract
 
-Every CineWeave Skill is **standalone first, composable second**.
+Every specialist is **standalone first, composable second**. Standalone means it
+can accept a direct brief and return its smallest owned artifact. Composable
+means it can consume exact upstream kind/ID/version/hash refs without hidden
+chat state, implicit “latest” resolution or circular artifact dependencies.
 
-Standalone means it can accept a direct user brief and optional references,
-then return its own smallest contract. Composable means it can consume exact,
-versioned outputs from other Skills without relying on hidden chat memory,
-implicit global state or a circular handoff.
+The optional `$cineweave` Skill is an intake router, not a creative super-Skill.
 
 ## Layers
 
 ```text
-Intent layer
-  natural language + declared reference roles
-          ↓
-Optional router
-  CreativeBrief + WorkflowPlan
-          ↓
-Specialist asset layer
-  Character | Scene | Style | Director | Production
-          ↓
-Contract layer
-  exact refs, version, content hash, locks, rights and evidence
-          ↓
-Human-approved execution boundary
-          ↓
+Intent and declared reference roles
+              ↓
+Optional CreativeBrief / WorkflowPlan
+              ↓
+Story ─ Character ─ Scene ─ Style
+              ↓
+Director ShotSpec / ShotLightingPlan / TemporalSpec
+              ↓
+PromptRecord / ImagePrompt
+              ↓
+Production recipes, evidence, capabilities and rights
+              ↓
+Immutable local artifact + exact-hash human approval
+              ↓
 Candidate observation → review → one-variable repair
 ```
 
-The router is an ergonomic entry point, not an orchestrator that owns every
-creative decision. It plans work; it does not create a character, scene, style,
-shot or production artifact itself.
+The dependency direction is selective. A bounded task bypasses unrelated
+layers. A workflow is a DAG of route invocations, so a Skill may appear in two
+phases without an artifact referencing its own downstream output.
 
-## Ownership and handoffs
+## Ownership matrix
 
-| Domain | Owner | Direct starting point | Typical composed input |
-|---|---|---|---|
-| intake and workflow | `cineweave` | vague multi-domain request | optional exact refs |
-| character exploration, identity and performance | `cineweave-character` | feeling, cards or character brief | CreativeBrief, CharacterOptionSet, StyleCompile |
-| geography and interaction | `cineweave-scene` | scene brief | CharacterBinding, StyleCompile |
-| representation and reference policy | `cineweave-style` | style brief/reference set | CharacterSpec, SceneSpec, CreativeBrief |
-| shot language and prompt assembly | `cineweave-director` | one-off image or storyboard request | bindings, StyleCompile, controls |
-| repeatability and quality gates | `cineweave-production` | recipe or rights/QA request | approved creative contracts |
+| Domain | Owner | Does not own |
+| --- | --- | --- |
+| intake and workflow | `cineweave` | specialist artifacts |
+| story causality and continuity | `cineweave-story` | shots or image prompts |
+| identity, appearance and actor behavior | `cineweave-character` | medium, camera or scene geography |
+| geography, materials, interaction and physical light | `cineweave-scene` | post-process look or shot source selection |
+| representational visual and temporal grammar | `cineweave-style` | identity, geography or physical source placement |
+| blocking, camera, shot light use and time | `cineweave-director` | persistent identity or general prompt library |
+| text-to-image prompt assets | `cineweave-prompt` | story causality or shot invention when a ShotSpec is required |
+| recipes, evidence, capability, rights and QA | `cineweave-production` | creative facts or provider claims |
 
-The strict precedence is:
+## Three separations with high leverage
 
-1. rights, consent and supplied Canon;
-2. locked character and scene facts;
-3. approved appearance and scene states;
-4. shot bindings and interaction constraints;
-5. director decisions;
-6. hard and soft production controls;
-7. style and adapter details.
-
-Lower-priority layers may not overwrite higher-priority facts.
-
-## Zero-prompt character exploration
-
-Character development may start from a feeling rather than facial terminology.
-The `cineweave-character` Skill owns the sequence below; the optional router
-only creates the editable `CreativeBrief` and directed workflow.
+### Light
 
 ```text
-feeling / six simple cards
-        ↓
-CharacterExplorationBrief
-        ↓
-CharacterOptionSet (one variable per candidate round)
-        ↓
-Director prompt compilation + Production deterministic candidate board
-        ↓
-QualityGate + user CharacterPreferenceFeedback
-        ↓
-explicit draft CharacterSpec → neutral evidence → human lock
+SceneLightState        physical source, position, direction, falloff, shadow
+StyleLightGrammar      contrast, rolloff, color treatment, grain, halation
+ShotLightingPlan       which approved source serves what function in this shot
 ```
 
-`QualityGate` checks anatomy, age alignment, representation fit, artifacts and
-declared rights. It is intentionally separate from `CharacterPreferenceFeedback`:
-the product records what the user prefers in a bounded option set and never
-issues a universal beauty score, silently infers biometrics or auto-locks an
-identity. Style and presentation remain lower-priority render inputs, not
-identity facts.
+This prevents a color grade from moving a window and prevents a SceneSpec from
+owning bloom.
 
-## Contract package and portable bundles
+### Performance and time
 
-The source contract package lives at `packages/cineweave-contracts`.
+`CharacterBinding` establishes the shot objective and observable performance.
+`PerformanceTimeline` owns timed gaze, face, breath, posture and residual state.
+`TemporalSpec` owns camera path, focus, edit and environmental timing while
+referencing—not rewriting—the actor timeline.
 
-```text
-packages/cineweave-contracts/
-├── contracts/manifest.json
-├── schemas/
-├── examples/
-├── recipes/
-└── references/
-```
+### Direction and prompts
 
-Each Skill declares its needed contract kinds in `skills/<skill>/contracts.json`.
-`scripts/build-skill-bundles.mjs` materializes a temporary bundle with only those
-schemas and recipes under `resources/`. The build rewrites package-local schema
-and recipe links, then validates that no repository contract path remains.
+`ShotSpec` decides purpose, blocking, attention, camera and composition.
+`PromptRecord` manages reusable image language in any domain. `ImagePrompt`
+compiles an exact shot when one exists. Prompt detail is limited by framing,
+visibility, compatibility and control value.
 
-This provides one source of truth during development and portable specialist
-Skill bundles during distribution.
+## Runtime
 
-## Composition rules
+`packages/cineweave-runtime` stores artifacts under `.cineweave/`.
 
-`WorkflowPlan` describes a directed acyclic graph. Each step names:
+- JSON is parsed strictly: duplicate keys, invalid Unicode, non-finite numbers
+  and non-JSON whitespace are rejected.
+- Canonical hashes are object-order independent.
+- One kind/ID/version has one immutable content hash, including concurrent writes.
+- Approval records bind exact artifact hashes and are independently hashed.
+- Project verification detects tampering, orphan approval refs and version/hash
+  conflicts.
+- Board assembly embeds independently produced tiles and emits provenance with
+  per-tile hashes and explicit partial failures.
 
-- specialist Skill and route;
-- standalone or composed invocation mode;
-- required and produced contracts;
-- explicit dependencies;
-- a human selection or approval gate when appropriate.
+The runtime is local and dependency-free. It does not execute paid providers or
+replace the human approval boundary.
 
-The workflow is deliberately not an execution engine. It does not invoke paid
-providers, create media, mutate Canon or grant rights. It is a visible plan a
-user or future product runtime can execute safely.
+## Contracts and portable bundles
 
-## V2 verification
+The canonical manifest owns 54 contract kinds. Each Skill declares its portable
+subset in `skills/<skill>/contracts.json`. Bundle construction copies only the
+needed schemas and recipes and rewrites local references, so a specialist bundle
+does not depend on the repository layout.
 
-The release gate verifies:
+Old 2.0 contract schemas remain valid where their data shape did not break.
+New 2.2 contracts use `contractVersion: 2.2.0`; the suite and plugin version are
+2.2.0. This is additive contract evolution, not a silent rewrite of old artifacts.
 
-- package metadata and V2 contract ownership;
-- all schema/example pairs and deterministic recipes;
-- each Skill's independent contract interface;
-- single-owner routes and no legacy Director brief route;
-- direct-activation and composition fixture coverage;
-- no cycles in workflow examples;
-- source links and generated portable bundles;
-- semantic, evidence, capability, rights and privacy controls.
+## Verification model
+
+Release validation covers:
+
+- official Skill and plugin structure;
+- unique route and contract ownership;
+- every schema/example pair;
+- cross-contract semantic positive and negative cases;
+- activation, indirect, incomplete, negative and edge behavior definitions;
+- workflow DAG and output-owner consistency;
+- canonicalization, immutable writes, concurrent conflicts and approvals;
+- deterministic partial board assembly;
+- standalone bundles, links, security and distributable media rights.
+
+See [research decisions](research/2026-08-21-v2.2-runtime-and-skill-boundaries.md)
+and [roadmap](roadmap.md).

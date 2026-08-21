@@ -1,0 +1,41 @@
+name: Validate CineWeave Studio
+
+on:
+  push:
+    branches: [main, "codex/**"]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  release-gate:
+    name: ${{ matrix.os }} / Node 22
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Runtime tests
+        run: npm test
+      - name: Full release gate
+        run: npm run validate
+      - name: Build standalone Skill bundles
+        run: node scripts/build-skill-bundles.mjs --out .build/skills
+      - name: Upload standalone bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: cineweave-skills-${{ matrix.os }}
+          path: .build/skills
+          if-no-files-found: error

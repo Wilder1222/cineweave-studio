@@ -79,7 +79,8 @@ Default staged handoff for a new character:
 3. Draft character direction plus neutral identity/body evidence;
 4. Character appearance state;
 5. Style reference/compile;
-6. Director hero/full-body/shot Prompt;
+6. Director `ShotSpec` for deliberate hero/full-body/shot observation, then
+   Prompt compilation by `$cineweave-prompt`;
 7. Production turnaround/expression recipes;
 8. Director Storyboard or final RenderPlan.
 

@@ -1,0 +1,21 @@
+{
+  "name": "cineweave-studio",
+  "version": "2.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Composable creative Skills, contracts and deterministic local runtime for CineWeave Studio.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/runtime/*.test.mjs",
+    "validate": "node scripts/run-release-checks.mjs",
+    "runtime": "node packages/cineweave-runtime/bin/cineweave.mjs",
+    "board": "node packages/cineweave-runtime/bin/assemble-board.mjs",
+    "evals": "node scripts/run-behavior-evals.mjs --validate"
+  },
+  "bin": {
+    "cineweave-studio": "./packages/cineweave-runtime/bin/cineweave.mjs"
+  },
+  "license": "MIT"
+}

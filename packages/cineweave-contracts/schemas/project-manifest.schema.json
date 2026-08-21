@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Wilder1222/cineweave-studio/schemas/project-manifest.schema.json",
+  "title": "CineWeave Local Project Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "contractVersion", "projectId", "name", "createdAt", "runtimeVersion", "storage"],
+  "properties": {
+    "kind": { "const": "cineweave_project_manifest" },
+    "contractVersion": { "const": "2.2.0" },
+    "projectId": { "$ref": "common.schema.json#/$defs/identifier" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "runtimeVersion": { "const": "2.2.0" },
+    "storage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "artifactDirectory", "approvalDirectory"],
+      "properties": {
+        "mode": { "const": "local_immutable" },
+        "artifactDirectory": { "const": "artifacts" },
+        "approvalDirectory": { "const": "approvals" }
+      }
+    }
+  }
+}

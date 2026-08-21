@@ -10,14 +10,14 @@
     {
       "id": 2,
       "prompt": "评分这张参考图适不适合做暗黑幻想人物的身份、饰品、灯光和真实感参考，并告诉我应该补什么参考图。",
-      "expected_output": "Reference review with role-scoped scores, visible evidence, rights status, preserve/borrow/exclude contract and pairing recommendations.",
-      "files": ["skills/cineweave-director/references/atlas/portrait-character-design/dark-fantasy-portrait-user-upload.png"]
+      "expected_output": "When the runtime image is present, return a reference review with role-scoped scores, visible evidence, rights status, preserve/borrow/exclude contract and pairing recommendations; otherwise request the missing image without fabricating evidence.",
+      "files": []
     },
     {
       "id": 7,
       "prompt": "把这张东方古典幻想人物参考图拆成面容、妆容、发型配饰、服装材质、姿态情绪、镜头、光线、色调和环境，再整理成可复用中文和英文 Prompt。",
-      "expected_output": "A role-scoped visual breakdown plus an observation-ready bilingual Prompt; reusable identity is handed to cineweave-character and inferred camera details are labeled as hypotheses.",
-      "files": ["skills/cineweave-director/references/atlas/portrait-character-design/dark-fantasy-portrait-user-upload.png"]
+      "expected_output": "When the runtime image is present, return a role-scoped visual breakdown plus an observation-ready bilingual Prompt; otherwise request the missing image. Reusable identity is handed to cineweave-character and inferred camera details are labeled as hypotheses.",
+      "files": []
     },
     {
       "id": 8,

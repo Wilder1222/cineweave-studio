@@ -13,7 +13,10 @@ CreativeBrief → WorkflowPlan
 CharacterSpec → AppearanceState → CharacterBinding
 SceneSpec     → SceneState      → SceneBinding → InteractionConstraintSet
 StylePackage  → StyleCompile    → StyleReview
-Director outputs: PromptRecord, ImagePrompt, Storyboard, RenderPlan
+Story outputs: StoryBrief, BeatSheet, ScriptScene, ContinuityLedger
+Director outputs: ShotSpec, ShotLightingPlan, TemporalSpec, Storyboard, RenderPlan
+Prompt outputs: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief,
+                PromptRepair
 Production outputs: AssetRecipe, ControlChannelSet, EvidenceBundle,
                     CapabilityProfile, LicenseProfile, ControlBenchmark
 ```
@@ -24,7 +27,9 @@ contracts from other Skills.
 
 ## Shared invariants
 
-- Every V2 exchange record uses `contractVersion: "2.0.0"`.
+- Every V2 exchange record uses its schema-declared contract version. The V2.2
+  package currently preserves `contractVersion: "2.0.0"` for compatible
+  creative records while the package manifest and runtime are versioned 2.2.0.
 - A dependent contract names an exact asset identity, version and content hash
   where that asset is already defined.
 - A reference input has one explicit role, scope, preserve list and ignore list.

@@ -8,7 +8,10 @@ This is an orchestration plan, not a single mega-prompt. Each stage answers a di
 
 Keep the payloads separate:
 
-- `$cineweave-director` owns reference decomposition, observation-ready Prompt blocks, camera, lighting, framing, style translation and shot use.
+- `$cineweave-director` owns reference review, shot purpose, blocking, camera,
+  shot-light use, temporal direction and storyboard use.
+- `$cineweave-prompt` owns `PromptRecord`, `ImagePrompt`, prompt variants and
+  prompt repair; it compiles exact Director decisions when a `ShotSpec` exists.
 - `$cineweave-character` owns `CharacterSpec`, `CharacterReferencePlan`, `CharacterAppearanceState`, `CharacterBinding` and identity/performance review.
 - `$cineweave-production` owns the AssetRecipe, control channels, evidence bundle, rights profile, capability match and deterministic assembly.
 
@@ -21,11 +24,11 @@ A visually striking reference can be a strong costume or palette sample while re
 | 0. Reference gate | What is actually visible, and what role may it serve? | Director | `ReferenceReview`; rights and role scope resolved |
 | 1. Identity lock | Who is this person without hairstyle, costume or mood styling? | Character | `CharacterSpec` + neutral reference plan; human identity approval |
 | 2. Appearance lock | Which approved hair, makeup, costume, materials and accessories are worn? | Character | `CharacterAppearanceState`; identity must remain unchanged |
-| 3. Hero portrait | Does the intended face, styling and photographic language read in one compelling frame? | Director | `PromptRecord` / `ImagePrompt`; portrait review, not automatic identity proof |
-| 4. Full-body anchor | Do silhouette, proportions, feet, garment weight and contact read at full scale? | Director + Character | full-body `ImagePrompt` and Character review |
+| 3. Hero portrait | Does the intended face, styling and photographic language read in one compelling frame? | Director + Prompt | `ShotSpec` + `ImagePrompt`; portrait review, not automatic identity proof |
+| 4. Full-body anchor | Do silhouette, proportions, feet, garment weight and contact read at full scale? | Character + Director + Prompt | exact Character binding, full-body `ShotSpec` / `ImagePrompt` and Character review |
 | 5. Turnaround | Are front, side and back construction, proportions and dominant side coherent? | Character + Production | `recipe.character-turnaround-3view`; human lock |
 | 6. Expression sheet | Can the same identity express controlled states without face drift? | Character + Production | `recipe.character-expression-sheet-3x3`; human lock |
-| 7. Shot use | Can the approved character perform inside a scene and camera plan? | Director | exact `CharacterBinding` + `ImagePrompt` / `Storyboard` |
+| 7. Shot use | Can the approved character perform inside a scene and camera plan? | Director + Prompt | exact `CharacterBinding` + `ShotSpec` + `ImagePrompt` / `Storyboard` |
 
 If a request jumps directly to Stage 3 or later, state which earlier evidence is missing. A hero portrait may be produced as exploration, but it cannot silently substitute for neutral identity, body or rights evidence.
 
@@ -52,8 +55,8 @@ Use this authority map as a default:
 | Hair, makeup, costume, accessory placement | AppearanceState | face geometry or body proportions |
 | Gesture, gaze, hand placement, expression | Performance candidate | permanent identity anchors |
 | Crop, angle, camera distance, focus | Director composition/capture hypothesis | scene geography |
-| Light direction, shadow softness, material response | Director lighting/style | identity |
-| Palette, grade, grain, halation | Director palette/grade hypothesis | factual film-stock or lens claims |
+| Light direction, shadow softness, material response | Scene physical-light candidate, Director shot-light use and Style treatment hypothesis | identity |
+| Palette, grade, grain, halation | Style treatment hypothesis consumed by Prompt | factual film-stock or lens claims |
 | Architecture or location | Scene reference candidate | character appearance |
 
 When a property is inferred rather than visible, label it as a hypothesis. For example, “85mm portrait lens” or “35mm film grain” can be a useful photographic hypothesis, but a still image alone does not prove the lens, stock or capture process.
@@ -95,7 +98,9 @@ For dense fantasy adornment, provide two explicit appearance profiles when relev
 
 ## Stage 3 — hero portrait calibration
 
-Use `image_prompt` or `prompt_management` to test one visual target at a time. Begin with how the camera observes the moment:
+Use `$cineweave-director` to resolve the portrait `ShotSpec`, then
+`$cineweave-prompt` to compile and test one visual target at a time. Begin with
+how the camera observes the moment:
 
 1. canvas, orientation and crop;
 2. observer position, shot scale, camera height, angle, distance and focus target;
@@ -140,7 +145,11 @@ Generate independent tiles, retry failed tiles only, preserve accepted tiles and
 
 ## Stage 7 — shot use and combined boards
 
-Only after human approval of identity, appearance and the relevant sheet evidence should Director bind the exact CharacterSpec/AppearanceState into a shot. A shot Prompt may borrow a hero portrait's capture/style evidence while preserving the approved identity and appearance bindings.
+Only after human approval of identity, appearance and the relevant sheet
+evidence should Director bind the exact CharacterSpec/AppearanceState into a
+shot. Prompt may then compile that exact `ShotSpec` and borrow approved hero
+portrait capture/style evidence while preserving identity and appearance
+bindings.
 
 When the user asks for “三视图 + 九宫格表情” in one deliverable, return two named recipe runs and a deterministic board assembly plan:
 
@@ -172,4 +181,5 @@ A staged plan is complete only when it names:
 - the relevant recipe IDs and independent task/assembly policy;
 - the next owner for each unresolved subproblem;
 - rights, capability and evidence blockers;
-- the final shot Prompt or Storyboard route, if requested.
+- the final Director `ShotSpec` / Storyboard route and Prompt compilation route,
+  if requested.

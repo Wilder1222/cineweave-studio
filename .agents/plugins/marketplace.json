@@ -1,7 +1,7 @@
 {
   "name": "cineweave-studio",
   "interface": {
-    "displayName": "CineWeave Creative Skills"
+    "displayName": "CineWeave Studio"
   },
   "plugins": [
     {
@@ -9,7 +9,7 @@
       "source": {
         "source": "url",
         "url": "https://github.com/Wilder1222/cineweave-studio.git",
-        "ref": "main"
+        "ref": "v2.2.0"
       },
       "policy": {
         "installation": "AVAILABLE",

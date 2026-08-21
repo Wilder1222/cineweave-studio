@@ -5,186 +5,215 @@
 <h1 align="center">CineWeave Studio</h1>
 
 <p align="center">
-  A composable Codex plugin for turning creative intent into controllable character, scene, style, direction and production workflows.
+  Composable Codex Skills for story, character, scene, style, direction, image prompting and production control.
 </p>
 
 <p align="center">
-  <a href="https://github.com/Wilder1222/cineweave-studio"><img alt="GitHub repository" src="https://img.shields.io/badge/GitHub-CineWeave%20Studio-111827?style=flat-square&logo=github&logoColor=white"></a>
+  <a href="https://github.com/Wilder1222/cineweave-studio/actions/workflows/validate.yml"><img alt="Validation" src="https://img.shields.io/github/actions/workflow/status/Wilder1222/cineweave-studio/validate.yml?branch=main&style=flat-square&label=validation"></a>
   <img alt="Codex plugin" src="https://img.shields.io/badge/Codex-Plugin-1D6FFF?style=flat-square">
-  <img alt="Version 2.0.1" src="https://img.shields.io/badge/version-2.0.1-14B8A6?style=flat-square">
+  <img alt="Version 2.2.0" src="https://img.shields.io/badge/version-2.2.0-14B8A6?style=flat-square">
+  <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-111827?style=flat-square">
 </p>
 
 <p align="center">
   <a href="#install-in-codex">Install</a> ·
-  <a href="#choose-a-skill">Skills</a> ·
-  <a href="#from-an-idea-to-a-producible-shot">Workflow</a> ·
-  <a href="docs/architecture.md">Architecture</a> ·
-  <a href="packages/cineweave-contracts/README.md">Contracts</a>
+  <a href="#eight-independent-skills">Skills</a> ·
+  <a href="#how-composition-works">Architecture</a> ·
+  <a href="#deterministic-local-runtime">Runtime</a> ·
+  <a href="docs/roadmap.md">Roadmap</a>
 </p>
 
 ---
 
-## The short version
+## What it does
 
-CineWeave Studio helps you describe a picture as a director would observe it:
-what the camera sees, how the subject behaves, where the light comes from, what
-the material does, and why the shot exists. It converts that intent into
-versioned, editable creative artifacts instead of one oversized prompt.
+CineWeave turns an imprecise creative wish into small, editable artifacts. It
+does not treat one giant prompt as story, character bible, set design, camera
+plan and production record at the same time.
 
-Use the optional `$cineweave` router when the request spans multiple domains.
-Use any specialist directly when the work is already bounded. No specialist has
-a hidden dependency on the router.
+The key idea is simple:
 
-| Start with… | Get… |
+> First state how the image is observed—subject, action, spatial relation,
+> viewpoint, light and material response—then compile only the detail that can
+> influence the requested frame.
+
+That rule works for portraits, products, food, architecture, illustration and
+cinematic frames. The prompt system is not limited to “cinematic content,” and
+the director system no longer owns general prompt management.
+
+| Start with | CineWeave returns |
 | --- | --- |
-| “I only know how she should feel.” | Comparable character directions, a preference loop and an approved identity plan. |
-| “Make this look like a poetic Song-inspired drama.” | A reusable style package with visual, cultural and temporal rules. |
-| “I need a shot with genuine cinematic presence.” | A prompt built from camera observation, blocking, light, composition and material response. |
-| “I need the image and video to stay controllable.” | Explicit controls, evidence, rights checks and production-ready recipes. |
+| “I only know how the character should feel.” | Comparable identity directions under one neutral fixture—no automatic beauty score or identity lock. |
+| “Turn this premise into a real scene.” | Dramatic question, causal beats, playable action, subtext and continuity facts. |
+| “Use this courtyard in several shots.” | Versioned geography, material, weather, physical light and interaction constraints. |
+| “I like this look but not the depicted person.” | Role-scoped style evidence with explicit preserve and ignore rules. |
+| “Make the shot feel intimate.” | Blocking, attention order, lens, depth, motivated shot lighting and a stable temporal end state. |
+| “Write the actual image prompt.” | A reusable Chinese, English or bilingual PromptRecord with a visibility budget and testable constraints. |
+| “Build a 3×3 sheet reliably.” | Independent tile tasks and deterministic external assembly with per-tile hashes. |
 
 ## Install in Codex
 
-Add the marketplace, then install the plugin:
+Install the immutable release tag:
 
 ```bash
-codex plugin marketplace add Wilder1222/cineweave-studio --ref main
+codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.2.0
 codex plugin add cineweave-studio@cineweave-studio
 ```
 
-Start a new Codex task after installation so the new Skills are available.
+Start a new Codex task after installation so the eight Skills are discovered.
+Release tags are immutable; development on `main` is not the installation pin.
 
-## Start creating
+## Eight independent Skills
 
-You can begin with a plain-language request—no form required.
+Every specialist works directly from a bounded brief and may also consume exact
+upstream contract refs. The `$cineweave` router is optional.
 
-```text
-Use $cineweave to turn this into an editable creative brief:
-I want an adult Song-inspired heroine who feels cool but quietly kind.
-Explore identity before wardrobe, give me comparable options, and do not lock her face until I approve neutral evidence.
-```
-
-Or go straight to a specialist:
-
-```text
-Use $cineweave-director to write a Chinese image prompt for an adult woman
-turning toward camera in a rain-washed courtyard. Describe the observed shot,
-the light, framing, physical action and material response. Avoid generic
-quality-word stacks.
-```
-
-## Choose a skill
-
-| Skill | Use it directly for | Produces |
+| Skill | Owns | Typical outputs |
 | --- | --- | --- |
-| `$cineweave` | Turning an open-ended request into the smallest viable workflow | `CreativeBrief`, `WorkflowPlan` |
-| `$cineweave-character` | Zero-prompt discovery, character identity, appearance and performance | Exploration, `CharacterSpec`, reference and performance plans |
-| `$cineweave-scene` | Locations, spatial continuity and physically plausible interaction | Scene specs, states, bindings and review plans |
-| `$cineweave-style` | Reusable visual and temporal style systems from deliberate references | `StylePackage`, reference policy, compiled style instructions |
-| `$cineweave-director` | Image prompts, camera language, shot design and storyboards | Prompt records, shots, storyboards and render plans |
-| `$cineweave-production` | Evidence-backed controls, capabilities, rights and evaluation | Recipes, control channels, evidence bundles and benchmarks |
+| `$cineweave` | intake and acyclic workflow planning | `CreativeBrief`, `WorkflowPlan` |
+| `$cineweave-story` | dramatic causality, script scenes and story continuity | `StoryBrief`, `BeatSheet`, `ScriptScene`, `ContinuityLedger` |
+| `$cineweave-character` | identity, appearance, behavior and actor timing | exploration contracts, `CharacterSpec`, `CharacterBinding`, `PerformanceTimeline` |
+| `$cineweave-scene` | geography, architecture, materials, physical light and interaction | `SceneSpec`, `SceneState`, `SceneLightState`, bindings and reviews |
+| `$cineweave-style` | medium and representational visual/temporal grammar | `StylePackage`, `StyleCompile`, `StyleLightGrammar` |
+| `$cineweave-director` | shot purpose, blocking, camera, shot light use and time | `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, storyboard |
+| `$cineweave-prompt` | general text-to-image prompt assets | `PromptRecord`, `ImagePrompt`, hypotheses and one-variable repairs |
+| `$cineweave-production` | recipes, controls, evidence, capabilities, rights and QA | `AssetRecipe`, control/evidence/license profiles and benchmarks |
 
-Each Skill accepts a direct brief and can consume exact outputs from other
-Skills. This keeps exploration fast while making larger productions traceable.
-
-## From an idea to a producible shot
-
-```text
-creative intent or references
-            │
-            ▼
-  optional $cineweave intake
-            │
-            ▼
-CreativeBrief + WorkflowPlan
-      ┌─────┼───────────┐
-      ▼     ▼           ▼
- character style       scene
-      └─────┬───────────┘
-            ▼
-        director
-            ▼
-       production
-            ▼
-human-approved image or video execution
-```
-
-The workflow uses a few deliberate rules:
-
-- Identity, appearance, performance and camera treatment are separate—changing a costume should not create a different person.
-- A visual reference declares what it is allowed to influence, such as palette or textile response, rather than silently copying identity or composition.
-- Static imagery does not pretend to define camera movement, performance rhythm or temporal style.
-- The system asks for more information only when it is high-impact and cannot safely be inferred.
-- Generated media is always human-gated; CineWeave designs the specification and never fabricates capability, rights or evidence claims.
-
-## Practical entry points
-
-### Create a character without knowing prompt terminology
+### Start without prompt terminology
 
 ```text
-Use $cineweave-character. I do not know the right facial-feature terms.
-Give me four comparable visual directions for an adult historical-fantasy woman:
-calm 70%, warm 30%, natural cinematic realism and restrained styling.
-Keep lighting, pose and wardrobe constant so I can choose the face direction.
+Use $cineweave-character. I want an adult historical woman who feels restrained
+but quietly warm. I do not know facial terminology. Give me four comparable
+identity directions with the same neutral light, pose, hair and simple clothing.
+Do not rank beauty or lock an identity.
 ```
 
-### Turn references into a safe style system
+### Develop story before shots
 
 ```text
-Use $cineweave-style to analyze these references.
-Keep only their low-saturation jade-and-earth palette, soft window light and
-aged-silk material response. Ignore the depicted person's identity, pose,
-costume and exact composition. Return a reusable StylePackage.
+Use $cineweave-story. A physician meets the person she once pushed away in a
+rain-washed courtyard. Build one dramatic question and a causal short-film beat
+sheet. Every beat needs an objective, conflict, choice, changed state and reason
+for the next beat. Do not add camera directions.
 ```
 
-### Direct a cinematic image prompt
+### Direct the observed moment
 
 ```text
-Use $cineweave-director to create a Chinese text-to-image prompt.
-An adult actor pauses at a courtyard doorway after rain. Start from camera
-distance and framing, then blocking, motivated light, surface detail and gaze.
-Keep the mood restrained and real; avoid "cinematic", "premium" or "8K" as
-substitutes for direction.
+Use $cineweave-director. Stage the recognition beat at the courtyard threshold.
+Define what the audience notices first, blocking and weight, relationship axis,
+50mm perspective, focus, physical light use, the motivated camera curve and a
+stable end state. Return a ShotSpec, not an image prompt.
 ```
 
-### Plan a small multi-shot production
+### Compile any image domain
 
 ```text
-Use $cineweave to plan a character, Song-inspired style system, courtyard
-scene and four-shot sequence. Return an editable CreativeBrief and a
-WorkflowPlan that names only the contracts we need.
+Use $cineweave-prompt to create a reusable Chinese product-photography prompt
+for a celadon teapot. Describe viewpoint, silhouette, support surface, contact
+shadow, reflection cards and glaze roughness. Remove empty “premium/8K” wording,
+keep one primary target and make variants change one hypothesis each.
 ```
 
-## What makes the system dependable
+## How composition works
 
-`packages/cineweave-contracts` is the canonical source for 39 versioned
-contracts. The release gate validates schemas and examples, route ownership,
-activation and composition cases, semantic rules, controls, local Skill links,
-portable standalone bundles, migration safety and privacy checks.
+```text
+natural language + declared reference roles
+                     │
+              optional $cineweave
+                     │
+          CreativeBrief + WorkflowPlan
+                     │
+        ┌────────────┼────────────┐
+        ▼            ▼            ▼
+      Story      Character      Scene
+        └────────────┼────────────┘
+                     ▼
+                   Style
+                     ▼
+                  Director
+                     ▼
+                   Prompt
+                     ▼
+                 Production
+                     ▼
+          immutable local artifact store
+                     ▼
+               human approval
+```
+
+This is a default dependency direction, not a requirement to invoke every
+Skill. A product prompt can go directly to Prompt; a script rewrite can go
+directly to Story; a rights audit can go directly to Production.
+
+Three boundaries prevent common drift:
+
+- Scene places physical light sources; Style defines how light is represented;
+  Director chooses how existing sources function in one shot.
+- Character defines actor behavior timing; Director aligns camera timing without
+  rewriting the performance.
+- Director defines the shot; Prompt compiles the shot and other exact facts into
+  model-facing language.
+
+Composition uses exact kind, ID, version and content hash. No Skill silently
+resolves “latest” or relies on hidden conversation state.
+
+## Deterministic local runtime
+
+V2.2 includes a dependency-free Node.js runtime for immutable local artifacts,
+hash-bound approvals and externally assembled image boards.
 
 ```bash
-node scripts/run-release-checks.mjs
+npm test
+node packages/cineweave-runtime/bin/cineweave.mjs init ./demo --id project.demo --name "Demo"
+node packages/cineweave-runtime/bin/cineweave.mjs put ./demo ./story-brief.json --id story.demo --version 1
+node packages/cineweave-runtime/bin/cineweave.mjs verify ./demo
 ```
 
-The V2 release also includes a non-destructive V1.1 migration path. See
-[migration notes](docs/migration/v1.1-to-v2.md) and the
-[full architecture](docs/architecture.md).
+Artifacts are canonicalized with RFC-8785-compatible JSON rules and stored
+under `.cineweave/`. One kind/ID/version can bind to only one content hash.
+Approvals reference that exact hash.
+
+Multi-panel outputs are assembled after independent tile generation:
+
+```bash
+node packages/cineweave-runtime/bin/assemble-board.mjs --manifest board.json --out board.svg --allow-partial
+```
+
+The assembler records every tile hash and failed tile ID. It never asks an
+image model to invent the grid, labels and all panels in a single pass.
+
+## Verification
+
+The V2.2 gate validates 54 owned contracts, all schema/example pairs, semantic
+positive and negative cases, 24 activation/behavior cases, deterministic runtime
+tests, standalone bundles, reference links, rights boundaries and distributable
+assets.
+
+```bash
+npm test
+npm run validate
+```
+
+CI runs on Windows and Linux. See [release policy](docs/release.md),
+[architecture](docs/architecture.md), [language policy](docs/language-policy.md)
+and [V2.0 → V2.2 migration](docs/migration/v2.0-to-v2.2.md).
 
 ## Repository map
 
 ```text
-skills/                         independently invocable Codex Skills
-packages/cineweave-contracts/   canonical schemas, examples and recipes
-tests/                          activation, workflow and evaluation fixtures
-scripts/                        release validation, bundling and migration
-docs/                           architecture, roadmap and migration guides
+skills/                         eight independently invocable Codex Skills
+packages/cineweave-contracts/   schemas, examples, ownership and recipes
+packages/cineweave-runtime/     immutable store and deterministic board tools
+tests/                          runtime, behavior, activation and workflow tests
+scripts/                        release, bundle, semantic and security checks
+docs/                           architecture, research, roadmap and migration
 ```
 
-## License
+## Scope and license
 
-MIT. See the plugin metadata for the current package declaration.
+The core remains provider-neutral and human-gated. It does not include paid
+model adapters, credentials or bundled user/third-party reference media. MIT
+licensed; see [LICENSE](LICENSE).
 
----
-
-Built by [Wilder1222](https://github.com/Wilder1222). The plugin package and
-repository are named `cineweave-studio`; specialist Skill identifiers such as
-`$cineweave-director` remain stable for compatibility.
+Built by [Wilder1222](https://github.com/Wilder1222).

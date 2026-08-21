@@ -98,7 +98,7 @@ Each option needs:
 3. a hypothesis explaining what feeling the variation is testing;
 4. an identity hypothesis that leaves all non-tested fields constant;
 5. preserve and avoid lists;
-6. a provider-neutral prompt intent for `$cineweave-director`.
+6. a provider-neutral prompt intent for `$cineweave-prompt`.
 
 Use 2–4 options by default. Use 5–6 only when the user deliberately asks for a
 wider exploration. Never mechanically combine “the eyes from A, nose from B
@@ -146,8 +146,10 @@ contracts.
 - `$cineweave` may create a `CreativeBrief` and compose the workflow, but it
   does not own the exploration contracts.
 - `$cineweave-character` owns option semantics and preference convergence.
-- `$cineweave-director` converts one exact option plus the shared fixture into
+- `$cineweave-prompt` converts one exact option plus the shared fixture into
   comparable Chinese prompt blocks; it may not invent or merge option deltas.
+- `$cineweave-director` supplies an exact `ShotSpec` only when the comparison
+  requires a deliberate shot rather than a neutral fixture.
 - `$cineweave-production` uses
   `recipe.character-exploration-board-4up` to create independent tile tasks,
   deterministic assembly and failed-tile-only retry.

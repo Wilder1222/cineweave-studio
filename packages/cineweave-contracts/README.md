@@ -1,34 +1,44 @@
-# CineWeave Contracts
+# CineWeave Contracts 2.2
 
-`cineweave-contracts` is the versioned exchange layer for CineWeave Studio.
-It contains the canonical schemas, examples, recipes and ownership manifest used
-by every independent CineWeave Skill.
+`cineweave-contracts` is the canonical exchange layer for CineWeave Studio. Its
+manifest records 54 contract kinds, one owner per contract and one owner per
+Skill route.
 
-The package is the source of truth during development. `scripts/build-skill-bundles.mjs`
-materializes only the contracts required by each Skill into a portable bundle, so
-specialist Skills remain usable without the `$cineweave` router.
+## Domains
+
+- Router: CreativeBrief and WorkflowPlan.
+- Story: StoryBrief, BeatSheet, ScriptScene and ContinuityLedger.
+- Character: exploration, identity, appearance, binding, PerformanceTimeline,
+  review and repair.
+- Scene: geography, state, physical SceneLightState, interaction and repair.
+- Style: StylePackage, reference policy, StyleCompile and StyleLightGrammar.
+- Director: proposals, ShotSpec, ShotLightingPlan, TemporalSpec, storyboard,
+  reference review and render planning.
+- Prompt: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief and PromptRepair.
+- Production: recipes, controls, evidence, capability, rights and benchmarks.
+- Runtime: project, artifact, approval and board-provenance records.
 
 ## Layout
 
-- `contracts/manifest.json` — ownership, routes, contract and recipe index.
-- `schemas/` — provider-neutral JSON exchange contracts.
-- `examples/` — one valid example per contract.
-- `recipes/` — built-in deterministic production recipes.
-- `references/` — shared contract semantics.
+- `contracts/manifest.json` — suite version, ownership and route index.
+- `schemas/` — provider-neutral JSON Schema contracts.
+- `examples/` — a valid example for every manifest contract.
+- `recipes/` — deterministic production recipes.
+- `references/` — shared semantics.
 
-Contracts are immutable inputs and outputs. A Skill may compose exact contract
-references, but it must not silently mutate an upstream asset or infer a missing
-locked fact.
+Each Skill declares its portable subset in `skills/<skill>/contracts.json`.
+`scripts/build-skill-bundles.mjs` copies only that subset and rewrites local
+links. A specialist therefore remains usable without `$cineweave` or the source
+repository layout.
 
-## Zero-prompt character discovery
+## Evolution policy
 
-The Character domain also contains `CharacterExplorationBrief`,
-`CharacterOptionSet` and `CharacterPreferenceFeedback`. Together they let a
-user start from a feeling or simple cards, compare controlled directions and
-explicitly converge toward a draft identity. Technical quality checks remain
-separate from subjective preference; no contract creates a universal beauty
-score, infers biometrics or auto-locks identity.
+Artifacts are immutable. Additive 2.2 schemas do not rewrite valid 2.0 payloads.
+A dependent artifact references exact kind, ID, version and content hash; it
+never means “latest.” Breaking data-shape changes require a new contract version
+and a non-destructive migration report.
 
-`recipes/character-exploration-board-4up.json` defines the corresponding
-independent candidate Tile plan. It is an AssetRecipe only: execution stays
-provider-neutral and human-approved.
+Schema validity is necessary but not sufficient. Semantic tests also enforce
+causal beats, non-overlapping performance phases, physical/style light
+separation, source-bound shot lighting, ordered temporal events, one-variable
+repair, deterministic grids and rights/capability gates.

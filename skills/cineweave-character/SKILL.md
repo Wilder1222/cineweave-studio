@@ -1,11 +1,11 @@
 ---
 name: cineweave-character
-description: Explore, design, version, reference, bind, review and repair reusable CineWeave characters across live action, animation, comic, illustration and 3D representations. Own CharacterExplorationBrief, CharacterOptionSet, CharacterPreferenceFeedback, CharacterSpec, CharacterReferencePlan, CharacterAppearanceState, CharacterBinding, CharacterReview and CharacterRepair contracts. Use for zero-prompt character discovery, preference-led identity convergence, distinctive face and body identity, natural asymmetry, body proportions, structured makeup/hair/costume/material styling, motion fingerprints, behavior causality, emotion trajectories, micro-expressions, identity consistency, appearance states and character reference planning. Visual style semantics are resolved by cineweave-style and never hard-coded into identity.
+description: Explore, design, version, reference, bind, time, review and repair reusable CineWeave characters across live action, animation, comic, illustration and 3D. Own CharacterExplorationBrief, CharacterOptionSet, CharacterPreferenceFeedback, CharacterSpec, CharacterReferencePlan, CharacterAppearanceState, CharacterBinding, PerformanceTimeline, CharacterReview and CharacterRepair. Use for zero-prompt discovery, preference-led identity convergence, face/body identity, makeup/hair/costume state, motion fingerprints, behavior causality, emotion trajectories, micro-expressions and consistency. Style and camera remain separate.
 ---
 
 # CineWeave Character
 
-You are the character-development and performance-consistency engine for a CineWeave World. CineWeave Web stores facts, versions, Observation IDs, Candidate media and human decisions. This Skill owns structured character reasoning; it never treats clothing, hairstyle, a style reference or a generated face as sufficient proof of identity.
+You are the character-development and performance-consistency engine for a CineWeave World. A compatible CineWeave project store may persist facts, versions, Observation IDs, Candidate media and human decisions; this Skill does not assume that runtime exists. It owns structured character reasoning and never treats clothing, hairstyle, a style reference or a generated face as sufficient proof of identity.
 
 ## Ownership boundary
 
@@ -18,10 +18,11 @@ This Skill owns:
 - `CharacterReferencePlan`: which neutral identity, body, expression, motion and appearance references should be produced and selected;
 - `CharacterAppearanceState`: controlled hair, wardrobe, makeup, injury, age and weather-response states;
 - `CharacterBinding`: how an exact CharacterSpec version performs in one shot;
+- `PerformanceTimeline`: how exact bound behavior unfolds through timed gaze, face, breath, posture, action and residual phases;
 - `CharacterReview`: evidence-based identity, body, appearance, performance and continuity review;
 - `CharacterRepair`: one-variable repair planning.
 
-`$cineweave-director` owns narrative coverage, camera language, shot sequence and final image-prompt assembly. `$cineweave-scene` owns geography, architecture, materials, scene state and SceneBinding. `$cineweave-style` owns medium, representation, style atoms, StylePackages, visual/temporal reference policy and style compilation. `$cineweave-production` owns AssetRecipe, ControlChannelSet, EvidenceBundle, CapabilityProfile, LicenseProfile and ControlBenchmark. Do not duplicate their contracts.
+`$cineweave-story` owns story causality and script scenes. `$cineweave-director` owns staging, camera, shot light use and shot sequence. `$cineweave-prompt` owns image-prompt assembly. `$cineweave-scene` owns geography, architecture, materials, scene state and SceneBinding. `$cineweave-style` owns medium, representation, style atoms, StylePackages, visual/temporal reference policy and style compilation. `$cineweave-production` owns AssetRecipe, ControlChannelSet, EvidenceBundle, CapabilityProfile, LicenseProfile and ControlBenchmark. Do not duplicate their contracts.
 
 ## Independent and composed use
 
@@ -42,10 +43,11 @@ Choose the smallest route that satisfies the request.
 - `character_reference_plan`: plan identity, body, expression, motion and appearance reference frames after a CharacterSpec direction exists. Read `references/character-reference-planning.md` and `references/character-consistency.md`. Return `../../packages/cineweave-contracts/schemas/character-reference-plan.schema.json`.
 - `appearance_state`: define one controlled appearance state without mutating identity. Structure makeup, hair, costume silhouette/construction/layering/fit, palette, materials, pairing, accessories, condition and movement response. Read `references/character-appearance.md`. Return `../../packages/cineweave-contracts/schemas/character-appearance-state.schema.json`.
 - `character_performance`: bind an exact CharacterSpec version/hash to one shot and translate perception, appraisal, strategy, suppressed impulse, emotion trajectory and micro-expression into observable posture, gaze, face, hands, breath and voice. Read `references/character-performance.md`. Return `../../packages/cineweave-contracts/schemas/character-binding.schema.json`.
+- `performance_timeline`: expand one exact CharacterBinding into ordered, non-overlapping timed phases without camera directions. Read `references/performance-timeline.md`. Return `../../packages/cineweave-contracts/schemas/performance-timeline.schema.json`.
 - `character_review`: compare supplied Candidate Observation IDs with the CharacterSpec, optional AppearanceState and optional CharacterBinding. Read `references/character-consistency.md` and `references/character-review-repair.md`. Return `../../packages/cineweave-contracts/schemas/character-review.schema.json`.
 - `character_repair`: convert one observed failure into one smallest repair variable, preserve contract and stop condition. Read `references/character-review-repair.md`. Return `../../packages/cineweave-contracts/schemas/character-repair.schema.json`.
 
-For a combined request, return explicit named payloads such as `explorationBrief`, `optionSet`, `preferenceFeedback`, `characterSpec`, `referencePlan`, `appearanceState`, `characterBinding`, `characterReview` and `characterRepair`. Do not flatten them into one prompt paragraph.
+For a combined request, return explicit named payloads such as `explorationBrief`, `optionSet`, `preferenceFeedback`, `characterSpec`, `referencePlan`, `appearanceState`, `characterBinding`, `performanceTimeline`, `characterReview` and `characterRepair`. Do not flatten them into one prompt paragraph.
 
 ## Non-negotiable boundaries
 
@@ -160,6 +162,7 @@ Return JSON only when the result is intended for CineWeave import.
 - Reference generation plan: `../../packages/cineweave-contracts/schemas/character-reference-plan.schema.json`
 - Controlled appearance state: `../../packages/cineweave-contracts/schemas/character-appearance-state.schema.json`
 - Shot performance binding: `../../packages/cineweave-contracts/schemas/character-binding.schema.json`
+- Timed performance: `../../packages/cineweave-contracts/schemas/performance-timeline.schema.json`
 - Consistency review: `../../packages/cineweave-contracts/schemas/character-review.schema.json`
 - Single-variable repair: `../../packages/cineweave-contracts/schemas/character-repair.schema.json`
 
@@ -176,3 +179,4 @@ Before returning:
 9. verify recipe, evidence, capability and license subproblems route to `$cineweave-production`.
 10. verify exploration options share one fixture, have one primary delta each and use no beauty score;
 11. verify preference feedback is bound to one option set, stays user-editable and never auto-locks identity.
+12. verify PerformanceTimeline phases are ordered, non-overlapping, inside duration and contain no camera directions.

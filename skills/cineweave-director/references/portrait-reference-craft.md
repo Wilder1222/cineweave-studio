@@ -4,17 +4,19 @@ Use this module when a creator asks how to reproduce a portrait reference, wants
 
 ## Ownership boundary
 
-- A one-off portrait Prompt belongs to Director.
+- A one-off or reusable portrait Prompt belongs to `$cineweave-prompt`.
 - Reusable face, body, likeness, identity anchors or a stable character DNA belong to `$cineweave-character` and must become a CharacterSpec or CharacterBinding.
 - Reusable makeup, hair, costume and accessory states belong to `$cineweave-character` as an AppearanceState. Director consumes the exact state and does not silently rewrite it.
-- Camera, framing, lighting, material translation, style bounds, negative constraints and Prompt versioning belong to Director.
+- Director owns shot purpose, blocking, camera and shot-light use. Scene owns
+  physical light state; Style owns representational treatment; Prompt owns
+  assembly, versioning, scoped negatives and acceptance checks.
 - If the source is a real person, recognizable character or copyrighted production, require supplied permission status. Do not infer a right to copy the face, signature or authorial style.
 
 ## Decompose the reference before writing a Prompt
 
 Record visible evidence, confidence and intended transfer for each applicable layer:
 
-| Layer | Observe | Director mapping or handoff |
+| Layer | Observe | Mapping or handoff |
 |---|---|---|
 | `identity` | face geometry, feature relationships, skin surface, asymmetry, body silhouette and distinctive marks | `CharacterSpec`/`CharacterBinding` when reusable; otherwise scoped identity reference |
 | `appearance` | makeup placement, hair construction, loose strands, ornaments, costume silhouette and garment construction | `AppearanceState`/character handoff; use `wardrobe` only when supplied to the shot |

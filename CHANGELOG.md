@@ -2,15 +2,29 @@
 
 ## Unreleased
 
-- added zero-prompt character exploration with `CharacterExplorationBrief`,
-  `CharacterOptionSet` and `CharacterPreferenceFeedback` contracts;
-- added a user-led, one-variable candidate-convergence workflow that separates
-  technical quality gates from subjective preference and never auto-locks an
-  identity;
-- added the deterministic `recipe.character-exploration-board-4up` production
-  recipe, workflow fixtures and semantic negative tests;
-- added Chinese zero-prompt intake, reference-role, prompt-compilation and
-  production handoff guidance across the standalone/composable Skills.
+No unreleased changes.
+
+## 2.2.0 — 2026-08-21
+
+- split screenwriting and general text-to-image management into the independent
+  `$cineweave-story` and `$cineweave-prompt` Skills;
+- expanded the suite to eight standalone/composable Skills and 54 uniquely
+  owned contracts;
+- added StoryBrief, BeatSheet, ScriptScene and ContinuityLedger;
+- added PerformanceTimeline, SceneLightState, StyleLightGrammar, ShotSpec,
+  ShotLightingPlan, TemporalSpec and PromptRepair;
+- separated physical scene light, representational light grammar and shot-level
+  source use;
+- added zero-prompt character exploration, controlled options and user-led
+  preference convergence without automatic beauty scoring or identity lock;
+- added a strict local runtime with RFC-8785-compatible hashes, concurrent
+  immutable version claims and exact-hash approvals;
+- added deterministic external board assembly with per-tile hashes and partial
+  failure provenance;
+- removed an unverified user-upload image from the distributable plugin and
+  added a binary/reference rights audit;
+- added 24 behavior cases, expanded semantic negative tests and Windows/Linux CI;
+- pinned the marketplace source to the immutable `v2.2.0` release tag.
 
 ## 2.0.0 — 2026-08-20
 

@@ -1,23 +1,25 @@
 {
-  "contractPackage": "cineweave-contracts@2.0.0",
+  "contractPackage": "cineweave-contracts@2.2.0",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalVisualReferences", "OptionalTemporalReferences"],
-    "produces": ["StylePackage", "StyleReferencePlan", "StyleCompile", "StyleReview"]
+    "produces": ["StylePackage", "StyleReferencePlan", "StyleCompile", "StyleLightGrammar", "StyleReview"]
   },
   "composed": {
-    "consumes": ["CreativeBrief", "ReferenceReview", "ReferenceSet", "CharacterSpec", "SceneSpec", "CharacterBinding", "SceneBinding"],
-    "produces": ["StylePackage", "StyleReferencePlan", "StyleCompile", "StyleReview"]
+    "consumes": ["CreativeBrief", "ReferenceReview", "ReferenceSet", "CharacterSpec", "SceneSpec", "SceneLightState", "CharacterBinding", "SceneBinding"],
+    "produces": ["StylePackage", "StyleReferencePlan", "StyleCompile", "StyleLightGrammar", "StyleReview"]
   },
   "contractKinds": [
     "cineweave_codex_style_package",
     "cineweave_codex_style_reference_plan",
     "cineweave_codex_style_compile",
+    "cineweave_codex_style_light_grammar",
     "cineweave_codex_style_review",
     "cineweave_codex_creative_brief",
     "cineweave_codex_reference_review",
     "cineweave_codex_reference_set",
     "cineweave_codex_character_spec",
     "cineweave_codex_scene_spec",
+    "cineweave_codex_scene_light_state",
     "character_binding",
     "scene_binding"
   ]

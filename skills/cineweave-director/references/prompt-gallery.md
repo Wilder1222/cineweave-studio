@@ -19,7 +19,7 @@ Use this file as a small routing index for reference-image selection and style c
 | `cinematic-still` / `cinematic-reveal` | live-action-looking frame, reveal, depth layers or frozen action | [`cinematic-atlas.md`](cinematic-atlas.md) |
 | `chinese-visual-language` | restrained Chinese silhouette, textile, architecture and negative space | [`cinematic-atlas.md`](cinematic-atlas.md) |
 | `reference-edit` | edit, inpaint, preserve contract or mask semantics | [`reference-editing.md`](reference-editing.md) |
-| `product`, `fashion`, `food`, `architecture`, `illustration`, `social`, `technical` | non-cinematic Prompt domains without a bundled case | use a supplied or rights-cleared reference plus [`prompt-craft.md`](prompt-craft.md) |
+| `product`, `fashion`, `food`, `architecture`, `illustration`, `social`, `technical` | non-cinematic Prompt domains without a bundled case | use a supplied or rights-cleared reference, then route prompt design to `$cineweave-prompt` |
 
 ## Gallery size rule
 

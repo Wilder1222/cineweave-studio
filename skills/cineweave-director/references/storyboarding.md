@@ -59,7 +59,10 @@ Keep human-readable scene continuity in `continuity.sceneState`, `geographyAncho
 
 ## Storyboard versus image prompt
 
-The storyboard owns sequence logic and continuity. The image prompt owns the exact frozen frame, visual hierarchy and text-to-image construction. Link them with `shotId` and keep the frame prompt subordinate to the storyboard beat.
+The Director storyboard owns sequence logic and continuity. `$cineweave-prompt`
+owns the exact frozen-frame image prompt, visual hierarchy rendering and
+text-to-image construction. Link them through the exact `shotId` / `ShotSpec`
+reference and keep the frame prompt subordinate to the storyboard beat.
 
 ## Continuity checks
 

@@ -1,11 +1,11 @@
 {
-  "contractPackage": "cineweave-contracts@2.0.0",
+  "contractPackage": "cineweave-contracts@2.2.0",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalApprovedContracts", "OptionalEvidence"],
     "produces": ["AssetRecipe", "ControlChannelSet", "EvidenceBundle", "CapabilityProfile", "LicenseProfile", "ControlBenchmark"]
   },
   "composed": {
-    "consumes": ["CreativeBrief", "CharacterExplorationBrief", "CharacterOptionSet", "CharacterContracts", "SceneContracts", "StyleCompile", "DirectorContracts", "ObservationIds"],
+    "consumes": ["CreativeBrief", "StoryContracts", "CharacterContracts", "SceneContracts", "StyleCompile", "DirectorContracts", "PromptContracts", "ObservationIds"],
     "produces": ["AssetRecipe", "ControlChannelSet", "EvidenceBundle", "CapabilityProfile", "LicenseProfile", "ControlBenchmark"]
   },
   "contractKinds": [
@@ -16,15 +16,21 @@
     "cineweave_codex_license_profile",
     "cineweave_codex_control_benchmark",
     "cineweave_codex_creative_brief",
-    "cineweave_codex_character_exploration_brief",
-    "cineweave_codex_character_option_set",
+    "cineweave_codex_story_brief",
+    "cineweave_codex_beat_sheet",
     "cineweave_codex_character_spec",
     "cineweave_codex_character_appearance_state",
     "character_binding",
+    "cineweave_codex_performance_timeline",
     "cineweave_codex_scene_spec",
     "cineweave_codex_scene_state",
+    "cineweave_codex_scene_light_state",
     "scene_binding",
     "cineweave_codex_style_compile",
+    "cineweave_codex_shot_spec",
+    "cineweave_codex_shot_lighting_plan",
+    "cineweave_codex_temporal_spec",
+    "cineweave_codex_prompt_record",
     "cineweave_codex_image_prompt",
     "cineweave_codex_storyboard_sequence"
   ]

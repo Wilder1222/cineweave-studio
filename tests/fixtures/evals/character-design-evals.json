@@ -55,7 +55,7 @@
       "prompt": "角色在超远景中穿过云上长桥。",
       "loads": [
         "character-performance",
-        "text-to-image"
+        "prompt-architecture"
       ],
       "expectedOutput": "image-prompt-output",
       "assertions": [

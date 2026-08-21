@@ -1,0 +1,26 @@
+{
+  "contractPackage": "cineweave-contracts@2.2.0",
+  "standalone": {
+    "accepts": ["NaturalLanguageBrief", "ExistingPromptText", "OptionalReferenceAssets"],
+    "produces": ["PromptRecord", "ImagePrompt", "PromptHypothesis", "DraftBrief", "PromptRepair"]
+  },
+  "composed": {
+    "consumes": ["CreativeBrief", "StoryBrief", "CharacterBinding", "SceneBinding", "StyleCompile", "ShotSpec", "ShotLightingPlan", "EvidenceBundle"],
+    "produces": ["PromptRecord", "ImagePrompt", "PromptHypothesis", "DraftBrief", "PromptRepair"]
+  },
+  "contractKinds": [
+    "cineweave_codex_prompt_record",
+    "cineweave_codex_image_prompt",
+    "cineweave_codex_prompt_hypothesis",
+    "cineweave_codex_interactive_draft_brief",
+    "cineweave_codex_prompt_repair",
+    "cineweave_codex_creative_brief",
+    "cineweave_codex_story_brief",
+    "character_binding",
+    "scene_binding",
+    "cineweave_codex_style_compile",
+    "cineweave_codex_shot_spec",
+    "cineweave_codex_shot_lighting_plan",
+    "cineweave_codex_evidence_bundle"
+  ]
+}

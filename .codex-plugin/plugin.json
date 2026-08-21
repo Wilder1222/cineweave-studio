@@ -1,12 +1,16 @@
 {
   "name": "cineweave-studio",
-  "version": "2.0.1",
-  "description": "CineWeave Studio is a composable creative Skill system for independent character, scene, style, direction and production workflows.",
+  "version": "2.2.0",
+  "description": "CineWeave Studio is a composable creative Skill system for independent story, character, scene, style, direction, prompt and production workflows.",
   "homepage": "https://github.com/Wilder1222/cineweave-studio",
   "repository": "https://github.com/Wilder1222/cineweave-studio",
   "license": "MIT",
   "keywords": [
     "cineweave",
+    "screenwriting",
+    "story-development",
+    "script-scene",
+    "continuity-ledger",
     "codex",
     "studio",
     "director",
@@ -23,6 +27,7 @@
     "cinematography",
     "text-to-image",
     "prompt-management",
+    "prompt-repair",
     "reference-review",
     "portrait-prompting",
     "reference-gallery",
@@ -52,14 +57,15 @@
   "interface": {
     "displayName": "CineWeave Studio",
     "shortDescription": "Composable creative workflows for images, video and production design.",
-    "longDescription": "CineWeave Studio v2 provides an optional $cineweave entry point plus five independently usable specialist Skills. Character supports zero-prompt discovery, user-led preference convergence, reusable identity and performance; Scene owns geography and physical interaction; Style owns visual and temporal style systems; Director owns shot language, prompts and storyboards; Production owns recipes, controls, evidence, capability, rights and evaluation. All composition passes through explicit versioned contracts, so a specialist can work directly from a brief or consume exact upstream artifacts without hidden state. The system remains provider-neutral, human-gated for execution and explicit about rights, evidence and capability limits.",
+    "longDescription": "CineWeave Studio v2.2 provides an optional $cineweave entry point plus seven independently usable specialist Skills. Story owns causality, script scenes and continuity; Character owns identity and performance; Scene owns geography, physical interaction and physical light state; Style owns visual and temporal representation; Director owns blocking, camera, shot lighting and time; Prompt owns reusable text-to-image assets across cinematic and non-cinematic domains; Production owns recipes, controls, evidence, capability, rights and evaluation. Exact versioned contracts support direct specialist use and acyclic composition without hidden state. A deterministic local runtime stores immutable artifacts, binds approvals to hashes and assembles multi-panel boards outside image models.",
     "developerName": "CineWeave",
     "category": "Productivity",
     "capabilities": [],
     "defaultPrompt": [
       "Turn my vague visual idea into an editable creative brief.",
       "Explore an original character from a feeling, then let me choose.",
-      "Write a shot-led Chinese image prompt for a cinematic scene."
+      "Develop this premise into causal beats and a playable script scene.",
+      "Write an observable Chinese image prompt for this portrait, product or scene."
     ],
     "brandColor": "#1D6FFF",
     "composerIcon": "./assets/cineweave-studio-plugin-icon.png",

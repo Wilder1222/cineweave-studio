@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.2.0",
   "cases": [
     {
       "id": "direct-character",
@@ -30,11 +30,25 @@
       "mustNotRequire": ["cineweave", "cineweave-character"]
     },
     {
-      "id": "direct-shot",
-      "request": "把她在窗前回眸的一刻写成一张真实感中文生图提示词。",
+      "id": "direct-director-shot",
+      "request": "为她在窗前认出故人的一刻设计阻挡、轴线、50mm镜头、灯光使用和稳定结束状态。",
       "entrySkill": "cineweave-director",
       "mode": "standalone",
-      "mustNotRequire": ["cineweave", "cineweave-production"]
+      "mustNotRequire": ["cineweave", "cineweave-prompt", "cineweave-production"]
+    },
+    {
+      "id": "direct-prompt",
+      "request": "把她在窗前回眸的一刻写成一张真实感中文生图提示词，并保存为可复用提示词版本。",
+      "entrySkill": "cineweave-prompt",
+      "mode": "standalone",
+      "mustNotRequire": ["cineweave", "cineweave-director", "cineweave-production"]
+    },
+    {
+      "id": "direct-story",
+      "request": "把重逢想法写成有目标、阻碍、选择、转折和状态变化的剧本场景。",
+      "entrySkill": "cineweave-story",
+      "mode": "standalone",
+      "mustNotRequire": ["cineweave", "cineweave-director", "cineweave-prompt"]
     },
     {
       "id": "direct-production",
@@ -48,14 +62,14 @@
       "request": "从角色、宋韵风格、雨后庭院到四镜头分镜，规划一个可验证的短片关键帧工作流。",
       "entrySkill": "cineweave",
       "mode": "router",
-      "requiresSpecialists": ["cineweave-character", "cineweave-style", "cineweave-scene", "cineweave-director"]
+      "requiresSpecialists": ["cineweave-story", "cineweave-character", "cineweave-style", "cineweave-scene", "cineweave-director", "cineweave-prompt"]
     },
     {
       "id": "router-zero-prompt-character",
       "request": "我不懂提示词，想创建一个属于自己的古风女性角色，先让我从候选方向里选择。",
       "entrySkill": "cineweave",
       "mode": "router",
-      "requiresSpecialists": ["cineweave-character", "cineweave-director", "cineweave-production"]
+      "requiresSpecialists": ["cineweave-character", "cineweave-prompt", "cineweave-production"]
     }
   ]
 }

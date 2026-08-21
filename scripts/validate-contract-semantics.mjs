@@ -416,9 +416,116 @@ function validateWorkflowPlan(payload, errors) {
   push(errors, payload?.executionBoundary?.requiresHumanApproval === true, "WorkflowPlan requires a human execution gate");
 }
 
+function validateStoryBrief(payload, errors) {
+  push(errors, nonEmpty(payload?.dramaticQuestion), "StoryBrief requires one dramatic question");
+  for (const key of ["want", "need", "fear", "contradiction"]) push(errors, nonEmpty(payload?.protagonist?.[key]), `StoryBrief protagonist.${key} is required`);
+  push(errors, payload?.validation?.protagonistCausality === true, "StoryBrief must be protagonist-causal");
+  push(errors, payload?.validation?.stakesEscalate === true, "StoryBrief stakes must escalate");
+  push(errors, payload?.validation?.noShotDecisions === true, "StoryBrief cannot own shot decisions");
+}
+
+function validateBeatSheet(payload, errors) {
+  const beats = payload?.beats || [];
+  push(errors, unique(beats.map((item) => item?.beatId)), "BeatSheet beat IDs must be unique");
+  beats.forEach((beat, index) => {
+    push(errors, beat?.order === index + 1, `${beat?.beatId}: BeatSheet order must be contiguous`);
+    for (const key of ["objective", "conflict", "choice", "change", "causesNext"]) push(errors, nonEmpty(beat?.[key]), `${beat?.beatId}: ${key} is required`);
+  });
+  const shares = beats.map((item) => item?.estimatedShare).filter((value) => typeof value === "number");
+  if (shares.length === beats.length) push(errors, Math.abs(shares.reduce((a, b) => a + b, 0) - 1) <= 0.001, "BeatSheet estimated shares must total 1");
+  push(errors, payload?.validation?.causal === true, "BeatSheet must declare causal structure");
+}
+
+function validateScriptScene(payload, errors) {
+  const participantIds = new Set((payload?.participants || []).map((item) => item?.participantId));
+  const beats = payload?.beats || [];
+  beats.forEach((beat, index) => {
+    push(errors, beat?.order === index + 1, `ScriptScene beat ${index + 1} order must be contiguous`);
+    if (beat?.speakerId) push(errors, participantIds.has(beat.speakerId), `ScriptScene references unknown speaker ${beat.speakerId}`);
+  });
+  push(errors, payload?.entryState !== payload?.exitState, "ScriptScene exit state must differ from entry state");
+  push(errors, payload?.validation?.noCameraDirections === true, "ScriptScene cannot own camera directions");
+}
+
+function validateContinuityLedger(payload, errors) {
+  const entries = payload?.entries || [];
+  push(errors, unique(entries.map((item) => item?.entryId)), "ContinuityLedger entry IDs must be unique");
+  for (const entry of entries) push(errors, Array.isArray(entry?.sourceRefs) && entry.sourceRefs.length > 0, `${entry?.entryId}: continuity fact needs exact sources`);
+  push(errors, payload?.validation?.noSilentOverwrite === true, "ContinuityLedger must prohibit silent overwrite");
+  push(errors, payload?.validation?.blockingConflictsVisible === true, "ContinuityLedger must surface blocking conflicts");
+}
+
+function validatePerformanceTimeline(payload, errors) {
+  const phases = payload?.phases || [];
+  push(errors, unique(phases.map((item) => item?.phaseId)), "PerformanceTimeline phase IDs must be unique");
+  let previousEnd = 0;
+  for (const phase of phases) {
+    push(errors, phase?.startSeconds >= previousEnd, `${phase?.phaseId}: phases overlap or are unordered`);
+    push(errors, phase?.endSeconds > phase?.startSeconds, `${phase?.phaseId}: end must follow start`);
+    push(errors, phase?.endSeconds <= payload?.durationSeconds, `${phase?.phaseId}: phase exceeds duration`);
+    previousEnd = phase?.endSeconds;
+  }
+  push(errors, payload?.validation?.noCameraDirections === true, "PerformanceTimeline cannot own camera directions");
+}
+
+function validateSceneLightState(payload, errors) {
+  const sources = payload?.sources || [];
+  push(errors, unique(sources.map((item) => item?.sourceId)), "SceneLightState source IDs must be unique");
+  for (const source of sources) {
+    push(errors, nonEmpty(source?.positionAnchor) && nonEmpty(source?.direction), `${source?.sourceId}: source must be geography-bound`);
+    push(errors, nonEmpty(source?.motivatedBy), `${source?.sourceId}: source must be motivated`);
+  }
+  push(errors, payload?.validation?.noPostprocessOwnership === true, "SceneLightState cannot own post-process treatment");
+}
+
+function validateStyleLightGrammar(payload, errors) {
+  push(errors, payload?.validation?.noPhysicalSourcePlacement === true, "StyleLightGrammar cannot place physical sources");
+  push(errors, payload?.validation?.noGeographyOwnership === true, "StyleLightGrammar cannot own geography");
+  push(errors, payload?.validation?.visualTemporalSeparated === true, "StyleLightGrammar must separate visual and temporal behavior");
+}
+
+function validateShotSpec(payload, errors) {
+  const characterIds = new Set((payload?.bindings?.characters || []).map((item) => item?.id));
+  for (const item of payload?.blocking || []) if (characterIds.size) push(errors, characterIds.has(item?.subjectRef), `ShotSpec blocking references unknown subject ${item?.subjectRef}`);
+  push(errors, nonEmpty(payload?.camera?.movementIntent), "ShotSpec needs a motivated movement intent, including static");
+  push(errors, payload?.validation?.oneDominantCameraIdea === true, "ShotSpec requires one dominant camera idea");
+  push(errors, payload?.validation?.axisCoherent === true, "ShotSpec must preserve axis coherence");
+}
+
+function validateShotLightingPlan(payload, errors, sceneLightState) {
+  const known = new Set((sceneLightState?.sources || []).map((item) => item?.sourceId));
+  const uses = [payload?.key, payload?.fill, payload?.rim, ...(payload?.practicals || [])].filter(Boolean);
+  if (known.size) for (const use of uses) push(errors, known.has(use?.sourceId), `ShotLightingPlan uses unknown source ${use?.sourceId}`);
+  push(errors, payload?.validation?.stylePhysicalSeparated === true, "ShotLightingPlan must separate style from physical sources");
+  push(errors, payload?.validation?.continuityBound === true, "ShotLightingPlan must bind continuity");
+}
+
+function validateTemporalSpec(payload, errors) {
+  for (const [label, events] of [["focus", payload?.focusTimeline || []], ["action", payload?.actionTimeline || []], ["dynamic light", payload?.dynamicLighting || []]]) {
+    let last = -1;
+    for (const event of events) {
+      push(errors, event?.timeSeconds >= last, `TemporalSpec ${label} events must be ordered`);
+      push(errors, event?.timeSeconds <= payload?.durationSeconds, `TemporalSpec ${label} event exceeds duration`);
+      last = event?.timeSeconds;
+    }
+  }
+  push(errors, nonEmpty(payload?.cameraMotion?.motivation), "TemporalSpec camera movement must be motivated");
+  push(errors, payload?.validation?.endStateStable === true, "TemporalSpec needs a stable end state");
+}
+
+function validatePromptRepair(payload, errors) {
+  push(errors, Array.isArray(payload?.changeOnly) && payload.changeOnly.length === 1, "PromptRepair changes exactly one variable");
+  push(errors, Array.isArray(payload?.evidenceObservationIds) && payload.evidenceObservationIds.length > 0, "PromptRepair requires observed evidence");
+  push(errors, payload?.validation?.parentImmutable === true, "PromptRepair keeps its parent immutable");
+}
+
 function validateByKind(payload, context = {}) {
   const errors = [];
   switch (payload?.kind) {
+    case "cineweave_codex_story_brief": validateStoryBrief(payload, errors); break;
+    case "cineweave_codex_beat_sheet": validateBeatSheet(payload, errors); break;
+    case "cineweave_codex_script_scene": validateScriptScene(payload, errors); break;
+    case "cineweave_codex_continuity_ledger": validateContinuityLedger(payload, errors); break;
     case "cineweave_codex_character_spec": validateCharacterSpec(payload, errors); break;
     case "cineweave_codex_character_exploration_brief": validateCharacterExplorationBrief(payload, errors); break;
     case "cineweave_codex_character_option_set": validateCharacterOptionSet(payload, errors); break;
@@ -427,12 +534,14 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_character_appearance_state": validateAppearanceState(payload, errors); break;
     case "cineweave_codex_character_review": validateReview(payload, errors, "Character"); break;
     case "cineweave_codex_character_repair": validateRepair(payload, errors, "Character"); break;
+    case "cineweave_codex_performance_timeline": validatePerformanceTimeline(payload, errors); break;
     case "cineweave_codex_scene_spec": validateSceneSpec(payload, errors); break;
     case "cineweave_codex_scene_state": validateSceneState(payload, errors, context.sceneSpec); break;
     case "cineweave_codex_scene_reference_plan": push(errors, payload?.validation?.geographyFirst === true, "SceneReferencePlan must be geography-first"); break;
     case "cineweave_codex_interaction_constraint_set": validateInteractionSet(payload, errors); break;
     case "cineweave_codex_scene_review": validateReview(payload, errors, "Scene"); break;
     case "cineweave_codex_scene_repair": validateRepair(payload, errors, "Scene"); break;
+    case "cineweave_codex_scene_light_state": validateSceneLightState(payload, errors); break;
     case "cineweave_codex_asset_recipe": validateAssetRecipe(payload, errors, context.controlSet); break;
     case "cineweave_codex_control_channel_set": validateControlSet(payload, errors); break;
     case "cineweave_codex_evidence_bundle": validateEvidenceBundle(payload, errors); break;
@@ -446,6 +555,11 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_style_reference_plan": validateStyleReferencePlan(payload, errors); break;
     case "cineweave_codex_style_compile": validateStyleCompile(payload, errors); break;
     case "cineweave_codex_style_review": validateStyleReview(payload, errors); break;
+    case "cineweave_codex_style_light_grammar": validateStyleLightGrammar(payload, errors); break;
+    case "cineweave_codex_shot_spec": validateShotSpec(payload, errors); break;
+    case "cineweave_codex_shot_lighting_plan": validateShotLightingPlan(payload, errors, context.sceneLightState); break;
+    case "cineweave_codex_temporal_spec": validateTemporalSpec(payload, errors); break;
+    case "cineweave_codex_prompt_repair": validatePromptRepair(payload, errors); break;
     case "cineweave_codex_creative_brief": validateCreativeBrief(payload, errors); break;
     case "cineweave_codex_workflow_plan": validateWorkflowPlan(payload, errors); break;
     default:
@@ -459,15 +573,21 @@ async function readJson(relativePath) { return JSON.parse(await readFile(resolve
 
 async function runSelfTest(mode = "all") {
   const sceneSpec = await readJson("examples/scene-spec.json");
+  const sceneLightState = await readJson("examples/scene-light-state.json");
   const controlSet = await readJson("examples/control-channel-set.json");
   const cases = [
     ["examples/character-spec.json", {}], ["examples/character-exploration-brief.json", {}], ["examples/character-option-set.json", {}], ["examples/character-preference-feedback.json", {}], ["examples/character-binding.json", {}], ["examples/character-reference-plan.json", {}], ["examples/character-appearance-state.json", {}], ["examples/character-review.json", {}], ["examples/character-repair.json", {}],
   ];
   if (mode === "all") cases.push(
+    ["examples/story-brief.json", {}], ["examples/beat-sheet.json", {}], ["examples/script-scene.json", {}], ["examples/continuity-ledger.json", {}],
+    ["examples/performance-timeline.json", {}],
     ["examples/scene-spec.json", {}], ["examples/scene-state.json", { sceneSpec }], ["examples/scene-binding.json", { sceneSpec }], ["examples/scene-reference-plan.json", { sceneSpec }], ["examples/interaction-constraint-set.json", {}], ["examples/scene-review.json", { sceneSpec }], ["examples/scene-repair.json", { sceneSpec }],
+    ["examples/scene-light-state.json", {}],
     ["examples/asset-recipe.json", { controlSet }], ["examples/control-channel-set.json", {}], ["examples/evidence-bundle.json", {}], ["examples/capability-profile.json", {}], ["examples/license-profile.json", {}], ["examples/control-benchmark.json", {}],
     ["examples/integrated-image-prompt.json", { sceneSpec }], ["examples/integrated-storyboard.json", { sceneSpec }], ["examples/prompt-record.json", {}],
-    ["examples/style-package.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-review.json", {}], ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}],
+    ["examples/style-package.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
+    ["examples/shot-spec.json", {}], ["examples/shot-lighting-plan.json", { sceneLightState }], ["examples/temporal-spec.json", {}], ["examples/prompt-repair.json", {}],
+    ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}],
   );
 
   let ok = true;
@@ -498,6 +618,14 @@ async function runSelfTest(mode = "all") {
   const badOptionSet = await readJson("examples/character-option-set.json"); badOptionSet.options[0].primaryDelta.axis = "eye_expression"; negative.push(["reject CharacterOptionSet with mixed exploration axes", badOptionSet, {}]);
   const badFeedbackLock = await readJson("examples/character-preference-feedback.json"); badFeedbackLock.convergence.identityLockRequested = true; negative.push(["reject CharacterPreferenceFeedback automatic identity lock", badFeedbackLock, {}]);
   const badFeedbackScore = await readJson("examples/character-preference-feedback.json"); badFeedbackScore.policy.universalBeautyScoreProhibited = false; negative.push(["reject CharacterPreferenceFeedback beauty score policy", badFeedbackScore, {}]);
+  const badBeatSheet = await readJson("examples/beat-sheet.json"); badBeatSheet.beats[1].order = 1; negative.push(["reject unordered BeatSheet", badBeatSheet, {}]);
+  const badPerformanceTimeline = await readJson("examples/performance-timeline.json"); badPerformanceTimeline.phases[1].startSeconds = 0.5; negative.push(["reject overlapping PerformanceTimeline", badPerformanceTimeline, {}]);
+  const badSceneLight = await readJson("examples/scene-light-state.json"); badSceneLight.sources[1].sourceId = badSceneLight.sources[0].sourceId; negative.push(["reject duplicate SceneLightState source", badSceneLight, {}]);
+  const badStyleLight = await readJson("examples/style-light-grammar.json"); badStyleLight.validation.noPhysicalSourcePlacement = false; negative.push(["reject StyleLightGrammar physical placement", badStyleLight, {}]);
+  const badShot = await readJson("examples/shot-spec.json"); badShot.blocking[0].subjectRef = "binding.unknown"; negative.push(["reject ShotSpec unknown blocking subject", badShot, {}]);
+  const badShotLight = await readJson("examples/shot-lighting-plan.json"); badShotLight.key.sourceId = "light.unknown"; negative.push(["reject ShotLightingPlan unknown source", badShotLight, { sceneLightState }]);
+  const badTemporal = await readJson("examples/temporal-spec.json"); badTemporal.actionTimeline[1].timeSeconds = 0.1; negative.push(["reject unordered TemporalSpec", badTemporal, {}]);
+  const badPromptRepair = await readJson("examples/prompt-repair.json"); badPromptRepair.changeOnly.push("also change composition"); negative.push(["reject multi-variable PromptRepair", badPromptRepair, {}]);
 
   if (mode === "all") for (const [label, payload, context] of negative) {
     const errors = validateByKind(payload, context);

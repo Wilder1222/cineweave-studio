@@ -11,11 +11,11 @@
   },
   "purpose": "用于暗黑幻想人物肖像的身份、饰品、发型和配色参考；不把画笔痕迹当作真实摄影镜头或皮肤材质证据。",
   "source": {
-    "sourceType": "bundled_atlas",
-    "sourceLabel": "用户提供的暗黑幻想人物肖像样例",
-    "sourceId": "portrait-character-design-dark-fantasy-001",
+    "sourceType": "user_upload",
+    "sourceLabel": "运行时用户提供的暗黑幻想人物肖像",
+    "sourceId": "OBS_RUNTIME_PORTRAIT_001",
     "rightsStatus": "unverified",
-    "usageNote": "仅用于本地参考分析；确认授权前不得重新分发或用于生产发布。"
+    "usageNote": "仅评审当前会话中的可见证据；确认授权前不得重新分发、打包或用于生产发布。"
   },
   "decision": "conditional",
   "primaryRole": "identity",

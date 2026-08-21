@@ -48,8 +48,8 @@
       "prompt": "把受威胁角色绑定和暴雨玉廊绑定编译为一张关键帧。",
       "loads": [
         "orchestration",
-        "text-to-image",
-        "cinematography"
+        "cineweave-director",
+        "cineweave-prompt"
       ],
       "expectedOutput": "image-prompt-output",
       "assertions": [
@@ -73,7 +73,8 @@
         "reference review separates identity, appearance and capture evidence",
         "Character owns identity and appearance state",
         "Production owns two deterministic sheet recipes",
-        "Director owns camera and final shot Prompt",
+        "Director owns camera and ShotSpec",
+        "Prompt owns final ImagePrompt compilation",
         "hero portrait is not silently used as sole identity proof",
         "exact bindings and human gates are present"
       ]
