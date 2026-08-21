@@ -47,8 +47,9 @@ async function checkNodeSyntax() {
 async function checkManifestContracts() {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   const plugin = JSON.parse(await readFile(join(repoRoot, ".codex-plugin", "plugin.json"), "utf8"));
-  if (manifest.version !== "2.0.0" || plugin.version !== "2.0.0" || plugin.name !== "cineweave-studio") fail("plugin and contract manifest must be CineWeave Studio v2.0.0");
-  else pass("plugin and contract manifest are CineWeave Studio v2.0.0");
+  const pluginVersionIsV2Patch = /^2\.0\.\d+$/.test(plugin.version);
+  if (manifest.version !== "2.0.0" || !pluginVersionIsV2Patch || plugin.name !== "cineweave-studio") fail("contract manifest must be 2.0.0 and plugin version must be a 2.0.x CineWeave Studio release");
+  else pass(`contract manifest is 2.0.0 and plugin is CineWeave Studio v${plugin.version}`);
 
   const kinds = new Set();
   for (const item of manifest.contracts || []) {

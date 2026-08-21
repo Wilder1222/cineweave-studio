@@ -1,6 +1,6 @@
 {
   "name": "cineweave-studio",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "CineWeave Studio is a composable creative Skill system for independent character, scene, style, direction and production workflows.",
   "homepage": "https://github.com/Wilder1222/cineweave-studio",
   "repository": "https://github.com/Wilder1222/cineweave-studio",
@@ -44,7 +44,9 @@
     "independent-skills"
   ],
   "author": {
-    "name": "CineWeave"
+    "name": "Wilder1222",
+    "email": "wangwilder1222@gmail.com",
+    "url": "https://github.com/Wilder1222"
   },
   "skills": "./skills/",
   "interface": {
@@ -54,6 +56,13 @@
     "developerName": "CineWeave",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "Use $cineweave to turn my creative request or zero-prompt character feeling into an editable brief and the smallest independent or composed CineWeave Studio workflow."
+    "defaultPrompt": [
+      "Turn my vague visual idea into an editable creative brief.",
+      "Explore an original character from a feeling, then let me choose.",
+      "Write a shot-led Chinese image prompt for a cinematic scene."
+    ],
+    "brandColor": "#1D6FFF",
+    "composerIcon": "./assets/cineweave-studio-plugin-icon.png",
+    "logo": "./assets/cineweave-studio-logo.png"
   }
 }

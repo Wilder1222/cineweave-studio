@@ -18,7 +18,7 @@ async function main() {
   const plugin = JSON.parse(await readFile(join(repoRoot, ".codex-plugin", "plugin.json"), "utf8"));
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   fail(errors, plugin.name === "cineweave-studio", "plugin package name must be cineweave-studio");
-  fail(errors, plugin.version === "2.0.0", "plugin version must be 2.0.0");
+  fail(errors, /^2\.0\.\d+$/.test(plugin.version), "plugin version must be a 2.0.x semantic version");
   fail(errors, manifest.suite === "cineweave-studio" && manifest.version === "2.0.0", "contract package must be CineWeave Studio v2");
   fail(errors, manifest.entrySkill === "cineweave", "manifest entrySkill must be cineweave");
   fail(errors, manifest.composition?.specialistsMayRunWithoutRouter === true, "manifest must declare router-independent specialists");
