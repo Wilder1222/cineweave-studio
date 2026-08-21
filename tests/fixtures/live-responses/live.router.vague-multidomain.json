@@ -1,0 +1,14 @@
+{
+  "caseId": "live.router.vague-multidomain",
+  "selectedSkill": "cineweave",
+  "route": "creative_intake",
+  "outcome": "clarify",
+  "contractKinds": ["cineweave_codex_creative_brief"],
+  "response": "我先把想法整理为可编辑的创作简报：南宋雨后庭院，女子因听见身后脚步而回头，核心情绪是克制的警觉。当前未确定且影响最大的内容是角色身份、这次要静态关键帧还是连续镜头，以及历史考据程度。",
+  "questions": [
+    "女子在故事中的身份是什么？",
+    "本次目标是静态关键帧还是视频镜头？",
+    "宋代元素偏考据复原还是诗意影视化？"
+  ],
+  "unsupportedClaims": []
+}

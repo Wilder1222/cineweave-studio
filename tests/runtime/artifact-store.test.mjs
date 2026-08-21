@@ -1,9 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { findArtifact, initProject, putArtifact, recordApproval, verifyProject } from "../../packages/cineweave-runtime/src/artifact-store.mjs";
+import { validateDocument } from "../../scripts/validate-output.mjs";
 
 test("artifact store is immutable, hash-verifiable and approval-bound", async () => {
   const root = await mkdtemp(join(tmpdir(), "cineweave-runtime-test-"));
@@ -76,5 +77,32 @@ test("concurrent project initialization returns one immutable manifest", async (
     ]);
     assert.deepEqual(results[0], results[1]);
     assert.match(results[0].name, /First|Second/);
+  } finally { await rm(root, { recursive: true, force: true }); }
+});
+
+test("V2.3 opens a V2.2 project non-destructively and preserves schema validity", async () => {
+  const root = await mkdtemp(join(tmpdir(), "cineweave-runtime-v22-"));
+  try {
+    const store = join(root, ".cineweave");
+    await mkdir(store, { recursive: true });
+    const projectPath = join(store, "project.json");
+    await writeFile(projectPath, JSON.stringify({
+      kind: "cineweave_project_manifest",
+      contractVersion: "2.2.0",
+      projectId: "project.v22-compatible",
+      name: "V2.2 compatible project",
+      createdAt: "2026-08-21T00:00:00.000Z",
+      runtimeVersion: "2.2.0",
+      storage: { mode: "local_immutable", artifactDirectory: "artifacts", approvalDirectory: "approvals" }
+    }, null, 2), "utf8");
+    const schemaPath = join(process.cwd(), "packages", "cineweave-contracts", "schemas", "project-manifest.schema.json");
+    assert.equal((await validateDocument(schemaPath, projectPath)).valid, true);
+
+    const opened = await initProject(root, { projectId: "project.must-not-replace" });
+    assert.equal(opened.contractVersion, "2.2.0");
+    assert.equal(opened.projectId, "project.v22-compatible");
+    const artifact = await putArtifact(root, { kind: "example_contract", value: "created-by-v23" }, { id: "artifact.v23-on-v22", version: 1 });
+    assert.equal(artifact.envelope.contractVersion, "2.3.0");
+    assert.equal((await verifyProject(root)).valid, true);
   } finally { await rm(root, { recursive: true, force: true }); }
 });

@@ -1,0 +1,10 @@
+{
+  "caseId": "live.director.motivated-shot",
+  "selectedSkill": "cineweave-director",
+  "route": "shot_direction",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_codex_shot_spec"],
+  "response": "表演顺序是眼神先向声源移动，半拍后头部转动，肩和胸腔最后只跟随一小段。摄影机移动的动机是陪观众确认她察觉了危险：从稳定中景极慢推近，不抢先揭示来人。焦点先停在她的近眼，转头峰值时短暂迁移到耳后空间，再回到眼睛。收势保持三分之四侧身，呼吸变浅，衣袖和耳坠晚于身体停止。",
+  "questions": [],
+  "unsupportedClaims": []
+}

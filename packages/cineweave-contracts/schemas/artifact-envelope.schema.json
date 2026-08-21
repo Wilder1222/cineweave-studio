@@ -7,7 +7,7 @@
   "required": ["kind", "contractVersion", "artifactRef", "status", "createdAt", "createdBy", "payload"],
   "properties": {
     "kind": { "const": "cineweave_artifact_envelope" },
-    "contractVersion": { "const": "2.2.0" },
+    "contractVersion": { "enum": ["2.2.0", "2.3.0"] },
     "artifactRef": { "$ref": "common.schema.json#/$defs/contractRef" },
     "status": { "enum": ["draft", "candidate", "approved", "rejected", "archived"] },
     "createdAt": { "type": "string", "format": "date-time" },

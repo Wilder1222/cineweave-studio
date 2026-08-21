@@ -7,7 +7,7 @@
   "required": ["kind", "contractVersion", "approvalId", "artifactRef", "decision", "actor", "decidedAt", "rationale", "approvalHash"],
   "properties": {
     "kind": { "const": "cineweave_approval_record" },
-    "contractVersion": { "const": "2.2.0" },
+    "contractVersion": { "enum": ["2.2.0", "2.3.0"] },
     "approvalId": { "$ref": "common.schema.json#/$defs/identifier" },
     "artifactRef": { "$ref": "common.schema.json#/$defs/contractRef" },
     "decision": { "enum": ["approved", "rejected"] },

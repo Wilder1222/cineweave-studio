@@ -1,5 +1,5 @@
 {
-  "contractPackage": "cineweave-contracts@2.2.0",
+  "contractPackage": "cineweave-contracts@2.3.0",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalReferenceAssets"],
     "produces": ["DirectorProposals", "ShotSpec", "ShotLightingPlan", "TemporalSpec", "Storyboard", "ReferenceReview", "ReferenceSet", "RenderPlan", "MediaImport"]

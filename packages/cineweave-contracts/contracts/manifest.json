@@ -1,6 +1,6 @@
 {
   "suite": "cineweave-studio",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "repository": "https://github.com/Wilder1222/cineweave-studio",
   "entrySkill": "cineweave",
   "skills": [
@@ -63,7 +63,7 @@
     {
       "name": "cineweave-production",
       "role": "production_validation",
-      "owns": ["asset_recipe", "control_plan", "evidence_bundle", "capability_profile", "license_profile", "control_benchmark"],
+      "owns": ["asset_recipe", "control_plan", "evidence_bundle", "capability_profile", "license_profile", "control_benchmark", "adapter_descriptor", "execution_request", "execution_receipt"],
       "consumes": ["CreativeBrief", "StoryContracts", "CharacterContracts", "SceneContracts", "StyleContracts", "DirectorContracts", "PromptContracts", "ObservationIds"],
       "standalone": true,
       "composable": true
@@ -126,12 +126,16 @@
     { "kind": "cineweave_codex_capability_profile", "schema": "schemas/capability-profile.schema.json", "example": "examples/capability-profile.json", "owner": "cineweave-production" },
     { "kind": "cineweave_codex_license_profile", "schema": "schemas/license-profile.schema.json", "example": "examples/license-profile.json", "owner": "cineweave-production" },
     { "kind": "cineweave_codex_control_benchmark", "schema": "schemas/control-benchmark.schema.json", "example": "examples/control-benchmark.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_adapter_descriptor", "schema": "schemas/adapter-descriptor.schema.json", "example": "examples/adapter-descriptor.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_execution_request", "schema": "schemas/execution-request.schema.json", "example": "examples/execution-request.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_execution_receipt", "schema": "schemas/execution-receipt.schema.json", "example": "examples/execution-receipt.json", "owner": "cineweave-production" },
 
     { "kind": "cineweave_project_manifest", "schema": "schemas/project-manifest.schema.json", "example": "examples/project-manifest.json", "owner": "suite" },
     { "kind": "cineweave_artifact_envelope", "schema": "schemas/artifact-envelope.schema.json", "example": "examples/artifact-envelope.json", "owner": "suite" },
     { "kind": "cineweave_approval_record", "schema": "schemas/approval-record.schema.json", "example": "examples/approval-record.json", "owner": "suite" },
     { "kind": "cineweave_board_provenance", "schema": "schemas/board-provenance.schema.json", "example": "examples/board-provenance.json", "owner": "suite" },
-    { "kind": "cineweave_contract_migration_report", "schema": "schemas/migration-report.schema.json", "example": "examples/migration-report.json", "owner": "suite" }
+    { "kind": "cineweave_contract_migration_report", "schema": "schemas/migration-report.schema.json", "example": "examples/migration-report.json", "owner": "suite" },
+    { "kind": "cineweave_skill_evaluation_run", "schema": "schemas/skill-evaluation-run.schema.json", "example": "examples/skill-evaluation-run.json", "owner": "suite" }
   ],
   "recipeCatalog": {
     "path": "recipes/catalog.json",
@@ -144,7 +148,10 @@
     "canonicalization": "RFC-8785-compatible",
     "immutableByHash": true,
     "approvalBindsExactArtifact": true,
-    "deterministicBoardAssembly": true
+    "deterministicBoardAssembly": true,
+    "adapterProtocol": "1.0.0",
+    "externalExecutionDefaultDenied": true,
+    "executionReceipts": true
   },
   "composition": {
     "workflowContract": "cineweave_codex_workflow_plan",

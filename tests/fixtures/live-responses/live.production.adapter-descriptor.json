@@ -1,0 +1,10 @@
+{
+  "caseId": "live.production.adapter-descriptor",
+  "selectedSkill": "cineweave-production",
+  "route": "adapter_descriptor",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_adapter_descriptor"],
+  "response": "定义 fixture 类离线适配器：只输出确定性 SVG，成本策略为零成本，executionModes 仅 dry_run 与 fixture。安全策略明确禁止联网，credentialEnvVars 为空且不读取凭证，entrypointId 只能映射受信任注册表，描述符不能提供任意命令、模块路径或端点。",
+  "questions": [],
+  "unsupportedClaims": []
+}

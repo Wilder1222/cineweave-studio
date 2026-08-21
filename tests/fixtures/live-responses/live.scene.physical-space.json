@@ -1,0 +1,10 @@
+{
+  "caseId": "live.scene.physical-space",
+  "selectedSkill": "cineweave-scene",
+  "route": "scene_design",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_codex_scene_spec"],
+  "response": "入口位于南侧月洞门，人物路径沿东侧回廊进入院心。前景是湿石栏与芭蕉，中景是人物和方形积水庭坪，后景是书斋窗与竹影。材质以吸水青砖、木柱和灰瓦为主；窗光从北侧书斋投出，先落在湿砖，再由积水形成低亮度反射，反射方向受水面和窗的位置约束。",
+  "questions": [],
+  "unsupportedClaims": []
+}

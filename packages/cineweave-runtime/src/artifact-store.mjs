@@ -1,10 +1,10 @@
 import { link, mkdir, readFile, readdir, stat, unlink, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { basename, dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve, sep } from "node:path";
 import { randomUUID } from "node:crypto";
-import { parseJsonStrict, sha256Canonical } from "./canonical-json.mjs";
+import { parseJsonStrict, sha256Bytes, sha256Canonical } from "./canonical-json.mjs";
 
-export const RUNTIME_VERSION = "2.2.0";
+export const RUNTIME_VERSION = "2.3.0";
 const identifierPattern = /^[a-z0-9][a-z0-9._-]{1,159}$/;
 const contentHashPattern = /^sha256:[0-9a-f]{64}$/;
 
@@ -57,6 +57,8 @@ export async function initProject(projectRoot, options = {}) {
   const projectPath = join(root, "project.json");
   await mkdir(join(root, "artifacts"), { recursive: true });
   await mkdir(join(root, "approvals"), { recursive: true });
+  await mkdir(join(root, "executions"), { recursive: true });
+  await mkdir(join(root, "idempotency"), { recursive: true });
   if (existsSync(projectPath)) return readStrictJson(projectPath);
   const project = {
     kind: "cineweave_project_manifest",
@@ -65,7 +67,13 @@ export async function initProject(projectRoot, options = {}) {
     name: options.name || "Untitled CineWeave Project",
     createdAt: options.createdAt || new Date().toISOString(),
     runtimeVersion: RUNTIME_VERSION,
-    storage: { mode: "local_immutable", artifactDirectory: "artifacts", approvalDirectory: "approvals" }
+    storage: {
+      mode: "local_immutable",
+      artifactDirectory: "artifacts",
+      approvalDirectory: "approvals",
+      executionDirectory: "executions",
+      idempotencyDirectory: "idempotency"
+    }
   };
   try { await writeImmutable(projectPath, project); }
   catch (error) { if (!existsSync(projectPath)) throw error; }
@@ -131,6 +139,13 @@ export async function findArtifact(projectRoot, artifactRef) {
   return { path, envelope };
 }
 
+export async function findArtifactByVersion(projectRoot, kind, id, version = 1) {
+  if (!Number.isSafeInteger(version) || version < 1) throw new TypeError("version must be a positive safe integer");
+  const pointerPath = join(artifactDirectory(projectRoot, kind, id), `v${version}.ref`);
+  if (!existsSync(pointerPath)) return null;
+  return findArtifact(projectRoot, await readStrictJson(pointerPath));
+}
+
 export async function recordApproval(projectRoot, artifactRef, options = {}) {
   const exactRef = assertArtifactRef(artifactRef);
   await findArtifact(projectRoot, exactRef);
@@ -157,6 +172,46 @@ export async function recordApproval(projectRoot, artifactRef, options = {}) {
   const { approvalHash: persistedApprovalHash, ...persistedBody } = persisted;
   if (persistedApprovalHash !== approvalHash || sha256Canonical(persistedBody) !== approvalHash) throw new Error(`Persisted approval hash mismatch: ${path}`);
   return { path, record: persisted };
+}
+
+export async function findApprovalDecision(projectRoot, artifactRef) {
+  const exactRef = assertArtifactRef(artifactRef);
+  const matches = [];
+  for (const path of await walkJson(join(storeRoot(projectRoot), "approvals"))) {
+    const record = await readStrictJson(path);
+    const { approvalHash, ...body } = record;
+    if (sha256Canonical(body) !== approvalHash) throw new Error(`Approval hash mismatch: ${path}`);
+    if (sameArtifactRef(assertArtifactRef(record.artifactRef), exactRef)) matches.push({ path, record });
+  }
+  matches.sort((left, right) => {
+    const time = Date.parse(left.record.decidedAt) - Date.parse(right.record.decidedAt);
+    return time || left.record.approvalHash.localeCompare(right.record.approvalHash);
+  });
+  return matches.at(-1) || null;
+}
+
+export async function claimIdempotency(projectRoot, idempotencyKey, requestArtifactRef, options = {}) {
+  if (typeof idempotencyKey !== "string" || idempotencyKey.length < 8 || idempotencyKey.length > 240) throw new TypeError("idempotencyKey must contain 8 to 240 characters");
+  const requestRef = assertArtifactRef(requestArtifactRef);
+  await findArtifact(projectRoot, requestRef);
+  const keyHash = sha256Bytes(Buffer.from(idempotencyKey, "utf8"));
+  const claim = {
+    kind: "cineweave_idempotency_claim",
+    contractVersion: RUNTIME_VERSION,
+    keyHash,
+    requestArtifactRef: requestRef,
+    claimedAt: options.claimedAt || new Date().toISOString()
+  };
+  const path = join(storeRoot(projectRoot), "idempotency", `${keyHash.slice(7)}.json`);
+  if (!existsSync(path)) {
+    try { await writeImmutable(path, claim); }
+    catch (error) { if (!existsSync(path)) throw error; }
+  }
+  const persisted = await readStrictJson(path);
+  if (persisted.keyHash !== keyHash || !sameArtifactRef(assertArtifactRef(persisted.requestArtifactRef), requestRef)) {
+    throw new Error("Idempotency key is already bound to a different exact ExecutionRequest");
+  }
+  return { path, claim: persisted };
 }
 
 async function walkJson(path) {
@@ -212,6 +267,22 @@ export async function verifyProject(projectRoot) {
       versions.set(versionKey, ref.contentHash);
       const shortHash = ref.contentHash.slice("sha256:".length, "sha256:".length + 16);
       if (basename(path) !== `v${ref.version}-${shortHash}.json`) errors.push(`Artifact path does not match its reference: ${path}`);
+      if (envelope.payload?.kind === "cineweave_execution_receipt") {
+        for (const output of envelope.payload.outputs || []) {
+          const outputPath = resolve(root, output.storageRef || "");
+          if (!outputPath.startsWith(`${resolve(root)}${sep}`)) {
+            errors.push(`Execution output escapes project store: ${path}`);
+            continue;
+          }
+          if (!existsSync(outputPath)) {
+            errors.push(`Execution output is missing: ${output.storageRef}`);
+            continue;
+          }
+          const bytes = await readFile(outputPath);
+          if (sha256Bytes(bytes) !== output.contentHash) errors.push(`Execution output hash mismatch: ${output.storageRef}`);
+          if (bytes.byteLength !== output.byteLength) errors.push(`Execution output byte length mismatch: ${output.storageRef}`);
+        }
+      }
     } catch (error) { errors.push(`Invalid artifact ${path}: ${error.message}`); }
   }
   const pointerPaths = await walkRefs(join(root, "artifacts"));
@@ -245,6 +316,17 @@ export async function verifyProject(projectRoot) {
       const key = `${ref.kind}/${ref.id}@${ref.version}:${ref.contentHash}`;
       if (!known.has(key)) errors.push(`Approval references a missing exact artifact: ${path}`);
     } catch (error) { errors.push(`Invalid approval ${path}: ${error.message}`); }
+  }
+  const idempotencyPaths = await walkJson(join(root, "idempotency"));
+  for (const path of idempotencyPaths) {
+    try {
+      const claim = await readStrictJson(path);
+      if (claim.kind !== "cineweave_idempotency_claim") errors.push(`Invalid idempotency claim kind: ${path}`);
+      if (basename(path) !== `${String(claim.keyHash || "").replace(/^sha256:/, "")}.json`) errors.push(`Idempotency path does not match its key hash: ${path}`);
+      const ref = assertArtifactRef(claim.requestArtifactRef);
+      const key = `${ref.kind}/${ref.id}@${ref.version}:${ref.contentHash}`;
+      if (!known.has(key)) errors.push(`Idempotency claim references a missing exact request: ${path}`);
+    } catch (error) { errors.push(`Invalid idempotency claim ${path}: ${error.message}`); }
   }
   return { valid: errors.length === 0, artifacts: artifactPaths.length, approvals: approvalPaths.length, errors };
 }

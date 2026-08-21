@@ -1,6 +1,6 @@
 {
   "name": "cineweave-studio",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "CineWeave Studio is a composable creative Skill system for independent story, character, scene, style, direction, prompt and production workflows.",
   "homepage": "https://github.com/Wilder1222/cineweave-studio",
   "repository": "https://github.com/Wilder1222/cineweave-studio",
@@ -39,6 +39,10 @@
     "capability-profile",
     "license-profile",
     "control-benchmark",
+    "adapter-protocol",
+    "execution-request",
+    "execution-receipt",
+    "live-evaluation",
     "interaction-constraints",
     "style-system",
     "style-package",
@@ -57,7 +61,7 @@
   "interface": {
     "displayName": "CineWeave Studio",
     "shortDescription": "Composable creative workflows for images, video and production design.",
-    "longDescription": "CineWeave Studio v2.2 provides an optional $cineweave entry point plus seven independently usable specialist Skills. Story owns causality, script scenes and continuity; Character owns identity and performance; Scene owns geography, physical interaction and physical light state; Style owns visual and temporal representation; Director owns blocking, camera, shot lighting and time; Prompt owns reusable text-to-image assets across cinematic and non-cinematic domains; Production owns recipes, controls, evidence, capability, rights and evaluation. Exact versioned contracts support direct specialist use and acyclic composition without hidden state. A deterministic local runtime stores immutable artifacts, binds approvals to hashes and assembles multi-panel boards outside image models.",
+    "longDescription": "CineWeave Studio v2.3 provides an optional $cineweave entry point plus seven independently usable specialist Skills. Story owns causality and continuity; Character owns identity and performance; Scene owns geography and physical light; Style owns representation; Director owns shots and time; Prompt owns reusable image prompts; Production owns recipes, controls, rights, adapter descriptors, exact execution requests and auditable receipts. Exact versioned contracts support standalone use and acyclic composition. The local runtime stores immutable artifacts, binds approvals to hashes, runs only trusted registered adapters, defaults external effects to denied and verifies output bytes.",
     "developerName": "CineWeave",
     "category": "Productivity",
     "capabilities": [],

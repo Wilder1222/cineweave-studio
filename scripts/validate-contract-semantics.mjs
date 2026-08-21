@@ -291,6 +291,164 @@ function validateBenchmark(payload, errors) {
   push(errors, payload?.acceptance?.blockingDimensionPassRate === 1, "Blocking dimensions require perfect pass rate");
 }
 
+function validateAdapterDescriptor(payload, errors, capabilityProfile) {
+  const operations = payload?.operations || [];
+  push(errors, unique(operations.map((item) => item?.operationId)), "Adapter operation IDs must be unique");
+  push(errors, payload?.security?.contractsMayContainSecrets === false, "Adapter contracts must forbid secrets");
+  push(errors, payload?.security?.externalEffectsDefaultDenied === true, "Adapter external effects must default to denied");
+  push(errors, payload?.security?.arbitraryCommandExecution === false, "Adapter descriptors must not authorize arbitrary commands");
+  push(errors, payload?.security?.outputRootConstrained === true, "Adapter outputs must stay under the execution root");
+  if ((payload?.executionModes || []).includes("external")) {
+    push(errors, payload?.security?.networkAccess === "external_mode_only", "External adapters may use network only in external mode");
+    push(errors, nonEmpty(payload?.security?.networkPolicyId), "External adapters require a network policy ID");
+  } else {
+    push(errors, payload?.security?.networkAccess === "forbidden", "Non-external adapters must forbid network access");
+  }
+  if (payload?.adapterClass === "fixture") {
+    push(errors, !(payload?.executionModes || []).includes("external"), "Fixture adapters must not expose external mode");
+    push(errors, (payload?.security?.credentialEnvVars || []).length === 0, "Fixture adapters must not request credentials");
+  }
+  if (capabilityProfile) {
+    push(errors, payload?.adapterId === capabilityProfile?.adapterId, "AdapterDescriptor adapterId must match CapabilityProfile adapterId");
+    push(errors, payload?.capabilityProfileRef?.kind === capabilityProfile?.kind, "AdapterDescriptor must bind the CapabilityProfile kind");
+  }
+}
+
+function validateExecutionRequest(payload, errors) {
+  const parameters = payload?.parameters || [];
+  push(errors, unique(parameters.map((item) => item?.name)), "ExecutionRequest parameter names must be unique");
+  const sensitiveName = /(?:api.?key|token|secret|password|credential|endpoint|signed.?url|url)/i;
+  for (const parameter of parameters) {
+    push(errors, !sensitiveName.test(parameter?.name || ""), `${parameter?.name}: sensitive or endpoint-like parameter names are forbidden`);
+    push(errors, parameter?.sensitive === false, `${parameter?.name}: sensitive values must not enter an ExecutionRequest`);
+  }
+  push(errors, payload?.adapterDescriptorRef?.kind === "cineweave_adapter_descriptor", "ExecutionRequest must bind an AdapterDescriptor");
+  push(errors, payload?.capabilityProfileRef?.kind === "cineweave_codex_capability_profile", "ExecutionRequest must bind a CapabilityProfile");
+  push(errors, payload?.renderPlanRef?.kind === "cineweave_codex_render_plan", "ExecutionRequest must bind a RenderPlan");
+  push(errors, ["cineweave_codex_prompt_record", "cineweave_codex_image_prompt"].includes(payload?.promptRef?.kind), "ExecutionRequest must bind a PromptRecord or ImagePrompt");
+  const checks = ["exactRefsResolved", "operationSupported", "hardCapabilitiesSatisfied", "rightsResolved", "budgetResolved", "secretsAbsent"];
+  const ready = checks.every((key) => payload?.preflight?.[key] === true);
+  if (payload?.status === "ready" || payload?.preflight?.status === "ready") push(errors, ready, "Ready ExecutionRequest requires every preflight check to pass");
+  if (payload?.executionMode === "external") {
+    push(errors, payload?.authorization?.externalEffects === "exact_request_approval_required", "External execution requires exact-request approval");
+    push(errors, payload?.authorization?.approvalScope === "exact_execution_request", "External approval scope must be the exact ExecutionRequest");
+  } else {
+    push(errors, payload?.authorization?.externalEffects === "denied", "Dry-run and fixture requests must deny external effects");
+    push(errors, payload?.authorization?.approvalScope === "none", "Local-only requests must not claim an external approval scope");
+  }
+}
+
+function validateExecutionReceipt(payload, errors, request) {
+  const attempts = payload?.attempts || [];
+  const outputs = payload?.outputs || [];
+  push(errors, unique(outputs.map((item) => item?.outputId)), "ExecutionReceipt output IDs must be unique");
+  push(errors, unique(outputs.map((item) => item?.storageRef)), "ExecutionReceipt storage refs must be unique");
+  for (let index = 0; index < attempts.length; index += 1) push(errors, attempts[index]?.attempt === index + 1, "ExecutionReceipt attempts must be sequential from one");
+  const totalCost = attempts.reduce((sum, item) => sum + Number(item?.costAmount || 0), 0);
+  push(errors, Math.abs(totalCost - Number(payload?.costSummary?.actualAmount || 0)) < 1e-9, "ExecutionReceipt actual cost must include all attempts");
+  if (payload?.status === "succeeded") {
+    push(errors, outputs.length > 0, "Successful execution requires verified outputs");
+    push(errors, payload?.failure === null, "Successful execution must not carry a failure");
+    push(errors, attempts.length > 0 && attempts.at(-1)?.status === "succeeded", "Successful execution requires a successful final attempt");
+    for (const key of ["adapterMatched", "requestHashMatched", "inputsMatched", "outputHashesVerified", "secretsAbsent", "externalSideEffectAuthorized"]) {
+      push(errors, payload?.validation?.[key] === true, `Successful execution requires validation.${key}`);
+    }
+  }
+  if (payload?.status === "dry_run") {
+    push(errors, payload?.executionMode === "dry_run", "Dry-run status requires dry_run execution mode");
+    push(errors, outputs.length === 0, "Dry-run receipt must not claim media outputs");
+    push(errors, attempts.length === 0, "Dry-run receipt must not claim adapter attempts");
+    push(errors, payload?.failure === null, "Successful dry-run must not carry a failure");
+  }
+  if (payload?.status === "failed") {
+    push(errors, isObject(payload?.failure), "Failed execution requires a normalized failure");
+    push(errors, attempts.length > 0 && attempts.at(-1)?.status === "failed", "Failed execution requires a failed final attempt");
+    push(errors, outputs.length === 0, "Failed execution must not claim completed outputs");
+  }
+  if (payload?.status === "blocked") {
+    push(errors, isObject(payload?.failure), "Blocked execution requires a normalized failure");
+    push(errors, attempts.length === 0, "Blocked execution must occur before adapter attempts");
+    push(errors, outputs.length === 0, "Blocked execution must not claim outputs");
+  }
+  if (payload?.executionMode === "external") {
+    push(errors, payload?.authorizationEvidence?.required === true, "External receipt requires authorization evidence");
+    if (payload?.status === "blocked") {
+      const decision = payload?.authorizationEvidence?.decision;
+      push(errors, ["approved", "missing", "rejected"].includes(decision), "Blocked external receipt has an invalid authorization decision");
+      if (decision === "missing") {
+        push(errors, payload?.authorizationEvidence?.approvalRecordHash === null, "Missing external approval must not claim an approval hash");
+        push(errors, payload?.authorizationEvidence?.exactRequestHashMatched === false, "Missing external approval cannot claim an exact hash match");
+      } else {
+        push(errors, payload?.authorizationEvidence?.exactRequestHashMatched === true, "External decision must match the exact request hash");
+        push(errors, nonEmpty(payload?.authorizationEvidence?.approvalRecordHash), "External decision requires an approval record hash");
+      }
+      push(errors, payload?.validation?.externalSideEffectAuthorized === false, "Blocked external execution must not claim authorized side effects");
+    } else {
+      push(errors, payload?.authorizationEvidence?.decision === "approved", "Attempted external execution must record an approved decision");
+      push(errors, payload?.authorizationEvidence?.exactRequestHashMatched === true, "External approval must match the exact request hash");
+      push(errors, nonEmpty(payload?.authorizationEvidence?.approvalRecordHash), "External receipt requires an approval record hash");
+      push(errors, payload?.validation?.externalSideEffectAuthorized === true, "Attempted external execution requires authorized side effects");
+    }
+  } else {
+    push(errors, payload?.authorizationEvidence?.required === false, "Local-only receipt must not claim external authorization was required");
+    push(errors, payload?.authorizationEvidence?.decision === "not_required", "Local-only receipt authorization decision must be not_required");
+  }
+  if (request) {
+    push(errors, payload?.idempotencyKey === request?.idempotencyKey, "ExecutionReceipt idempotency key must match its request");
+    push(errors, payload?.executionMode === request?.executionMode, "ExecutionReceipt mode must match its request");
+    push(errors, payload?.costSummary?.currency === request?.budget?.currency, "ExecutionReceipt currency must match its request budget");
+    push(errors, payload?.costSummary?.actualAmount <= request?.budget?.maxAmount, "ExecutionReceipt cost exceeds request budget");
+    push(errors, attempts.length <= request?.budget?.maxAttempts, "ExecutionReceipt attempts exceed request budget");
+  }
+}
+
+function validateSkillEvaluationRun(payload, errors) {
+  const results = payload?.results || [];
+  const datasetCaseIds = payload?.dataset?.caseIds || [];
+  const resultCaseIds = results.map((item) => item?.caseId);
+  push(errors, unique(resultCaseIds), "SkillEvaluationRun case result IDs must be unique");
+  push(errors, datasetCaseIds.length === resultCaseIds.length && datasetCaseIds.every((id, index) => id === resultCaseIds[index]), "SkillEvaluationRun results must preserve the declared dataset case order");
+  push(errors, Date.parse(payload?.startedAt) <= Date.parse(payload?.finishedAt), "SkillEvaluationRun finish time must not precede start time");
+
+  for (const result of results) {
+    const checks = result?.checks || [];
+    const errorsForCase = result?.errors || [];
+    push(errors, unique(checks.map((item) => item?.checkId)), `${result?.caseId}: check IDs must be unique`);
+    const hasFailedCheck = checks.some((item) => item?.status === "fail");
+    if (result?.status === "pass") {
+      push(errors, checks.length > 0 && !hasFailedCheck && errorsForCase.length === 0, `${result?.caseId}: pass requires passing checks and no errors`);
+      push(errors, nonEmpty(result?.responseHash), `${result?.caseId}: pass requires a response hash`);
+    } else if (result?.status === "fail") {
+      push(errors, hasFailedCheck && errorsForCase.length === 0, `${result?.caseId}: fail requires a failed check and no runner error`);
+      push(errors, nonEmpty(result?.responseHash), `${result?.caseId}: graded failure requires a response hash`);
+    } else if (result?.status === "error") {
+      push(errors, errorsForCase.length > 0, `${result?.caseId}: error requires runner error evidence`);
+    }
+  }
+
+  const passed = results.filter((item) => item?.status === "pass").length;
+  const failed = results.filter((item) => item?.status === "fail").length;
+  const runnerErrors = results.filter((item) => item?.status === "error").length;
+  const activationChecks = results.flatMap((item) => item?.checks || []).filter((item) => item?.scope === "activation");
+  const outputChecks = results.flatMap((item) => item?.checks || []).filter((item) => ["output", "safety"].includes(item?.scope));
+  const passRate = (checks) => checks.length ? checks.filter((item) => item?.status === "pass").length / checks.length : 1;
+  const close = (left, right) => Math.abs(Number(left) - Number(right)) < 1e-12;
+  push(errors, payload?.summary?.total === results.length, "SkillEvaluationRun summary total must equal result count");
+  push(errors, payload?.summary?.passed === passed && payload?.summary?.failed === failed && payload?.summary?.errors === runnerErrors, "SkillEvaluationRun summary status counts are inconsistent");
+  push(errors, close(payload?.summary?.activationPassRate, passRate(activationChecks)), "SkillEvaluationRun activation pass rate is inconsistent");
+  push(errors, close(payload?.summary?.outputPassRate, passRate(outputChecks)), "SkillEvaluationRun output pass rate is inconsistent");
+  push(errors, payload?.summary?.releaseGatePassed === results.every((item) => item?.status === "pass"), "SkillEvaluationRun release gate is inconsistent");
+  if (payload?.mode === "fixture_replay") {
+    push(errors, payload?.environment?.sandbox === "fixture-replay", "Fixture replay must declare the fixture-replay sandbox");
+    push(errors, payload?.environment?.pluginSourceRef === null, "Fixture replay must not claim an installed plugin source ref");
+    push(errors, payload?.privacy?.rawResponsePolicy === "discarded", "Fixture replay must discard raw responses");
+  } else if (payload?.mode === "live_codex") {
+    push(errors, payload?.environment?.sandbox === "read-only", "Live Codex evaluation must use a read-only sandbox");
+    push(errors, payload?.environment?.pluginSourceRef === `v${payload?.environment?.pluginVersion}`, "Live Codex evaluation must bind the immutable installed plugin tag");
+    push(errors, payload?.privacy?.rawResponsePolicy === "local_uncommitted", "Live Codex responses must remain local and uncommitted");
+  }
+}
+
 function validateIntegratedImage(payload, errors) {
   const sceneBlocks = ["sceneGeography", "sceneArchitecture", "sceneMaterials", "sceneLighting", "sceneAtmosphere", "spatialContinuity"];
   const hasSceneBlocks = sceneBlocks.some((name) => Array.isArray(payload?.promptBlocks?.[name]) && payload.promptBlocks[name].length > 0);
@@ -548,6 +706,10 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_capability_profile": validateCapabilityProfile(payload, errors); break;
     case "cineweave_codex_license_profile": validateLicenseProfile(payload, errors); break;
     case "cineweave_codex_control_benchmark": validateBenchmark(payload, errors); break;
+    case "cineweave_adapter_descriptor": validateAdapterDescriptor(payload, errors, context.capabilityProfile); break;
+    case "cineweave_execution_request": validateExecutionRequest(payload, errors); break;
+    case "cineweave_execution_receipt": validateExecutionReceipt(payload, errors, context.executionRequest); break;
+    case "cineweave_skill_evaluation_run": validateSkillEvaluationRun(payload, errors); break;
     case "cineweave_codex_image_prompt": validateIntegratedImage(payload, errors); break;
     case "cineweave_codex_prompt_record": validatePromptRecord(payload, errors); break;
     case "cineweave_codex_storyboard_sequence": validateIntegratedStoryboard(payload, errors); break;
@@ -584,6 +746,7 @@ async function runSelfTest(mode = "all") {
     ["examples/scene-spec.json", {}], ["examples/scene-state.json", { sceneSpec }], ["examples/scene-binding.json", { sceneSpec }], ["examples/scene-reference-plan.json", { sceneSpec }], ["examples/interaction-constraint-set.json", {}], ["examples/scene-review.json", { sceneSpec }], ["examples/scene-repair.json", { sceneSpec }],
     ["examples/scene-light-state.json", {}],
     ["examples/asset-recipe.json", { controlSet }], ["examples/control-channel-set.json", {}], ["examples/evidence-bundle.json", {}], ["examples/capability-profile.json", {}], ["examples/license-profile.json", {}], ["examples/control-benchmark.json", {}],
+    ["examples/adapter-descriptor.json", {}], ["examples/execution-request.json", {}], ["examples/execution-receipt.json", {}], ["examples/execution-receipt-blocked.json", {}], ["examples/skill-evaluation-run.json", {}],
     ["examples/integrated-image-prompt.json", { sceneSpec }], ["examples/integrated-storyboard.json", { sceneSpec }], ["examples/prompt-record.json", {}],
     ["examples/style-package.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
     ["examples/shot-spec.json", {}], ["examples/shot-lighting-plan.json", { sceneLightState }], ["examples/temporal-spec.json", {}], ["examples/prompt-repair.json", {}],
@@ -626,6 +789,10 @@ async function runSelfTest(mode = "all") {
   const badShotLight = await readJson("examples/shot-lighting-plan.json"); badShotLight.key.sourceId = "light.unknown"; negative.push(["reject ShotLightingPlan unknown source", badShotLight, { sceneLightState }]);
   const badTemporal = await readJson("examples/temporal-spec.json"); badTemporal.actionTimeline[1].timeSeconds = 0.1; negative.push(["reject unordered TemporalSpec", badTemporal, {}]);
   const badPromptRepair = await readJson("examples/prompt-repair.json"); badPromptRepair.changeOnly.push("also change composition"); negative.push(["reject multi-variable PromptRepair", badPromptRepair, {}]);
+  const badAdapter = await readJson("examples/adapter-descriptor.json"); badAdapter.executionModes.push("external"); negative.push(["reject network-free adapter exposing external mode", badAdapter, {}]);
+  const badExecutionRequest = await readJson("examples/execution-request.json"); badExecutionRequest.parameters.push({ name: "api_key", value: "not-a-real-value", sensitive: false }); negative.push(["reject sensitive execution parameter", badExecutionRequest, {}]);
+  const badExecutionReceipt = await readJson("examples/execution-receipt.json"); badExecutionReceipt.costSummary.actualAmount = 1; negative.push(["reject receipt cost that omits attempt accounting", badExecutionReceipt, {}]);
+  const badEvaluationRun = await readJson("examples/skill-evaluation-run.json"); badEvaluationRun.summary.passed = 1; negative.push(["reject inconsistent SkillEvaluationRun summary", badEvaluationRun, {}]);
 
   if (mode === "all") for (const [label, payload, context] of negative) {
     const errors = validateByKind(payload, context);

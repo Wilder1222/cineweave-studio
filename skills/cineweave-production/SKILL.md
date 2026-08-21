@@ -1,6 +1,6 @@
 ---
 name: cineweave-production
-description: Compile CineWeave creative facts and resolved StylePackages into deterministic production recipes, explicit hard/soft/advisory control channels, scoped evidence bundles, provider-neutral capability profiles, license and identity-rights gates, and ControlBench evaluation suites. Own AssetRecipe, ControlChannelSet, EvidenceBundle, CapabilityProfile, LicenseProfile and ControlBenchmark contracts.
+description: Compile CineWeave creative facts into deterministic production recipes, controls, evidence, capability and rights gates, provider-neutral adapter descriptors, exact execution requests and auditable execution receipts. Use for production planning, adapter matching, execution authorization, receipt review and ControlBench evaluation.
 ---
 
 # CineWeave Production
@@ -17,8 +17,11 @@ This Skill owns:
 - `CapabilityProfile`: provider-neutral adapter capabilities and known limits, never endpoint or credential data;
 - `LicenseProfile`: code, weight, dependency, asset and identity-rights status;
 - `ControlBenchmark`: repeatable Character, Appearance, Scene, Interaction, Storyboard and Rights evaluation cases.
+- `AdapterDescriptor`: an exact, versioned runtime adapter identity and operation surface without endpoint or secret values;
+- `ExecutionRequest`: a budgeted, idempotent request bound to exact approved production artifacts;
+- `ExecutionReceipt`: immutable evidence of authorization, attempts, costs, verified output hashes and failure state.
 
-It does not redefine a CharacterSpec, SceneSpec, CharacterBinding, SceneBinding, StylePackage or director shot. It never calls a Provider or claims that a recipe generated media.
+It does not redefine a CharacterSpec, SceneSpec, CharacterBinding, SceneBinding, StylePackage or director shot. A Skill never calls a provider itself. The local runtime may invoke a separately registered adapter only through an ExecutionRequest; external mode remains denied until an approval binds that exact request hash.
 
 ## Independent and composed use
 
@@ -39,6 +42,9 @@ Choose the smallest route that satisfies the request.
 - `capability_profile`: describe an adapter class without endpoint, credential or hidden vendor parameters, then match required controls and evidence. Use `references/capability-matching.md`. Return `../../packages/cineweave-contracts/schemas/capability-profile.schema.json`.
 - `license_profile`: record code, weights, dependencies, assets, identity consent, publication and data-handling status. Use `references/evidence-and-rights.md`. Return `../../packages/cineweave-contracts/schemas/license-profile.schema.json`.
 - `control_benchmark`: design or update a repeatable ControlBench suite. Use `references/control-bench.md`. Return `../../packages/cineweave-contracts/schemas/control-benchmark.schema.json`.
+- `adapter_descriptor`: register or review a provider-neutral adapter protocol surface. Use `references/execution-protocol.md`. Return `../../packages/cineweave-contracts/schemas/adapter-descriptor.schema.json`.
+- `execution_request`: prepare an idempotent, budgeted request from exact artifact refs. Use `references/execution-protocol.md`. Return `../../packages/cineweave-contracts/schemas/execution-request.schema.json`.
+- `execution_receipt`: record or audit authorization, attempts, cost and output hashes after runtime execution. Use `references/execution-protocol.md`. Return `../../packages/cineweave-contracts/schemas/execution-receipt.schema.json`.
 
 ## Operating sequence
 
@@ -50,8 +56,10 @@ Choose the smallest route that satisfies the request.
 6. Resolve every evidence item and adapter dependency to a LicenseProfile.
 7. Match hard adapter requirements against a CapabilityProfile.
 8. Block when a hard capability, required evidence role or rights profile is unresolved.
-9. Produce a provider-neutral RenderPlan reference package for Director; keep execution human-gated.
-10. Evaluate results with ControlBench and repair only failed tasks or one smallest variable.
+9. Produce a provider-neutral RenderPlan reference package for Director.
+10. Resolve an exact AdapterDescriptor and prepare an ExecutionRequest. Dry-run and fixture modes must deny network access; external mode requires approval of the stored request artifact itself.
+11. Let the deterministic runtime execute the registered adapter and persist an ExecutionReceipt. Do not infer success from a provider message or an output filename.
+12. Evaluate verified outputs with ControlBench and repair only failed tasks or one smallest variable.
 
 ## Required behavior
 
@@ -66,7 +74,12 @@ Choose the smallest route that satisfies the request.
 - Capability `partial` or `experimental` support requires explicit review; it is not equivalent to strong support.
 - Unknown commercial or identity rights never become allowed by assumption.
 - CapabilityProfile may name an adapter identifier but must not include endpoints, secrets or account-specific parameters.
+- AdapterDescriptor may declare credential environment-variable names and a network-policy ID, but never credential values, signed URLs, private absolute paths or an arbitrary shell command.
+- ExecutionRequest parameters are non-sensitive primitives. A parameter whose name resembles a token, key, password, secret, URL or endpoint must be rejected before execution.
+- `external` execution is blocked unless the exact immutable ExecutionRequest artifact has an approved ApprovalRecord and the caller explicitly enables external effects.
+- Retries count against both attempt and cost budgets. Every attempt, including a failed billable attempt, remains in the ExecutionReceipt.
+- Receipt outputs use project-relative storage refs and lowercase SHA-256 hashes. A path or provider response alone is not evidence that an output is valid.
 
 ## Output contracts
 
-Return only the matching schema object. A combined production request may return named `assetRecipe`, `controlChannelSet`, `evidenceBundle`, `capabilityProfile`, `licenseProfiles` and `controlBenchmark` payloads. Keep receipts on every top-level contract.
+Return only the matching schema object. A combined production request may return named `assetRecipe`, `controlChannelSet`, `evidenceBundle`, `capabilityProfile`, `licenseProfiles`, `controlBenchmark`, `adapterDescriptor`, `executionRequest` and `executionReceipt` payloads. Keep Skill receipts on authored contracts; execution receipts are produced by the runtime, not invented by the Skill.

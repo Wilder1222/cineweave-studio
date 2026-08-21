@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/Wilder1222/cineweave-studio/actions/workflows/validate.yml"><img alt="Validation" src="https://img.shields.io/github/actions/workflow/status/Wilder1222/cineweave-studio/validate.yml?branch=main&style=flat-square&label=validation"></a>
   <img alt="Codex plugin" src="https://img.shields.io/badge/Codex-Plugin-1D6FFF?style=flat-square">
-  <img alt="Version 2.2.0" src="https://img.shields.io/badge/version-2.2.0-14B8A6?style=flat-square">
+  <img alt="Version 2.3.0" src="https://img.shields.io/badge/version-2.3.0-14B8A6?style=flat-square">
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-111827?style=flat-square">
 </p>
 
@@ -56,7 +56,7 @@ the director system no longer owns general prompt management.
 Install the immutable release tag:
 
 ```bash
-codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.2.0
+codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.3.0
 codex plugin add cineweave-studio@cineweave-studio
 ```
 
@@ -77,7 +77,7 @@ upstream contract refs. The `$cineweave` router is optional.
 | `$cineweave-style` | medium and representational visual/temporal grammar | `StylePackage`, `StyleCompile`, `StyleLightGrammar` |
 | `$cineweave-director` | shot purpose, blocking, camera, shot light use and time | `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, storyboard |
 | `$cineweave-prompt` | general text-to-image prompt assets | `PromptRecord`, `ImagePrompt`, hypotheses and one-variable repairs |
-| `$cineweave-production` | recipes, controls, evidence, capabilities, rights and QA | `AssetRecipe`, control/evidence/license profiles and benchmarks |
+| `$cineweave-production` | recipes, controls, evidence, capabilities, rights, execution intent and QA | `AssetRecipe`, capability/license profiles, `AdapterDescriptor`, `ExecutionRequest`, `ExecutionReceipt` |
 
 ### Start without prompt terminology
 
@@ -139,7 +139,12 @@ natural language + declared reference roles
                      ▼
           immutable local artifact store
                      ▼
-               human approval
+        exact-request human approval
+          (external execution only)
+                     ▼
+        trusted registered adapter runtime
+                     ▼
+       verified output + execution receipt
 ```
 
 This is a default dependency direction, not a requirement to invoke every
@@ -160,19 +165,28 @@ resolves “latest” or relies on hidden conversation state.
 
 ## Deterministic local runtime
 
-V2.2 includes a dependency-free Node.js runtime for immutable local artifacts,
-hash-bound approvals and externally assembled image boards.
+V2.3 includes a dependency-free Node.js runtime for immutable local artifacts,
+hash-bound approvals, deterministic board assembly and trusted adapter
+execution with byte-verifiable receipts.
 
 ```bash
 npm test
 node packages/cineweave-runtime/bin/cineweave.mjs init ./demo --id project.demo --name "Demo"
 node packages/cineweave-runtime/bin/cineweave.mjs put ./demo ./story-brief.json --id story.demo --version 1
 node packages/cineweave-runtime/bin/cineweave.mjs verify ./demo
+node packages/cineweave-runtime/bin/cineweave.mjs adapters
 ```
 
 Artifacts are canonicalized with RFC-8785-compatible JSON rules and stored
 under `.cineweave/`. One kind/ID/version can bind to only one content hash.
 Approvals reference that exact hash.
+
+The core ships one zero-cost, network-free SVG fixture adapter for deterministic
+tests. Contracts cannot provide commands, module paths, endpoints or credential
+values. External adapters must be registered as trusted code, match their
+declared implementation hash, receive approval for the exact stored request and
+be explicitly enabled by the caller. Every attempt and its cost is retained in
+an immutable `ExecutionReceipt`.
 
 Multi-panel outputs are assembled after independent tile generation:
 
@@ -185,19 +199,21 @@ image model to invent the grid, labels and all panels in a single pass.
 
 ## Verification
 
-The V2.2 gate validates 54 owned contracts, all schema/example pairs, semantic
-positive and negative cases, 24 activation/behavior cases, deterministic runtime
+The V2.3 gate validates 58 contracts and 57 uniquely owned routes, all
+schema/example pairs, semantic positive and negative cases, 24 static behavior
+cases, a 10-case live-evaluation replay set, deterministic runtime and adapter
 tests, standalone bundles, reference links, rights boundaries and distributable
 assets.
 
 ```bash
 npm test
 npm run validate
+npm run evals:live -- --plan --model <model>
 ```
 
 CI runs on Windows and Linux. See [release policy](docs/release.md),
 [architecture](docs/architecture.md), [language policy](docs/language-policy.md)
-and [V2.0 → V2.2 migration](docs/migration/v2.0-to-v2.2.md).
+and [V2.2 → V2.3 migration](docs/migration/v2.2-to-v2.3.md).
 
 ## Repository map
 

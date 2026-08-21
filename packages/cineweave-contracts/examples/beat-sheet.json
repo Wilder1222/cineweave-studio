@@ -12,7 +12,7 @@
   "structure": "short_form",
   "skillReceipt": {
     "repository": "https://github.com/Wilder1222/cineweave-studio",
-    "ref": "v2.2.0",
+    "ref": "v2.3.0",
     "commit": "0123456789abcdef0123456789abcdef01234567",
     "installedBy": "codex-environment",
     "usedAt": "2026-08-21T01:05:00.000Z"

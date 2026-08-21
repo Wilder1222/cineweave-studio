@@ -1,6 +1,6 @@
 {
   "kind": "cineweave_approval_record",
-  "contractVersion": "2.2.0",
+  "contractVersion": "2.3.0",
   "approvalId": "approval.song-courtyard-brief",
   "artifactRef": {
     "kind": "cineweave_codex_creative_brief",

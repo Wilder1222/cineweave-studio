@@ -4,7 +4,9 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { initProject, listArtifacts, putArtifact, readStrictJson, recordApproval, verifyProject } from "../src/artifact-store.mjs";
+import { createAdapterRegistry, executeRequest } from "../src/adapter-runtime.mjs";
 import { sha256Canonical } from "../src/canonical-json.mjs";
+import { fixtureSvgAdapter } from "../src/fixture-svg-adapter.mjs";
 
 function parseArgs(values) {
   const positional = [];
@@ -28,6 +30,8 @@ function usage() {
     "cineweave-studio hash <json-file>",
     "cineweave-studio put <project> <json-file> --id <id> [--kind <kind>] [--version <n>]",
     "cineweave-studio approve <project> <artifact-envelope> --decision approved|rejected --actor <name> [--rationale <text>]",
+    "cineweave-studio adapters",
+    "cineweave-studio execute <project> <execution-request-envelope>",
     "cineweave-studio list <project>",
     "cineweave-studio verify <project>"
   ].join("\n");
@@ -68,6 +72,21 @@ async function main() {
       rationale: flags.rationale
     });
     console.log(JSON.stringify(result.record, null, 2));
+    return;
+  }
+  if (command === "adapters") {
+    const registry = createAdapterRegistry([fixtureSvgAdapter]);
+    console.log(JSON.stringify(registry.list(), null, 2));
+    return;
+  }
+  if (command === "execute") {
+    if (!positional[0] || !positional[1]) throw new Error(usage());
+    const envelope = await readStrictJson(resolve(positional[1]));
+    if (envelope.kind !== "cineweave_artifact_envelope" || !envelope.artifactRef) throw new Error("Expected an immutable ExecutionRequest artifact envelope");
+    const registry = createAdapterRegistry([fixtureSvgAdapter]);
+    const result = await executeRequest(resolve(positional[0]), envelope.artifactRef, registry, { allowExternal: false });
+    console.log(JSON.stringify(result.envelope, null, 2));
+    if (["blocked", "failed"].includes(result.envelope.payload.status)) process.exitCode = 3;
     return;
   }
   if (command === "list") {

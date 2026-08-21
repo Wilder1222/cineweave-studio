@@ -1,7 +1,7 @@
-# CineWeave Contracts 2.2
+# CineWeave Contracts 2.3
 
 `cineweave-contracts` is the canonical exchange layer for CineWeave Studio. Its
-manifest records 54 contract kinds, one owner per contract and one owner per
+manifest records 58 contract kinds, one owner per contract and one owner per
 Skill route.
 
 ## Domains
@@ -15,8 +15,10 @@ Skill route.
 - Director: proposals, ShotSpec, ShotLightingPlan, TemporalSpec, storyboard,
   reference review and render planning.
 - Prompt: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief and PromptRepair.
-- Production: recipes, controls, evidence, capability, rights and benchmarks.
-- Runtime: project, artifact, approval and board-provenance records.
+- Production: recipes, controls, evidence, capability, rights, adapter
+  descriptors, exact execution requests, receipts and benchmarks.
+- Runtime: project, artifact, approval, board-provenance and Skill-evaluation
+  records.
 
 ## Layout
 
@@ -33,7 +35,8 @@ repository layout.
 
 ## Evolution policy
 
-Artifacts are immutable. Additive 2.2 schemas do not rewrite valid 2.0 payloads.
+Artifacts are immutable. Additive 2.2 and 2.3 schemas do not rewrite valid 2.0
+or 2.2 payloads.
 A dependent artifact references exact kind, ID, version and content hash; it
 never means “latest.” Breaking data-shape changes require a new contract version
 and a non-destructive migration report.
@@ -41,4 +44,5 @@ and a non-destructive migration report.
 Schema validity is necessary but not sufficient. Semantic tests also enforce
 causal beats, non-overlapping performance phases, physical/style light
 separation, source-bound shot lighting, ordered temporal events, one-variable
-repair, deterministic grids and rights/capability gates.
+repair, deterministic grids, execution authorization/cost integrity and
+evaluation-summary consistency.

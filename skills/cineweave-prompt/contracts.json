@@ -1,5 +1,5 @@
 {
-  "contractPackage": "cineweave-contracts@2.2.0",
+  "contractPackage": "cineweave-contracts@2.3.0",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "ExistingPromptText", "OptionalReferenceAssets"],
     "produces": ["PromptRecord", "ImagePrompt", "PromptHypothesis", "DraftBrief", "PromptRepair"]

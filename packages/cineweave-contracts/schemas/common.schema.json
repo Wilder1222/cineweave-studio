@@ -36,6 +36,18 @@
         "usedAt": { "type": "string", "format": "date-time" }
       }
     },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "createdAt", "updatedAt", "changeLog"],
+      "properties": {
+        "source": { "enum": ["user_authored", "codex_authored", "adapted", "imported", "suite_builtin"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "parentId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "changeLog": { "$ref": "#/$defs/stringList" }
+      }
+    },
     "stringList": {
       "type": "array",
       "minItems": 1,

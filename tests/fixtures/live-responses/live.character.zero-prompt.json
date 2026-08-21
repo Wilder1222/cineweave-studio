@@ -1,0 +1,13 @@
+{
+  "caseId": "live.character.zero-prompt",
+  "selectedSkill": "cineweave-character",
+  "route": "character_explore",
+  "outcome": "answer",
+  "contractKinds": [
+    "cineweave_codex_character_exploration_brief",
+    "cineweave_codex_character_option_set"
+  ],
+  "response": "先做同一中性妆发、光线和机位下的候选对比。方向 A 是柔和淡颜，方向 B 是清晰骨相，方向 C 是英气克制；每轮只改变一个探索轴。由你选择更喜欢的轮廓、眼神和亲和程度，系统再记录偏好并收敛，不替你决定唯一答案。",
+  "questions": [],
+  "unsupportedClaims": []
+}

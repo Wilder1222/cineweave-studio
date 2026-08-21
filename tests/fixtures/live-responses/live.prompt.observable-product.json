@@ -1,0 +1,10 @@
+{
+  "caseId": "live.prompt.observable-product",
+  "selectedSkill": "cineweave-prompt",
+  "route": "prompt_design",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_codex_prompt_record"],
+  "response": "镜头以略低于瓶肩的平视角度近距离观察一只磨砂黑香水瓶，瓶体偏离画面中心，前缘清晰，后缘轻微失焦。狭长柔光从左后方擦过瓶肩，只在磨砂表面形成克制的灰色渐变；正面用很弱的卡纸反射补出标签轮廓。瓶底与深灰石台有明确接触阴影，背景比瓶体亮半档，避免黑色轮廓消失；反射受粗糙材质压低，不出现镜面高光。",
+  "questions": [],
+  "unsupportedClaims": []
+}

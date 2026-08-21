@@ -1,0 +1,10 @@
+{
+  "caseId": "live.story.causal-beats",
+  "selectedSkill": "cineweave-story",
+  "route": "beat_sheet",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_codex_beat_sheet"],
+  "response": "四个因果节拍：1. 守城官在换防记录中发现兄长留下的私印；2. 因此他暗查粮道，反而导致敌军提前发动；3. 城门受袭迫使他在亲情与军令之间公开选择；4. 他拘捕兄长，所以保住城门，却失去家族支持。",
+  "questions": [],
+  "unsupportedClaims": []
+}

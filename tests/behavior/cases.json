@@ -1,6 +1,6 @@
 {
   "suite": "cineweave-skill-behavior",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "categories": ["direct", "indirect", "incomplete", "negative", "edge"],
   "cases": [
     {

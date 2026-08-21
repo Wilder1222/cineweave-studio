@@ -4,6 +4,25 @@
 
 No unreleased changes.
 
+## 2.3.0 — 2026-08-21
+
+- added provider-neutral `AdapterDescriptor`, exact `ExecutionRequest` and
+  runtime-authored `ExecutionReceipt` contracts;
+- added a trusted in-process adapter registry with implementation-hash matching,
+  immutable idempotency claims and constrained execution outputs;
+- required exact-request approval and explicit caller enablement before any
+  external adapter effect;
+- added complete retry-cost accounting, normalized failures and byte-level
+  output verification to project integrity checks;
+- shipped a zero-cost, network-free deterministic SVG fixture adapter and CLI
+  adapter/execution commands;
+- added a strict `SkillEvaluationRun` contract and semantic summary checks;
+- added ten synthetic live Skill cases covering all eight Skills plus a
+  should-not-activate case, committed deterministic responses and replay grading;
+- added an opt-in, explicit-cost live Codex evaluation runner using isolated,
+  read-only tasks and strict structured output;
+- expanded the release gate to 58 contracts and 57 uniquely owned routes.
+
 ## 2.2.0 — 2026-08-21
 
 - split screenwriting and general text-to-image management into the independent

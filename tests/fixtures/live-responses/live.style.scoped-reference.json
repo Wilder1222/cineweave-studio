@@ -1,0 +1,10 @@
+{
+  "caseId": "live.style.scoped-reference",
+  "selectedSkill": "cineweave-style",
+  "route": "style_reference_plan",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_codex_style_reference_plan"],
+  "response": "提取范围：低饱和色盘、保留细小纹理的皮肤质感、柔和侧光及其低对比层次。忽略范围：人物长相、人物身份、服装、姿势、背景与具体构图。该图只提供表现层证据，不复制身份，也不覆盖角色锚点。",
+  "questions": [],
+  "unsupportedClaims": []
+}

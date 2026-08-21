@@ -12,27 +12,41 @@
 - 24 behavior cases across direct, indirect, incomplete, negative and edge use;
 - Windows/Linux CI, bundle validation and distributable-asset rights audit.
 
-## V2.3 — execution evidence and live quality evaluation
+## Shipped in V2.3
 
-Priority is based on user value and architectural risk.
+- provider-neutral `AdapterDescriptor`, exact `ExecutionRequest` and
+  runtime-authored `ExecutionReceipt` contracts;
+- trusted in-process adapter registry with implementation-hash matching;
+- exact-request approval and explicit caller enablement for external effects;
+- immutable idempotency claims, retry-cost accounting and byte-level output
+  verification;
+- zero-cost, network-free deterministic SVG fixture adapter;
+- 10-case live Skill evaluation corpus covering every Skill and a negative
+  should-not-activate request;
+- explicit-cost live Codex runner, read-only isolated tasks, strict structured
+  responses and deterministic committed replay grading;
+- semantic validation for execution and evaluation summary integrity.
 
-1. **Adapter protocol and execution receipts (P0).** Define a provider-neutral
-   adapter interface, capability negotiation, input/output hashes, cost boundary
-   and retry receipts. Ship no credential or paid call in the core plugin.
-2. **Live Skill evaluation harness (P0).** Run selected behavior cases in clean
-   Codex tasks, grade activation and artifact quality, retain anonymized results
-   and compare releases. Static definitions remain the fast release gate.
-3. **Artifact graph CLI (P1).** Add dependency inspection, stale-ref detection,
+## Next incremental priorities (V2.3.x)
+
+Priority remains based on user value and architectural risk.
+
+1. **Artifact graph CLI (P0).** Add dependency inspection, stale-ref detection,
    approval-gate queries and safe export/import on top of the immutable store.
-4. **Reference ingestion (P1).** Create local observations with perceptual role,
+2. **Reference ingestion (P0).** Create local observations with perceptual role,
    region scope, content hash, source, consent and redistribution status; never
    copy user uploads into the public plugin.
-5. **Contract-aware repair runner (P1).** Execute one-variable repair plans while
+3. **Contract-aware repair runner (P1).** Execute one-variable repair plans while
    preserving passing immutable inputs and recording before/after evidence.
-6. **Original case atlas (P1).** Add rights-cleared, reproducible worked cases
+4. **Original case atlas (P1).** Add rights-cleared, reproducible worked cases
    for portrait, product, food, architecture, editorial, diagrams and exact-text
    layouts. Keep a small routing index, load only the matching category and
    attach prompt version, adapter context, candidate hash and review evidence.
+5. **Evaluation baselines (P1).** Retain versioned aggregate scores, compare
+   regressions by route and require human review for grader-definition changes.
+6. **Adapter conformance kit (P1).** Publish fixtures for timeout, partial output,
+   retryable billing, malformed metadata and cancellation without shipping any
+   provider credential or paid adapter in core.
 
 ## V2.4 — production workspace
 
