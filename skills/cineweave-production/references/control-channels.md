@@ -16,3 +16,5 @@ Default conflict order:
 6. lighting/material evidence;
 7. style;
 8. adapter-specific execution choices.
+
+When a StyleCompile is supplied, split its controls into visual and temporal channels. A style channel remains advisory unless the user explicitly promotes a bounded style invariant to a hard project control; it still cannot override identity, geography, interaction, rights or exact shot facts.

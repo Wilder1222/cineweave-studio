@@ -37,7 +37,7 @@ async function listSkillFiles(directory) {
 async function hashSkillBundle(skillRoot) {
   const files = await listSkillFiles(skillRoot);
   if (!files.length) throw new Error(`skill bundle is empty: ${skillRoot}`);
-  const manifest = ["cineweave-skill-bundle-v1\n"];
+  const manifest = ["cineweave-skill-bundle-v2\n"];
   for (const file of files.sort()) {
     const relativePath = relative(skillRoot, file).split(sep).join("/");
     const digest = createHash("sha256").update(await readFile(file)).digest("hex");

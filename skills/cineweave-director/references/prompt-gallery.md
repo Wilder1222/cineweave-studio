@@ -14,8 +14,8 @@ Use this file as a small routing index for reference-image selection and style c
 
 | Category | Use when | Route |
 |---|---|---|
-| `portrait-character-design` | identity, adornment, stylized character design or close portrait gesture | [`gallery-portrait-character-design.md`](gallery-portrait-character-design.md) |
-| `portrait-realism` | skin, hair, lens perspective, focus and photographic portrait behavior | [`cinematic-atlas.md`](cinematic-atlas.md) |
+| `portrait-character-design` | identity, adornment, stylized character design or close portrait gesture | [`gallery-portrait-character-design.md`](gallery-portrait-character-design.md) + [`portrait-reference-craft.md`](portrait-reference-craft.md) |
+| `portrait-realism` | skin, hair, lens perspective, focus and photographic portrait behavior | [`cinematic-atlas.md`](cinematic-atlas.md) + [`portrait-reference-craft.md`](portrait-reference-craft.md) |
 | `cinematic-still` / `cinematic-reveal` | live-action-looking frame, reveal, depth layers or frozen action | [`cinematic-atlas.md`](cinematic-atlas.md) |
 | `chinese-visual-language` | restrained Chinese silhouette, textile, architecture and negative space | [`cinematic-atlas.md`](cinematic-atlas.md) |
 | `reference-edit` | edit, inpaint, preserve contract or mask semantics | [`reference-editing.md`](reference-editing.md) |

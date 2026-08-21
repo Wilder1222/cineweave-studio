@@ -1,0 +1,18 @@
+{
+  "contractPackage": "cineweave-contracts@2.0.0",
+  "standalone": {
+    "accepts": ["NaturalLanguageBrief", "ReferenceAssets", "OptionalExactContractRefs"],
+    "produces": ["cineweave_codex_creative_brief", "cineweave_codex_workflow_plan"]
+  },
+  "composed": {
+    "consumes": ["CreativeBrief"],
+    "produces": ["WorkflowPlan"]
+  },
+  "contractKinds": [
+    "cineweave_codex_creative_brief",
+    "cineweave_codex_workflow_plan",
+    "cineweave_codex_character_exploration_brief",
+    "cineweave_codex_character_option_set",
+    "cineweave_codex_character_preference_feedback"
+  ]
+}

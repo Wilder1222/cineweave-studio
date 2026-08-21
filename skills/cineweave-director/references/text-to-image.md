@@ -1,6 +1,6 @@
 # Text-to-image prompt layer
 
-Use this reference when the creator wants a cinematic still, storyboard frame, Keyframe candidate or a prompt package for Codex interactive image generation.
+Use this reference when the creator wants a cinematic still, storyboard frame, Keyframe candidate or a prompt package for Codex interactive image generation. For portrait or character-reference requests, load `portrait-reference-craft.md` as the role/ownership layer before compiling these blocks. If a style package, fine-grained style or cross-image/video style continuity is requested, resolve `$cineweave-style` first and retain its exact binding.
 
 ## Prompt compilation order
 
@@ -15,7 +15,7 @@ Compile the prompt from decisions, not adjective accumulation:
 7. camera: shot scale, angle, height, focal length, focus target and composition;
 8. light and material: motivated source, direction, exposure relationship, surface response, palette and atmosphere;
 9. cinematic realism: plausible anatomy, fabric behavior, physically coherent perspective, atmospheric depth and controlled lens behavior;
-10. restrained style stack: one primary visual grammar with only the support styles required by the intent;
+10. compiled StylePackage directives: medium, representation, costume, lighting, palette and post-process channels in their declared scope;
 11. technical constraints: framing, aspect ratio or capture intent when supplied;
 12. targeted negatives: likely failure modes for this shot.
 
@@ -45,6 +45,12 @@ When a SceneBinding is present, keep these concerns separate:
 - `spatialContinuity`: camera axis, side, screen direction, prop placement and zone relations.
 
 A style or composition reference must not rewrite SceneSpec geography.
+
+## StyleCompile handoff
+
+`styleBinding` is optional for a purely local Prompt, but required when the request names an exact StylePackage or asks for repeatable fine-grained style behavior. For an image target, use the StyleCompile visual channels in the `style` prompt block and preserve the exact package/compile refs in the binding. For a video target, keep `motion` and `temporal` directives separate from image appearance; a static style image cannot be presented as evidence for camera movement, editing rhythm, dynamic light or secondary motion.
+
+Style directives are advisory to locked CharacterSpec, AppearanceState, SceneSpec, SceneBinding, InteractionConstraintSet and Director camera decisions. If a style package conflicts with one of those facts, expose the conflict and preserve the higher-priority fact rather than flattening the conflict into prose.
 
 ## Cinematic realism
 

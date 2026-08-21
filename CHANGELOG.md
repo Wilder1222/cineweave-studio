@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+- added zero-prompt character exploration with `CharacterExplorationBrief`,
+  `CharacterOptionSet` and `CharacterPreferenceFeedback` contracts;
+- added a user-led, one-variable candidate-convergence workflow that separates
+  technical quality gates from subjective preference and never auto-locks an
+  identity;
+- added the deterministic `recipe.character-exploration-board-4up` production
+  recipe, workflow fixtures and semantic negative tests;
+- added Chinese zero-prompt intake, reference-role, prompt-compilation and
+  production handoff guidance across the standalone/composable Skills.
+
+## 2.0.0 — 2026-08-20
+
+- renamed the product package to CineWeave Studio;
+- added the optional `$cineweave` intake and workflow-composition Skill;
+- made all five expert Skills explicitly standalone and composable;
+- moved canonical schemas, examples, recipes and ownership metadata into
+  `packages/cineweave-contracts`;
+- added the V2 WorkflowPlan contract, activation fixtures and composition tests;
+- added portable Skill-bundle build validation and V2 architecture checks;
+- moved natural-language brief ownership from Director to the product router;
+- removed the V1 runtime compatibility requirement in favor of an explicit
+  non-destructive V1.1-to-V2 migration utility.
+
 ## 1.1.0 — 2026-08-20
 
 - added the independent `cineweave-production` Skill;

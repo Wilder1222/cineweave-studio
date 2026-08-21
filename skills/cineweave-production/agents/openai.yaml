@@ -1,4 +1,6 @@
 interface:
   display_name: "CineWeave Production"
-  short_description: "Recipes, controls, evidence, capabilities, rights and ControlBench"
-  default_prompt: "Use $cineweave-production to turn approved character, scene and director facts into a deterministic AssetRecipe, prioritized ControlChannels, scoped EvidenceBundle, capability and rights gates, and a repeatable ControlBench plan."
+  short_description: "Plan repeatable assets, controls, evidence and validation"
+  default_prompt: "Use $cineweave-production to create the smallest production recipe, control plan and validation package for this deliverable."
+policy:
+  allow_implicit_invocation: true

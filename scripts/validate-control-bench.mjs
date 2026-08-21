@@ -5,7 +5,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const read = async (path) => JSON.parse(await readFile(resolve(repoRoot, path), "utf8"));
+const read = async (path) => JSON.parse(await readFile(resolve(repoRoot, "packages/cineweave-contracts", path), "utf8"));
 
 function validateCrossContracts({ benchmark, recipe, controls, evidence, capability, license, catalog }) {
   const errors = [];

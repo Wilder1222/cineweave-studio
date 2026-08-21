@@ -1,4 +1,6 @@
 interface:
   display_name: "CineWeave Character"
-  short_description: "Identity, styling, behavior, emotion and consistency"
-  default_prompt: "Use $cineweave-character to define or bind exact face/body identity, makeup, hair, costume construction/materials, behavior causality, emotion trajectory, micro-expression and shot performance without mutating the locked character."
+  short_description: "Explore and build reusable identity, appearance and performance contracts"
+  default_prompt: "Use $cineweave-character to turn my feeling or direct brief into comparable character directions, record my preference, then return only the requested character contract."
+policy:
+  allow_implicit_invocation: true

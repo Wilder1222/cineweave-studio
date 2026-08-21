@@ -15,8 +15,9 @@ Do not treat a Prompt as one disposable string. A managed Prompt has:
 - bounded variants with a one-variable change note;
 - evaluation criteria, known risks and the next experiment;
 - provenance and a change log so the parent is never silently overwritten.
+- an optional `styleBinding` that preserves the exact StylePackage/StyleCompile version when a reusable or fine-grained visual style is involved.
 
-The canonical storage contract is [`../../../schemas/prompt-record.schema.json`](../../../schemas/prompt-record.schema.json). It is separate from the cinematic [`image-prompt-output.schema.json`](../../../schemas/image-prompt-output.schema.json), which remains the richer shot-design package for film and storyboard work.
+The canonical storage contract is [`prompt-record.schema.json`](../../../packages/cineweave-contracts/schemas/prompt-record.schema.json). It is separate from the cinematic [`image-prompt-output.schema.json`](../../../packages/cineweave-contracts/schemas/image-prompt-output.schema.json), which remains the richer shot-design package for film and storyboard work.
 
 ## Management operations
 
@@ -35,9 +36,21 @@ Choose the smallest operation that matches the request:
 
 Never overwrite a prior version and never claim that a Prompt produced a successful image. A Prompt is a design and management artifact; generated media requires a separate human-gated RenderPlan and verified Draft import.
 
+## Style-aware Prompt binding
+
+When a Prompt names a reusable StylePackage, a fine-grained style recipe or a visual/video style that must remain stable, route style resolution to `$cineweave-style` and keep the result in `styleBinding`:
+
+- `inline_atoms` is for a local, exploratory combination that has not become a package;
+- `package` records the exact `stylePackageRef` and may retain resolved atom IDs;
+- `compiled` records both the exact `stylePackageRef` and `styleCompileRef` used for this target.
+
+The human-readable `prompt.blocks.style` remains the readable rendering of the decision. It is not the authority for versioning. Keep `visualTemporalSeparated: true`, preserve/allowedVariation/forbidden rules and the style binding outside identity, body, geography and camera facts. A style change should create a bounded variant or new Prompt version; it should not silently rewrite the parent Prompt.
+
 ## Reference gallery routing
 
 When a creator asks whether a reference image is suitable, which category to use, or how to reproduce a visual treatment, read [`prompt-gallery.md`](prompt-gallery.md) first and then one matching category. Keep the gallery index small and high-signal; do not paste every example into the active context. Score a reference for the declared purpose and role, preserve source and rights metadata, and separate what to preserve, borrow and exclude. If the bundled gallery has no relevant case, use a user-supplied or rights-cleared reference and say that the gallery is inconclusive.
+
+For portrait or character-style requests, also read [`portrait-reference-craft.md`](portrait-reference-craft.md). Decompose the source into identity, appearance, performance, composition, capture, lighting, materials, palette and environment. Route reusable identity and appearance to `$cineweave-character`; keep Director's Prompt focused on shot-level observation and transfer rules.
 
 For any domain, make the observation order explicit when it affects the result: canvas or layout, target and arrangement, observer viewpoint and crop, light/color/material behavior, bounded style grammar, then technical and negative constraints. Put exact visible text in quotes with placement and typography instructions. For an edit, state `change only X; preserve Y` and keep camera, identity and layout invariants visible.
 

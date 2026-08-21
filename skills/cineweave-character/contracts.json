@@ -1,0 +1,28 @@
+{
+  "contractPackage": "cineweave-contracts@2.0.0",
+  "standalone": {
+    "accepts": ["NaturalLanguageBrief", "OptionalReferenceAssets", "OptionalWorldContext"],
+    "produces": ["CharacterExplorationBrief", "CharacterOptionSet", "CharacterPreferenceFeedback", "CharacterSpec", "CharacterReferencePlan", "CharacterAppearanceState", "CharacterBinding", "CharacterReview", "CharacterRepair"]
+  },
+  "composed": {
+    "consumes": ["CreativeBrief", "CharacterExplorationBrief", "CharacterOptionSet", "CharacterPreferenceFeedback", "StyleCompile", "AssetRecipe", "ControlChannelSet", "EvidenceBundle", "LicenseProfile"],
+    "produces": ["CharacterExplorationBrief", "CharacterOptionSet", "CharacterPreferenceFeedback", "CharacterSpec", "CharacterReferencePlan", "CharacterAppearanceState", "CharacterBinding", "CharacterReview", "CharacterRepair"]
+  },
+  "contractKinds": [
+    "cineweave_codex_character_spec",
+    "cineweave_codex_character_exploration_brief",
+    "cineweave_codex_character_option_set",
+    "cineweave_codex_character_preference_feedback",
+    "character_binding",
+    "cineweave_codex_character_reference_plan",
+    "cineweave_codex_character_appearance_state",
+    "cineweave_codex_character_review",
+    "cineweave_codex_character_repair",
+    "cineweave_codex_creative_brief",
+    "cineweave_codex_style_compile",
+    "cineweave_codex_asset_recipe",
+    "cineweave_codex_control_channel_set",
+    "cineweave_codex_evidence_bundle",
+    "cineweave_codex_license_profile"
+  ]
+}

@@ -35,7 +35,7 @@ async function exists(file) {
 }
 
 async function main() {
-  const skillRoot = resolve(process.argv[2] ?? "skills/cineweave-director");
+  const skillRoot = resolve(process.argv[2] ?? "skills");
   const markdownFiles = await listMarkdownFiles(skillRoot);
   const errors = [];
   for (const file of markdownFiles) {

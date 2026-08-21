@@ -1,14 +1,14 @@
 {
-  "name": "cineweave-director",
+  "name": "cineweave-studio",
   "interface": {
     "displayName": "CineWeave Creative Skills"
   },
   "plugins": [
     {
-      "name": "cineweave-director",
+      "name": "cineweave-studio",
       "source": {
         "source": "url",
-        "url": "https://github.com/Wilder1222/cineweave-director.git",
+        "url": "https://github.com/Wilder1222/cineweave-studio.git",
         "ref": "main"
       },
       "policy": {

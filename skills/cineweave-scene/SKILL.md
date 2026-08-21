@@ -1,6 +1,6 @@
 ---
 name: cineweave-scene
-description: Design, version, reference, bind, interact, review and repair reusable CineWeave scenes. Own SceneSpec, SceneReferencePlan, SceneState, SceneBinding, InteractionConstraintSet, SceneReview and SceneRepair contracts. Use for geography, spatial topology, architecture, scale anchors, material systems, prop layout, time/weather/light states, grounded character-environment contact, occlusion, prop interaction, camera axes and scene continuity.
+description: Design, version, reference, bind, interact, review and repair reusable CineWeave scenes across live action, animation, comic, illustration and 3D representations. Own SceneSpec, SceneReferencePlan, SceneState, SceneBinding, InteractionConstraintSet, SceneReview and SceneRepair contracts. Use for geography, spatial topology, architecture, scale anchors, material systems, prop layout, time/weather/light states, grounded character-environment contact, occlusion, prop interaction, camera axes and scene continuity. Visual and temporal style semantics are resolved by cineweave-style.
 ---
 
 # CineWeave Scene
@@ -19,18 +19,27 @@ This Skill owns:
 - `SceneReview`: evidence-based geography, scale, material, light and continuity review;
 - `SceneRepair`: one-variable scene repair planning.
 
-`$cineweave-director` owns dramatic coverage, camera choice within the allowed topology and final prompt/storyboard assembly. `$cineweave-character` owns identity and performance. `$cineweave-production` owns recipes, controls, evidence, capability, rights and benchmarks. Do not absorb those domains into SceneSpec.
+`$cineweave-director` owns dramatic coverage, camera choice within the allowed topology and final prompt/storyboard assembly. `$cineweave-character` owns identity and performance. `$cineweave-style` owns representation, production-design style atoms, visual/temporal references and style compilation. `$cineweave-production` owns recipes, controls, evidence, capability, rights and benchmarks. Do not absorb those domains into SceneSpec.
+
+## Independent and composed use
+
+This Skill may start from a direct scene brief and optional references; it does
+not require `$cineweave` or a pre-existing CharacterSpec to design a location.
+For a composed shot, consume exact CreativeBrief, CharacterBinding, StyleCompile
+or production contracts only when the task needs them. Return the smallest Scene
+contract requested and keep every upstream reference explicit. The portable
+contract index is [`contracts.json`](contracts.json).
 
 ## Routes
 
-- `scene_interaction`: bind CharacterBinding and SceneBinding references into grounded contacts, supports, occlusions, light response, environment response and prop continuity. Read `references/scene-interaction.md`. Return `../../schemas/interaction-constraint-set.schema.json`.
+- `scene_interaction`: bind CharacterBinding and SceneBinding references into grounded contacts, supports, occlusions, light response, environment response and prop continuity. Read `references/scene-interaction.md`. Return `../../packages/cineweave-contracts/schemas/interaction-constraint-set.schema.json`.
 
-- `scene_design`: create, import, normalize, update, fork or review a SceneSpec. Read `references/scene-design.md` and `references/scene-spatial-continuity.md`. Return `../../schemas/scene-spec.schema.json`.
-- `scene_reference_plan`: plan geography, architecture, scale, material, lighting, atmosphere and prop-layout reference frames. Read `references/scene-reference-planning.md`. Return `../../schemas/scene-reference-plan.schema.json`.
-- `scene_state`: define one controlled environmental state without changing immutable geography. Read `references/scene-state.md`. Return `../../schemas/scene-state.schema.json`.
-- `scene_binding`: resolve an exact SceneSpec and optional SceneState into one shot. Read `references/scene-binding.md` and `references/scene-spatial-continuity.md`. Return `../../schemas/scene-binding.schema.json`.
-- `scene_review`: compare supplied Candidate Observations with SceneSpec, optional SceneState and optional SceneBinding. Read `references/scene-consistency.md` and `references/scene-review-repair.md`. Return `../../schemas/scene-review.schema.json`.
-- `scene_repair`: prepare one smallest scene repair variable, preserve contract and stop condition. Read `references/scene-review-repair.md`. Return `../../schemas/scene-repair.schema.json`.
+- `scene_design`: create, import, normalize, update, fork or review a SceneSpec. Read `references/scene-design.md` and `references/scene-spatial-continuity.md`. Return `../../packages/cineweave-contracts/schemas/scene-spec.schema.json`.
+- `scene_reference_plan`: plan geography, architecture, scale, material, lighting, atmosphere and prop-layout reference frames. Read `references/scene-reference-planning.md`. Return `../../packages/cineweave-contracts/schemas/scene-reference-plan.schema.json`.
+- `scene_state`: define one controlled environmental state without changing immutable geography. Read `references/scene-state.md`. Return `../../packages/cineweave-contracts/schemas/scene-state.schema.json`.
+- `scene_binding`: resolve an exact SceneSpec and optional SceneState into one shot. Read `references/scene-binding.md` and `references/scene-spatial-continuity.md`. Return `../../packages/cineweave-contracts/schemas/scene-binding.schema.json`.
+- `scene_review`: compare supplied Candidate Observations with SceneSpec, optional SceneState and optional SceneBinding. Read `references/scene-consistency.md` and `references/scene-review-repair.md`. Return `../../packages/cineweave-contracts/schemas/scene-review.schema.json`.
+- `scene_repair`: prepare one smallest scene repair variable, preserve contract and stop condition. Read `references/scene-review-repair.md`. Return `../../packages/cineweave-contracts/schemas/scene-repair.schema.json`.
 
 For a combined request, return explicit named payloads. Do not flatten SceneSpec, SceneState, SceneBinding and prompt text into one paragraph.
 
@@ -62,6 +71,7 @@ Extract:
 - controllable time, weather, season, occupancy, damage, light and atmosphere variables;
 - supplied SceneSpec, SceneState, SceneBinding and Observation IDs;
 - rights restrictions and what may change.
+- requested medium/representation or exact StylePackage refs; keep these as style inputs rather than locked geography facts.
 
 ### 2. Design geography before decoration
 
@@ -110,12 +120,12 @@ Review expected versus observed geography, architecture, scale, material, props,
 
 Return JSON only when intended for CineWeave import.
 
-- Scene identity asset: `../../schemas/scene-spec.schema.json`
-- Scene reference plan: `../../schemas/scene-reference-plan.schema.json`
-- Controlled scene state: `../../schemas/scene-state.schema.json`
-- Shot scene binding: `../../schemas/scene-binding.schema.json`
-- Scene consistency review: `../../schemas/scene-review.schema.json`
-- Single-variable scene repair: `../../schemas/scene-repair.schema.json`
+- Scene identity asset: `../../packages/cineweave-contracts/schemas/scene-spec.schema.json`
+- Scene reference plan: `../../packages/cineweave-contracts/schemas/scene-reference-plan.schema.json`
+- Controlled scene state: `../../packages/cineweave-contracts/schemas/scene-state.schema.json`
+- Shot scene binding: `../../packages/cineweave-contracts/schemas/scene-binding.schema.json`
+- Scene consistency review: `../../packages/cineweave-contracts/schemas/scene-review.schema.json`
+- Single-variable scene repair: `../../packages/cineweave-contracts/schemas/scene-repair.schema.json`
 
 Before returning:
 

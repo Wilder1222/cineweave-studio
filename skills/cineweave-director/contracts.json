@@ -1,0 +1,35 @@
+{
+  "contractPackage": "cineweave-contracts@2.0.0",
+  "standalone": {
+    "accepts": ["NaturalLanguageBrief", "OptionalReferenceAssets"],
+    "produces": ["DirectorProposals", "PromptRecord", "ImagePrompt", "Storyboard", "ReferenceReview", "ReferenceSet", "RenderPlan", "MediaImport", "PromptHypothesis", "DraftBrief"]
+  },
+  "composed": {
+    "consumes": ["CreativeBrief", "CharacterExplorationBrief", "CharacterOptionSet", "CharacterBinding", "SceneBinding", "InteractionConstraintSet", "StyleCompile", "ProductionContracts"],
+    "produces": ["DirectorProposals", "PromptRecord", "ImagePrompt", "Storyboard", "ReferenceReview", "ReferenceSet", "RenderPlan", "MediaImport", "PromptHypothesis", "DraftBrief"]
+  },
+  "contractKinds": [
+    "cineweave_codex_director_proposals",
+    "cineweave_codex_prompt_record",
+    "cineweave_codex_image_prompt",
+    "cineweave_codex_storyboard_sequence",
+    "cineweave_codex_reference_review",
+    "cineweave_codex_reference_set",
+    "cineweave_codex_render_plan",
+    "cineweave_codex_media_import",
+    "cineweave_codex_prompt_hypothesis",
+    "cineweave_codex_interactive_draft_brief",
+    "cineweave_codex_creative_brief",
+    "cineweave_codex_character_exploration_brief",
+    "cineweave_codex_character_option_set",
+    "character_binding",
+    "scene_binding",
+    "cineweave_codex_interaction_constraint_set",
+    "cineweave_codex_style_compile",
+    "cineweave_codex_asset_recipe",
+    "cineweave_codex_control_channel_set",
+    "cineweave_codex_evidence_bundle",
+    "cineweave_codex_capability_profile",
+    "cineweave_codex_license_profile"
+  ]
+}

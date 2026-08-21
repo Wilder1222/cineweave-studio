@@ -17,4 +17,6 @@ Use this category for identity, adornment, silhouette, palette and close-up char
 - Borrow: frontal close-up crop, hand-to-lips gesture and restrained dark fantasy adornment logic.
 - Exclude: exact identity when a new character is intended, painterly marks as photographic evidence, original signature/background and unmotivated accessory duplication.
 
+For a portrait Prompt, decompose the case into identity, appearance, performance, capture, lighting, materials and palette before transferring it. The case is strongest for identity/adornment/gesture/palette; treat any 85mm, window-light, skin-pore or film-grain description as a separate photographic style hypothesis unless the supplied asset itself provides that evidence.
+
 When using this case, bind it to one explicit role at a time and create a `reference-review` record before adding it to a production Prompt or RenderPlan.

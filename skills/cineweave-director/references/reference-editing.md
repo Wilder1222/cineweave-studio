@@ -21,6 +21,8 @@ Assign each input one explicit role:
 
 Use Observation IDs rather than raw private paths or signed URLs. The Web/API layer resolves media access; the Skill only declares semantic role, optional scope and preserve contract.
 
+For a portrait split, bind the identity image to `identity`, route reusable makeup/hair/costume to `$cineweave-character`, and represent a capture/style image through the existing `composition`, `lighting`, `style` or `material` roles. Do not invent a single “style strength” field that silently overrides identity.
+
 ## Reference scope
 
 Use `scope` when a role is too broad:

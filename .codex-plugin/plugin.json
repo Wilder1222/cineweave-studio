@@ -1,15 +1,19 @@
 {
-  "name": "cineweave-director",
-  "version": "1.1.0",
-  "description": "CineWeave creative Skill suite for controlled character identity and styling, scene interaction, professional directing, production recipes, evidence, capability matching, rights and ControlBench validation.",
-  "homepage": "https://github.com/Wilder1222/cineweave-director",
-  "repository": "https://github.com/Wilder1222/cineweave-director",
+  "name": "cineweave-studio",
+  "version": "2.0.0",
+  "description": "CineWeave Studio is a composable creative Skill system for independent character, scene, style, direction and production workflows.",
+  "homepage": "https://github.com/Wilder1222/cineweave-studio",
+  "repository": "https://github.com/Wilder1222/cineweave-studio",
   "license": "MIT",
   "keywords": [
     "cineweave",
     "codex",
+    "studio",
     "director",
     "character-design",
+    "character-exploration",
+    "character-preference",
+    "zero-prompt",
     "character-consistency",
     "character-performance",
     "scene-design",
@@ -18,6 +22,10 @@
     "storyboard",
     "cinematography",
     "text-to-image",
+    "prompt-management",
+    "reference-review",
+    "portrait-prompting",
+    "reference-gallery",
     "render-plan",
     "reference-editing",
     "asset-recipe",
@@ -26,19 +34,26 @@
     "capability-profile",
     "license-profile",
     "control-benchmark",
-    "interaction-constraints"
+    "interaction-constraints",
+    "style-system",
+    "style-package",
+    "style-atoms",
+    "style-compiler",
+    "creative-brief",
+    "workflow-composition",
+    "independent-skills"
   ],
   "author": {
     "name": "CineWeave"
   },
   "skills": "./skills/",
   "interface": {
-    "displayName": "CineWeave Creative Skills",
-    "shortDescription": "Character, scene, director and production-control workflows.",
-    "longDescription": "CineWeave Creative Skills v1.1 coordinates four Codex Skills. Character owns reusable identity, detailed makeup/hair/costume states, behavior logic, emotion and performance. Scene owns reusable geography, time/weather/light states and grounded character-environment interactions. Director composes exact character, scene and interaction bindings into professional storyboards, prompts and render plans. Production owns deterministic AssetRecipes, hard/soft/advisory ControlChannels, scoped EvidenceBundles, provider-neutral CapabilityProfiles, explicit LicenseProfiles and ControlBench evaluation suites. The system never assumes commercial rights, hides capability mismatch, writes Canon, exposes private paths, calls paid Providers or claims media generation without evidence.",
+    "displayName": "CineWeave Studio",
+    "shortDescription": "Composable creative workflows for images, video and production design.",
+    "longDescription": "CineWeave Studio v2 provides an optional $cineweave entry point plus five independently usable specialist Skills. Character supports zero-prompt discovery, user-led preference convergence, reusable identity and performance; Scene owns geography and physical interaction; Style owns visual and temporal style systems; Director owns shot language, prompts and storyboards; Production owns recipes, controls, evidence, capability, rights and evaluation. All composition passes through explicit versioned contracts, so a specialist can work directly from a brief or consume exact upstream artifacts without hidden state. The system remains provider-neutral, human-gated for execution and explicit about rights, evidence and capability limits.",
     "developerName": "CineWeave",
     "category": "Productivity",
     "capabilities": [],
-    "defaultPrompt": "Use CineWeave Character to define identity, styling and performance; CineWeave Scene to define geography, environmental state and interactions; CineWeave Director to design shots; and CineWeave Production to compile recipes, controls, evidence, capability and rights gates before a human-approved RenderPlan."
+    "defaultPrompt": "Use $cineweave to turn my creative request or zero-prompt character feeling into an editable brief and the smallest independent or composed CineWeave Studio workflow."
   }
 }

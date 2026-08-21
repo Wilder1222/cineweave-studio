@@ -1,0 +1,124 @@
+{
+  "suite": "cineweave-studio",
+  "version": "2.0.0",
+  "repository": "https://github.com/Wilder1222/cineweave-studio",
+  "entrySkill": "cineweave",
+  "skills": [
+    {
+      "name": "cineweave",
+      "role": "product_router",
+      "owns": ["creative_intake", "workflow_compose"],
+      "consumes": ["NaturalLanguageBrief", "ReferenceAssets", "OptionalExactContractRefs"],
+      "standalone": true,
+      "composable": true
+    },
+    {
+      "name": "cineweave-character",
+      "role": "identity_and_performance",
+      "owns": ["character_explore", "character_converge", "character_design", "character_reference_plan", "appearance_state", "character_performance", "character_review", "character_repair"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "CharacterExplorationBrief", "CharacterOptionSet", "CharacterPreferenceFeedback", "WorldContext", "ObservationIds", "StyleCompile", "ProductionContracts"],
+      "standalone": true,
+      "composable": true
+    },
+    {
+      "name": "cineweave-scene",
+      "role": "geography_and_interaction",
+      "owns": ["scene_design", "scene_reference_plan", "scene_state", "scene_binding", "scene_interaction", "scene_review", "scene_repair"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "WorldContext", "ObservationIds", "CharacterBinding", "StyleCompile", "ProductionContracts"],
+      "standalone": true,
+      "composable": true
+    },
+    {
+      "name": "cineweave-style",
+      "role": "style_system",
+      "owns": ["style_analyze", "style_reference_plan", "style_resolve", "style_compose", "style_package", "style_compile", "style_review"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "ReferenceReview", "ReferenceSet", "CharacterSpec", "SceneSpec", "CharacterBinding", "SceneBinding", "ObservationIds"],
+      "standalone": true,
+      "composable": true
+    },
+    {
+      "name": "cineweave-director",
+      "role": "shot_and_prompt_direction",
+      "owns": ["proposal", "prompt_management", "image_prompt", "storyboard", "reference_review", "reference_set", "render_plan", "media_import", "hypothesis", "draft_brief", "repair"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "CharacterBinding", "SceneBinding", "InteractionConstraintSet", "StyleCompile", "ProductionContracts"],
+      "standalone": true,
+      "composable": true
+    },
+    {
+      "name": "cineweave-production",
+      "role": "production_validation",
+      "owns": ["asset_recipe", "control_plan", "evidence_bundle", "capability_profile", "license_profile", "control_benchmark"],
+      "consumes": ["CreativeBrief", "CharacterContracts", "SceneContracts", "StyleCompile", "DirectorContracts", "ObservationIds"],
+      "standalone": true,
+      "composable": true
+    }
+  ],
+  "contracts": [
+    { "kind": "cineweave_codex_creative_brief", "schema": "schemas/creative-brief.schema.json", "example": "examples/creative-brief.json", "owner": "cineweave" },
+    { "kind": "cineweave_codex_workflow_plan", "schema": "schemas/workflow-plan.schema.json", "example": "examples/workflow-plan.json", "owner": "cineweave" },
+
+    { "kind": "cineweave_codex_character_spec", "schema": "schemas/character-spec.schema.json", "example": "examples/character-spec.json", "owner": "cineweave-character" },
+    { "kind": "cineweave_codex_character_exploration_brief", "schema": "schemas/character-exploration-brief.schema.json", "example": "examples/character-exploration-brief.json", "owner": "cineweave-character" },
+    { "kind": "cineweave_codex_character_option_set", "schema": "schemas/character-option-set.schema.json", "example": "examples/character-option-set.json", "owner": "cineweave-character" },
+    { "kind": "cineweave_codex_character_preference_feedback", "schema": "schemas/character-preference-feedback.schema.json", "example": "examples/character-preference-feedback.json", "owner": "cineweave-character" },
+    { "kind": "character_binding", "schema": "schemas/character-binding.schema.json", "example": "examples/character-binding.json", "owner": "cineweave-character" },
+    { "kind": "cineweave_codex_character_reference_plan", "schema": "schemas/character-reference-plan.schema.json", "example": "examples/character-reference-plan.json", "owner": "cineweave-character" },
+    { "kind": "cineweave_codex_character_appearance_state", "schema": "schemas/character-appearance-state.schema.json", "example": "examples/character-appearance-state.json", "owner": "cineweave-character" },
+    { "kind": "cineweave_codex_character_review", "schema": "schemas/character-review.schema.json", "example": "examples/character-review.json", "owner": "cineweave-character" },
+    { "kind": "cineweave_codex_character_repair", "schema": "schemas/character-repair.schema.json", "example": "examples/character-repair.json", "owner": "cineweave-character" },
+
+    { "kind": "cineweave_codex_scene_spec", "schema": "schemas/scene-spec.schema.json", "example": "examples/scene-spec.json", "owner": "cineweave-scene" },
+    { "kind": "cineweave_codex_scene_state", "schema": "schemas/scene-state.schema.json", "example": "examples/scene-state.json", "owner": "cineweave-scene" },
+    { "kind": "scene_binding", "schema": "schemas/scene-binding.schema.json", "example": "examples/scene-binding.json", "owner": "cineweave-scene" },
+    { "kind": "cineweave_codex_scene_reference_plan", "schema": "schemas/scene-reference-plan.schema.json", "example": "examples/scene-reference-plan.json", "owner": "cineweave-scene" },
+    { "kind": "cineweave_codex_interaction_constraint_set", "schema": "schemas/interaction-constraint-set.schema.json", "example": "examples/interaction-constraint-set.json", "owner": "cineweave-scene" },
+    { "kind": "cineweave_codex_scene_review", "schema": "schemas/scene-review.schema.json", "example": "examples/scene-review.json", "owner": "cineweave-scene" },
+    { "kind": "cineweave_codex_scene_repair", "schema": "schemas/scene-repair.schema.json", "example": "examples/scene-repair.json", "owner": "cineweave-scene" },
+
+    { "kind": "cineweave_codex_style_package", "schema": "schemas/style-package.schema.json", "example": "examples/style-package.json", "owner": "cineweave-style" },
+    { "kind": "cineweave_codex_style_reference_plan", "schema": "schemas/style-reference-plan.schema.json", "example": "examples/style-reference-plan.json", "owner": "cineweave-style" },
+    { "kind": "cineweave_codex_style_compile", "schema": "schemas/style-compile.schema.json", "example": "examples/style-compile.json", "owner": "cineweave-style" },
+    { "kind": "cineweave_codex_style_review", "schema": "schemas/style-review.schema.json", "example": "examples/style-review.json", "owner": "cineweave-style" },
+
+    { "kind": "cineweave_codex_director_proposals", "schema": "schemas/proposal-output.schema.json", "example": "examples/proposal-output.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_prompt_record", "schema": "schemas/prompt-record.schema.json", "example": "examples/prompt-record.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_image_prompt", "schema": "schemas/image-prompt-output.schema.json", "example": "examples/integrated-image-prompt.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_storyboard_sequence", "schema": "schemas/storyboard-output.schema.json", "example": "examples/integrated-storyboard.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_reference_review", "schema": "schemas/reference-review.schema.json", "example": "examples/reference-review.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_reference_set", "schema": "schemas/reference-set.schema.json", "example": "examples/character-reference-set.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_render_plan", "schema": "schemas/render-plan.schema.json", "example": "examples/character-render-plan.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_media_import", "schema": "schemas/media-import.schema.json", "example": "examples/media-import.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_prompt_hypothesis", "schema": "schemas/hypothesis-output.schema.json", "example": "examples/hypothesis-output.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_interactive_draft_brief", "schema": "schemas/draft-brief.schema.json", "example": "examples/draft-brief.json", "owner": "cineweave-director" },
+
+    { "kind": "cineweave_codex_asset_recipe", "schema": "schemas/asset-recipe.schema.json", "example": "examples/asset-recipe.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_codex_control_channel_set", "schema": "schemas/control-channel-set.schema.json", "example": "examples/control-channel-set.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_codex_evidence_bundle", "schema": "schemas/evidence-bundle.schema.json", "example": "examples/evidence-bundle.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_codex_capability_profile", "schema": "schemas/capability-profile.schema.json", "example": "examples/capability-profile.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_codex_license_profile", "schema": "schemas/license-profile.schema.json", "example": "examples/license-profile.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_codex_control_benchmark", "schema": "schemas/control-benchmark.schema.json", "example": "examples/control-benchmark.json", "owner": "cineweave-production" },
+
+    { "kind": "cineweave_contract_migration_report", "schema": "schemas/migration-report.schema.json", "example": "examples/migration-report.json", "owner": "suite" }
+  ],
+  "recipeCatalog": {
+    "path": "recipes/catalog.json",
+    "schema": "schemas/asset-recipe.schema.json",
+    "builtInRecipeCount": 8
+  },
+  "composition": {
+    "workflowContract": "cineweave_codex_workflow_plan",
+    "specialistsMayRunWithoutRouter": true,
+    "requiresExplicitContractRefsAcrossSkills": true,
+    "allowsImplicitConversationState": false,
+    "allowsCycles": false
+  },
+  "boundaries": {
+    "providerNeutral": true,
+    "humanApprovalForExecution": true,
+    "noCanonMutationBySkills": true,
+    "noInventedObservationIds": true,
+    "noPrivatePathsOrSignedUrls": true,
+    "noAssumedCommercialRights": true,
+    "capabilityMismatchBlocksHardControls": true
+  }
+}
