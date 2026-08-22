@@ -71,6 +71,7 @@ async function checkManifestContracts() {
   }
   for (const [schema, example] of [
     ["schemas/execution-receipt.schema.json", "examples/execution-receipt-blocked.json"],
+    ["schemas/shot-spec.schema.json", "examples/shot-spec-action.json"],
     ["schemas/style-package.schema.json", "examples/style-package-anime.json"],
     ["schemas/style-package.schema.json", "examples/style-package-manga.json"]
   ]) {

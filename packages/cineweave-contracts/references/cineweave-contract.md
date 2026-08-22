@@ -16,7 +16,8 @@ StylePackage  → StyleCompile    → StyleReview
 Reference outputs: ReferenceAsset → ReferenceObservation → ReferenceReview
                    → ReferenceBindingSet
 Story outputs: StoryBrief, BeatSheet, ScriptScene, ContinuityLedger
-Director outputs: ShotSpec, ShotLightingPlan, TemporalSpec, Storyboard, RenderPlan
+Director outputs: ActionSequenceSpec → ShotSpec, ShotLightingPlan, TemporalSpec,
+                  Storyboard, RenderPlan
 Prompt outputs: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief,
                 PromptRepair
 Production outputs: AssetRecipe, ControlChannelSet, EvidenceBundle,
@@ -32,8 +33,8 @@ contracts from other Skills.
 ## Shared invariants
 
 - Every V2 exchange record uses its schema-declared contract version. The
-  V2.4 package preserves 2.0, 2.2, 2.3.0 and 2.3.1 contract versions for
-  compatible records while new reference lifecycle records use 2.4.0.
+  V2.5 package preserves 2.0, 2.2, 2.3.0, 2.3.1 and 2.4.0 contract versions
+  for compatible records while new V2.5 records declare 2.5.0.
 - A dependent contract names an exact asset identity, version and content hash
   where that asset is already defined.
 - A newer version does not invalidate an exact old ref or inherit its approval.
@@ -45,6 +46,9 @@ contracts from other Skills.
   downstream targets. Byte integrity does not establish authorship or rights.
 - Identity, appearance, geography, style representation and camera treatment
   remain separate ownership domains.
+- ActionSequenceSpec binds Story purpose, Character motion/performance and Scene
+  constraints into beats, coverage and sequence continuity. It does not invent
+  those upstream facts or imply stunt-safety approval.
 - External execution requires approval of the exact stored request plus explicit
   caller enablement; generated media remains an observed candidate until review
   cites evidence.

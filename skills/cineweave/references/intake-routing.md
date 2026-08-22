@@ -12,6 +12,7 @@ only fields that change a downstream decision:
 | medium, visual system, reference policy or style transfer | `cineweave-style` | representation must not overwrite identity or geography |
 | ingest, verify, score, region-scope or bind supplied image/video references | `cineweave-reference` | exact bytes, evidence roles, privacy and rights gates must precede domain interpretation |
 | 拆解人像参考图、反推提示词或创建可复用 Face Recipe | `cineweave-reference` → requested Character/Style/Director/Prompt owners | face identity, skin state, representation and capture hypotheses require separate evidence paths |
+| fight, pursuit, escape, rescue or other multi-beat physical sequence | `cineweave-director` `action_sequence` | action beats, spatial changes, coverage and sequence continuity must precede individual shots |
 | blocking, camera, shot lighting, temporal direction or storyboard | `cineweave-director` | direction decides how an already-defined moment is revealed |
 | reusable or one-off text-to-image prompt in any domain | `cineweave-prompt` | prompt compilation must remain usable beyond cinematic shots |
 | recipe, evidence, capability, rights or repeatable QA | `cineweave-production` | production validation is separate from creative facts |
@@ -26,6 +27,7 @@ Ask only when a safe default would materially change the result:
 - desired output medium or image versus video;
  - whether the request needs story development, a shot decision or only prompt compilation;
 - whether identity must persist across images or shots;
+- whether a physical action is one shot beat or a multi-beat sequence requiring ActionSequenceSpec;
 - the role of a supplied reference image or video when it cannot be safely split into draft atomic observations;
 - historical reconstruction versus stylized reinterpretation;
 - the item that must remain locked.

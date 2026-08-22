@@ -31,6 +31,12 @@ Every storyboard shot should specify:
 - continuity invariants;
 - a provider-neutral frame prompt for the single frozen image.
 
+When an ActionSequenceSpec exists, every action shot also binds its exact
+`actionSequenceRef` and selected `actionBeatIds`. Preserve the linked coverage
+requirements and show every state-changing beat at least once unless the
+approved editorial design deliberately carries it through sound or off-screen
+action.
+
 ## Character continuity
 
 For each bound character, preserve or explicitly change:
@@ -67,3 +73,7 @@ reference and keep the frame prompt subordinate to the storyboard beat.
 ## Continuity checks
 
 Before returning a sequence, check that screen direction, eyelines, axis, subject identity, character state, appearance state, SceneState, active zones, prop placement, light direction, geography and scale anchors remain coherent. If a deliberate break is required, label it as a transition decision rather than allowing an accidental discontinuity.
+
+For action, also check participant zone/facing, occupied hands, weapon or tool
+state, displaced props, damage, support, pursuit direction and the final state
+of each ActionSequenceSpec continuity track.

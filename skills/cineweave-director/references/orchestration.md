@@ -12,9 +12,11 @@ Director consumes exact asset and style bindings; it does not redefine them.
 6. Check character zone placement against active SceneBinding zones.
 7. Check screen direction, eyeline, camera axis and dominant side.
 8. Check action mechanics against architecture, props, surfaces and weather.
-9. Resolve light and material response from SceneBinding without erasing character skin/costume readability.
-10. Compile prompt/storyboard blocks by domain, then append scoped StyleCompile blocks.
-11. Preserve all refs and hashes in downstream records or explicit provenance.
+9. For multi-beat action, verify ActionSequenceSpec participant, zone, beat,
+   coverage, continuity and risk links before any ShotSpec selects action beats.
+10. Resolve light and material response from SceneBinding without erasing character skin/costume readability.
+11. Compile prompt/storyboard blocks by domain, then append scoped StyleCompile blocks.
+12. Preserve all refs and hashes in downstream records or explicit provenance.
 
 ## Conflict handling
 
@@ -26,6 +28,8 @@ Examples:
 - Character dominant side conflicts with prop placement → preserve CharacterSpec and ask Scene/Director to adjust blocking unless Canon says otherwise.
 - SceneState wind direction conflicts with fabric motion → SceneState controls environment response; update the shot cue, not the SceneSpec.
 - Director lens makes a scale anchor unreadable → change camera/lens, not SceneSpec geography.
+- ActionSequenceSpec selects an unknown zone or changes Character-owned timing →
+  return the conflict to Scene or Character; do not repair it inside camera coverage.
 - Style atom conflicts with CharacterSpec or SceneSpec → preserve the exact fact and return a StyleCompile conflict, not a silent identity/geography change.
 
 ## Reference precedence
@@ -44,3 +48,8 @@ A lower-priority reference cannot overwrite a higher-priority invariant.
 ## Production-control handoff
 
 Before an execution-ready RenderPlan, require `$cineweave-style` to resolve the StylePackage/StyleCompile when style affects the target, then require `$cineweave-production` to resolve an AssetRecipe, ControlChannelSet, EvidenceBundle, CapabilityProfile and all LicenseProfiles. Director may consume those exact refs but does not invent capability support or commercial permission. Hard control mismatch, unresolved style conflict or unresolved rights leaves the execution gate blocked. InteractionConstraintSet compiles into a dedicated `sceneInteraction` block and continuity state.
+
+An ActionSequenceSpec may be ready for creative shot breakdown while its risk
+register still requires qualified review. Production readiness remains blocked
+until those external safety decisions exist; the Director contract never authors
+or implies them.

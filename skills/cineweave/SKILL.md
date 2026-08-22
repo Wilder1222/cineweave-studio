@@ -1,6 +1,6 @@
 ---
 name: cineweave
-description: Turn a natural-language creative request into a stage-aware CineWeave brief and composable workflow plan. Use as the optional product entry when a request spans story, character, scene, style, reference assets, direction, image prompting or production; do not use it when the user explicitly invokes one specialist for a bounded task.
+description: Turn a natural-language creative request into a stage-aware CineWeave brief and composable workflow plan. Use as the optional product entry when a request spans story, character, scene, style, reference assets, action or shot direction, image prompting or production; do not use it when the user explicitly invokes one specialist for a bounded task.
 ---
 
 # CineWeave Studio
@@ -16,8 +16,8 @@ This Skill owns only:
 - `creative_intake`: a stage-aware `CreativeBrief` from natural language and declared references;
 - `workflow_compose`: a dependency-aware `WorkflowPlan` that selects independent specialist routes.
 
-It does not create a StoryBrief, CharacterSpec, SceneSpec, StylePackage, ShotSpec,
-ImagePrompt, Storyboard, AssetRecipe or RenderPlan. Users may invoke any specialist
+It does not create a StoryBrief, CharacterSpec, SceneSpec, StylePackage,
+ActionSequenceSpec, ShotSpec, ImagePrompt, Storyboard, AssetRecipe or RenderPlan. Users may invoke any specialist
 directly: `$cineweave-story`, `$cineweave-character`, `$cineweave-scene`,
 `$cineweave-style`, `$cineweave-reference`, `$cineweave-director`, `$cineweave-prompt` and
 `$cineweave-production` never require this router.
@@ -38,7 +38,7 @@ when a task needs more than one specialist or must be handed to a team.
 
 1. Treat the natural-language request as creative intent, not as a complete Canon record.
 2. Route raw supplied media to `$cineweave-reference` for exact ingestion and atomic role-scoped observations. Preserve an existing exact `ReferenceBindingSet`; do not let one image silently define identity, costume, style and composition together.
-3. Keep story causality, identity, geography, style representation, shot language, prompt compilation and production readiness separate.
+3. Keep story causality, identity, geography, style representation, action choreography, shot language, prompt compilation and production readiness separate.
 4. Build a directed acyclic workflow. A Skill can consume an upstream contract but never relies on hidden conversational state or a circular handoff.
 5. Prefer a direct specialist route for a single-domain task. Use a composed plan only when a concrete output needs cross-domain contracts.
 6. Preserve hard/soft/free/undefined locks and make unresolved high-impact information visible.
@@ -47,6 +47,7 @@ when a task needs more than one specialist or must be handed to a team.
 9. For “拆解参考图 / 反推提示词” portrait requests, route the actual media through atomic Reference observations first. Compose Character, Style, Director and Prompt only for the requested reusable outputs; a prior prose description without the image cannot substitute for visual evidence.
 10. For semantic face/body editing, route to `$cineweave-character` `character_morphology`, then `morphology_review` before identity lock. Sliders, cards and A/B feedback are inputs to the same provider-neutral morphology contract.
 11. For an unknown visual direction, route to `$cineweave-style` `style_explore` and `style_converge`; once Character and Style are approved, use `representation_binding` before cross-medium compilation.
+12. For fights, pursuits, escapes, rescues or other multi-beat physical sequences, route exact Story, Character and Scene outputs to `$cineweave-director` `action_sequence` before `shot_direction`. Keep qualified production-safety review outside the creative contract.
 
 ## Output contracts
 

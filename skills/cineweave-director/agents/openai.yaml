@@ -1,6 +1,6 @@
 interface:
   display_name: "CineWeave Director"
-  short_description: "Direct shots, lighting, time and storyboards"
-  default_prompt: "Use $cineweave-director to direct this image or sequence from my brief and any exact character, scene or style contracts I provide."
+  short_description: "Direct action, shots, lighting, time and storyboards"
+  default_prompt: "Use $cineweave-director to choreograph or direct this action, image or sequence from my brief and any exact story, character, scene or style contracts I provide."
 policy:
   allow_implicit_invocation: true

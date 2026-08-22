@@ -72,7 +72,10 @@
   representation scopes for anime, manga, illustration, stylized 3D and hybrid;
 - fine-grained morphology, surface, linework, shading, depth, panel, typography
   and motion-style evidence roles;
-- 69 contracts, 66 uniquely owned routes and 14 built-in deterministic recipes,
+- Director-owned `ActionSequenceSpec` for exact multi-beat choreography,
+  physical-design checks, coverage requirements, closed sequence continuity and
+  visible qualified-review risks before ShotSpec selection;
+- 70 contracts, 67 uniquely owned routes, 33 behavior cases and 14 built-in deterministic recipes,
   including neutral morphology, natural-human, Anime, Manga, style-exploration
   and six-family cross-representation fixtures.
 

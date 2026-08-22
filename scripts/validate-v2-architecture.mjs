@@ -66,6 +66,7 @@ async function main() {
   fail(errors, workflow?.owner === "cineweave", "WorkflowPlan must be owned by cineweave");
   fail(errors, contractKinds.get("cineweave_codex_story_brief")?.owner === "cineweave-story", "StoryBrief must be owned by cineweave-story");
   fail(errors, contractKinds.get("cineweave_codex_prompt_record")?.owner === "cineweave-prompt", "PromptRecord must be owned by cineweave-prompt");
+  fail(errors, contractKinds.get("cineweave_codex_action_sequence_spec")?.owner === "cineweave-director", "ActionSequenceSpec must be owned by cineweave-director");
   fail(errors, contractKinds.get("cineweave_codex_shot_spec")?.owner === "cineweave-director", "ShotSpec must be owned by cineweave-director");
   fail(errors, contractKinds.get("cineweave_codex_scene_light_state")?.owner === "cineweave-scene", "SceneLightState must be owned by cineweave-scene");
   fail(errors, contractKinds.get("cineweave_codex_style_light_grammar")?.owner === "cineweave-style", "StyleLightGrammar must be owned by cineweave-style");

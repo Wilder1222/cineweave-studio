@@ -20,7 +20,7 @@ ReferenceAsset → atomic Observation / Review / BindingSet
               ↓
 Story ─ Character ─ Scene ─ Style
               ↓
-Director ShotSpec / ShotLightingPlan / TemporalSpec
+Director ActionSequenceSpec → ShotSpec / ShotLightingPlan / TemporalSpec
               ↓
 PromptRecord / ImagePrompt
               ↓
@@ -49,11 +49,11 @@ phases without an artifact referencing its own downstream output.
 | geography, materials, interaction and physical light | `cineweave-scene` | post-process look or shot source selection |
 | style exploration, RepresentationBinding, visual/temporal grammar and realism treatment | `cineweave-style` | canonical identity, physical skin/material state, geography or source placement |
 | reference bytes, observations, suitability and role bindings | `cineweave-reference` | character/scene/style design, rights grants or provider execution |
-| blocking, camera, shot light use and time | `cineweave-director` | persistent identity or general prompt library |
+| action beats, sequence coverage and continuity, blocking, camera, shot light use and time | `cineweave-director` | story causality, persistent identity, scene geography, stunt-safety approval or general prompt library |
 | text-to-image prompt assets | `cineweave-prompt` | story causality or shot invention when a ShotSpec is required |
 | recipes, evidence, capability, rights, execution intent and QA | `cineweave-production` | creative facts, credentials, endpoints or claims that execution succeeded |
 
-## Four separations with high leverage
+## Separations with high leverage
 
 ### Reference evidence
 
@@ -140,6 +140,20 @@ owning bloom.
 `TemporalSpec` owns camera path, focus, edit and environmental timing while
 referencing—not rewriting—the actor timeline.
 
+### Action choreography
+
+`ActionSequenceSpec` sits between exact Story/Character/Scene facts and shot
+breakdown. It owns ordered physical beats, participant movement through bound
+zones, coverage requirements and entry/change/exit continuity. It references
+Character motion fingerprints and PerformanceTimelines without rewriting actor
+behavior, and it references Scene zones and InteractionConstraintSets without
+inventing geography or contact rules.
+
+ShotSpec may bind an exact ActionSequenceSpec plus selected action beat IDs.
+Lens, exact camera position and temporal curves remain shot-level decisions.
+Action risk flags make qualified-review needs visible; the design artifact is
+never a stunt plan or safety approval.
+
 ### Direction and prompts
 
 `ShotSpec` decides purpose, blocking, attention, camera and composition.
@@ -190,7 +204,7 @@ boundaries.
 
 ## Contracts and portable bundles
 
-The canonical manifest owns 69 contract kinds. Each Skill declares its portable
+The canonical manifest owns 70 contract kinds. Each Skill declares its portable
 subset in `skills/<skill>/contracts.json`. Bundle construction copies only the
 needed schemas and recipes and rewrites local references, so a specialist bundle
 does not depend on the repository layout.
@@ -210,6 +224,8 @@ Release validation covers:
 - unique route and contract ownership;
 - every schema/example pair;
 - cross-contract semantic positive and negative cases;
+- action-beat ordering, participant/zone resolution, coverage and risk links,
+  continuity closure and no implied stunt-safety approval;
 - activation, indirect, incomplete, negative and edge behavior definitions;
 - workflow DAG and output-owner consistency;
 - canonicalization, immutable writes, concurrent conflicts and approvals;

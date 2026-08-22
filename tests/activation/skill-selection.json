@@ -58,6 +58,13 @@
       "mustNotRequire": ["cineweave", "cineweave-prompt", "cineweave-production"]
     },
     {
+      "id": "direct-director-action-sequence",
+      "request": "把茶楼保护、短促交锋、退路被封和临河撤离拆成可拍的动作节拍、空间变化、覆盖要求与连续性状态。",
+      "entrySkill": "cineweave-director",
+      "mode": "standalone",
+      "mustNotRequire": ["cineweave", "cineweave-prompt", "cineweave-production"]
+    },
+    {
       "id": "direct-prompt",
       "request": "把她在窗前回眸的一刻写成一张真实感中文生图提示词，并保存为可复用提示词版本。",
       "entrySkill": "cineweave-prompt",

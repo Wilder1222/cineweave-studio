@@ -2,14 +2,15 @@
   "contractPackage": "cineweave-contracts@2.5.0",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalReferenceBindingSet"],
-    "produces": ["DirectorProposals", "ShotSpec", "ShotLightingPlan", "TemporalSpec", "Storyboard", "RenderPlan", "MediaImport"]
+    "produces": ["DirectorProposals", "ActionSequenceSpec", "ShotSpec", "ShotLightingPlan", "TemporalSpec", "Storyboard", "RenderPlan", "MediaImport"]
   },
   "composed": {
-    "consumes": ["CreativeBrief", "StoryBrief", "ScriptScene", "ReferenceObservation", "ReferenceReview", "ReferenceBindingSet", "CharacterBinding", "PerformanceTimeline", "RepresentationBinding", "SceneBinding", "SceneLightState", "InteractionConstraintSet", "StyleCompile", "StyleLightGrammar", "PromptRecord", "ImagePrompt", "ProductionContracts"],
-    "produces": ["DirectorProposals", "ShotSpec", "ShotLightingPlan", "TemporalSpec", "Storyboard", "RenderPlan", "MediaImport"]
+    "consumes": ["CreativeBrief", "StoryBrief", "ScriptScene", "ReferenceObservation", "ReferenceReview", "ReferenceBindingSet", "CharacterBinding", "PerformanceTimeline", "RepresentationBinding", "SceneBinding", "SceneLightState", "InteractionConstraintSet", "ActionSequenceSpec", "StyleCompile", "StyleLightGrammar", "PromptRecord", "ImagePrompt", "ProductionContracts"],
+    "produces": ["DirectorProposals", "ActionSequenceSpec", "ShotSpec", "ShotLightingPlan", "TemporalSpec", "Storyboard", "RenderPlan", "MediaImport"]
   },
   "contractKinds": [
     "cineweave_codex_director_proposals",
+    "cineweave_codex_action_sequence_spec",
     "cineweave_codex_shot_spec",
     "cineweave_codex_shot_lighting_plan",
     "cineweave_codex_temporal_spec",

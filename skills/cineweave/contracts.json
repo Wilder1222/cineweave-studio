@@ -5,7 +5,7 @@
     "produces": ["CreativeBrief", "WorkflowPlan"]
   },
   "composed": {
-    "consumes": ["NaturalLanguageBrief", "OptionalExactContractRefs", "CharacterMorphologySpec", "MorphologyReview", "StyleExplorationBrief", "StyleOptionSet", "StylePreferenceFeedback", "RepresentationBinding"],
+    "consumes": ["NaturalLanguageBrief", "OptionalExactContractRefs", "CharacterMorphologySpec", "MorphologyReview", "StyleExplorationBrief", "StyleOptionSet", "StylePreferenceFeedback", "RepresentationBinding", "ActionSequenceSpec"],
     "produces": ["CreativeBrief", "WorkflowPlan"]
   },
   "contractKinds": [
@@ -18,6 +18,7 @@
     "cineweave_codex_style_exploration_brief",
     "cineweave_codex_style_option_set",
     "cineweave_codex_style_preference_feedback",
-    "cineweave_codex_representation_binding"
+    "cineweave_codex_representation_binding",
+    "cineweave_codex_action_sequence_spec"
   ]
 }

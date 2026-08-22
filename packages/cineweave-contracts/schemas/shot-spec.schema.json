@@ -12,6 +12,14 @@
     "version": { "type": "integer", "minimum": 1 },
     "scriptSceneRef": { "$ref": "common.schema.json#/$defs/contractRef" },
     "beatIds": { "type": "array", "maxItems": 8, "items": { "$ref": "common.schema.json#/$defs/identifier" } },
+    "actionSequenceRef": { "$ref": "common.schema.json#/$defs/contractRef" },
+    "actionBeatIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/identifier" }
+    },
     "skillReceipt": { "$ref": "common.schema.json#/$defs/skillReceipt" },
     "purpose": { "type": "string", "minLength": 1, "maxLength": 1200 },
     "dramaticBeat": { "type": "string", "minLength": 1, "maxLength": 1200 },
@@ -109,5 +117,9 @@
         "endStateStable": { "const": true }
       }
     }
+  },
+  "dependentRequired": {
+    "actionSequenceRef": ["actionBeatIds"],
+    "actionBeatIds": ["actionSequenceRef"]
   }
 }

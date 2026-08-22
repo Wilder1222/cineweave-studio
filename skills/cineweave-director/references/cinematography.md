@@ -42,6 +42,12 @@ Use one dominant movement per shot unless a transition explicitly requires a com
 
 Movement should reveal, pursue, isolate, destabilize, connect or release. A text-to-image frame cannot literally move, so convert the movement into a capture moment: body posture, trailing fabric, parallax layers, controlled motion blur, directional light or a readable leading line.
 
+For a shot selected from ActionSequenceSpec, camera choices must satisfy the
+linked coverage requirement: preserve its must-see action, permitted
+occlusion, axis intent, movement motivation, cut motivation and stable handoff.
+Do not choose a lens that makes a required contact, support point or path change
+unreadable.
+
 ## Continuity
 
 Track the 180-degree axis, screen direction, eyelines, subject scale, light direction, horizon and dominant color. A repair should change the cheapest variable while preserving these invariants.
