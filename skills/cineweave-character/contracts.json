@@ -1,5 +1,5 @@
 {
-  "contractPackage": "cineweave-contracts@2.5.0",
+  "contractPackage": "cineweave-contracts@2.5.1",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalReferenceBindingSet", "OptionalWorldContext"],
     "produces": ["CharacterExplorationBrief", "CharacterOptionSet", "CharacterPreferenceFeedback", "CharacterMorphologySpec", "MorphologyReview", "CharacterSpec", "CharacterReferencePlan", "CharacterAppearanceState", "CharacterBinding", "PerformanceTimeline", "CharacterReview", "CharacterRepair"]

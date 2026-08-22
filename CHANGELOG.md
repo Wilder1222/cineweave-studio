@@ -2,7 +2,26 @@
 
 ## Unreleased
 
-- No unreleased changes.
+- added Director-owned `ActionSequenceSpec` and `action_sequence` routing for
+  multi-beat choreography, exact Character/Scene bindings, physical-design
+  checks, coverage requirements, closed continuity and visible qualified-review
+  risks without claiming stunt-safety approval;
+- allowed ShotSpec to select exact action-sequence beats before lens, camera and
+  temporal direction, with an end-to-end Story → Character/Scene → Action →
+  Shot/Temporal/Storyboard workflow example;
+- expanded the current source gate to 70 contracts, 67 uniquely owned routes,
+  14 built-in recipes, 33 behavior cases, 13 live replay cases and 37 runtime
+  tests across all nine standalone/composable Skills.
+
+## 2.5.1 — 2026-08-22
+
+- fixed the repository Marketplace entry to pin the installable plugin to the
+  immutable `v2.5.1` release instead of resolving the previous `v2.4.0`
+  snapshot;
+- synchronized plugin, package, contract-package, recipe-catalog, standalone
+  Skill and evaluation-corpus distribution metadata at 2.5.1;
+- retained the V2.5.0 contract and runtime wire formats, so this installation
+  fix requires no artifact migration.
 
 ## 2.5.0 — 2026-08-22
 
@@ -32,18 +51,11 @@
 - expanded provider capabilities, evidence roles, family Bench semantics,
   semantic negative tests, activation/composition cases and deterministic live
   replay fixtures while preserving provider-neutral Canon and human gates;
-- added Director-owned `ActionSequenceSpec` and `action_sequence` routing for
-  multi-beat choreography, exact Character/Scene bindings, physical-design
-  checks, coverage requirements, closed continuity and visible qualified-review
-  risks without claiming stunt-safety approval;
-- allowed ShotSpec to select exact action-sequence beats before lens, camera and
-  temporal direction, with an end-to-end Story → Character/Scene → Action →
-  Shot/Temporal/Storyboard workflow example;
 - advanced the local runtime and project schemas additively to V2.5.0 while
   retaining non-destructive support for valid V2.2, V2.3.x and V2.4 artifacts
   and project bundles;
-- expanded the release gate to 70 contracts, 67 uniquely owned routes, 14
-  built-in recipes, 33 behavior cases, 13 live replay cases and 37 runtime tests
+- expanded the release gate to 69 contracts, 66 uniquely owned routes, 14
+  built-in recipes, 32 behavior cases, 13 live replay cases and 37 runtime tests
   across all nine standalone/composable Skills.
 
 ## 2.4.0 — 2026-08-22

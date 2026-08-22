@@ -54,7 +54,7 @@ async function checkManifestContracts() {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   const plugin = JSON.parse(await readFile(join(repoRoot, ".codex-plugin", "plugin.json"), "utf8"));
   const packageJson = JSON.parse(await readFile(join(repoRoot, "package.json"), "utf8"));
-  if (manifest.version !== "2.5.0" || plugin.version !== manifest.version || packageJson.version !== manifest.version || plugin.name !== "cineweave-studio") fail("package, plugin and contract manifest versions must all be CineWeave Studio 2.5.0");
+  if (manifest.version !== "2.5.1" || plugin.version !== manifest.version || packageJson.version !== manifest.version || plugin.name !== "cineweave-studio") fail("package, plugin and contract manifest versions must all be CineWeave Studio 2.5.1");
   else pass(`package, plugin and contract manifest are CineWeave Studio v${plugin.version}`);
 
   const kinds = new Set();
@@ -104,7 +104,7 @@ async function checkManifestContracts() {
 async function checkRecipeCatalog() {
   const catalogPath = join(contractRoot, "recipes", "catalog.json");
   const catalog = JSON.parse(await readFile(catalogPath, "utf8"));
-  if (catalog.version !== "2.5.0") fail("recipe catalog version must be 2.5.0");
+  if (catalog.version !== "2.5.1") fail("recipe catalog version must be 2.5.1");
   const ids = new Set();
   for (const item of catalog.recipes || []) {
     if (ids.has(item.recipeId)) fail(`duplicate recipe ID: ${item.recipeId}`);
@@ -195,7 +195,7 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  console.log("\nCineWeave Studio v2.5.0 release checks passed.");
+  console.log("\nCineWeave Studio v2.5.1 release checks passed.");
 }
 
 main().catch((error) => { console.error(error instanceof Error ? error.stack || error.message : String(error)); process.exitCode = 2; });

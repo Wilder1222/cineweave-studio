@@ -1,6 +1,6 @@
 {
   "datasetId": "cineweave.live-smoke",
-  "suiteVersion": "2.5.0",
+  "suiteVersion": "2.5.1",
   "syntheticInputsOnly": true,
   "cases": [
     {

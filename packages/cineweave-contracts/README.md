@@ -1,4 +1,4 @@
-# CineWeave Contracts 2.5.0
+# CineWeave Contracts 2.5.1
 
 `cineweave-contracts` is the canonical exchange layer for CineWeave Studio. Its
 manifest records 70 contract kinds, one owner per contract and one owner per
