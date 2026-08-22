@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/Wilder1222/cineweave-studio/actions/workflows/validate.yml"><img alt="Validation" src="https://img.shields.io/github/actions/workflow/status/Wilder1222/cineweave-studio/validate.yml?branch=main&style=flat-square&label=validation"></a>
   <img alt="Codex plugin" src="https://img.shields.io/badge/Codex-Plugin-1D6FFF?style=flat-square">
-  <img alt="Version 2.5.0" src="https://img.shields.io/badge/version-2.5.0-14B8A6?style=flat-square">
+  <img alt="Version 2.5.1" src="https://img.shields.io/badge/version-2.5.1-14B8A6?style=flat-square">
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-111827?style=flat-square">
 </p>
 
@@ -59,7 +59,7 @@ the director system no longer owns general prompt management.
 Install the immutable release tag:
 
 ```bash
-codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.5.0
+codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.5.1
 codex plugin add cineweave-studio@cineweave-studio
 ```
 
@@ -239,7 +239,7 @@ resolves “latest” or relies on hidden conversation state.
 
 ## Deterministic local runtime
 
-V2.5.0 includes a dependency-free Node.js runtime for immutable local
+V2.5.1 packages the V2.5.0 dependency-free Node.js runtime for immutable local
 artifacts, bounded content-addressed reference ingestion, exact dependency
 graphs, hash-bound approval gates, safe project transfer, deterministic board
 assembly and trusted adapter execution with byte-verifiable receipts.
@@ -297,7 +297,7 @@ image model to invent the grid, labels and all panels in a single pass.
 
 ## Verification
 
-The V2.5.0 gate validates 69 contracts, 66 uniquely owned routes and 14 built-in
+The V2.5.1 gate validates 69 contracts, 66 uniquely owned routes and 14 built-in
 deterministic recipes. It also validates every schema/example pair, semantic
 positive and negative cases, 32 static behavior cases, a 13-case deterministic
 live-evaluation replay set and 37 runtime tests, plus standalone Skill bundles,

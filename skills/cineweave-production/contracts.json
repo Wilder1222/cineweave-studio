@@ -1,5 +1,5 @@
 {
-  "contractPackage": "cineweave-contracts@2.5.0",
+  "contractPackage": "cineweave-contracts@2.5.1",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalApprovedContracts", "OptionalEvidence", "OptionalReferenceContracts"],
     "produces": ["AssetRecipe", "ControlChannelSet", "EvidenceBundle", "CapabilityProfile", "LicenseProfile", "ControlBenchmark", "AdapterDescriptor", "ExecutionRequest", "ExecutionReceipt"]

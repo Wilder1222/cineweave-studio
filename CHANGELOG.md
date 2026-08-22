@@ -4,6 +4,16 @@
 
 - No unreleased changes.
 
+## 2.5.1 — 2026-08-22
+
+- fixed the repository Marketplace entry to pin the installable plugin to the
+  immutable `v2.5.1` release instead of resolving the previous `v2.4.0`
+  snapshot;
+- synchronized plugin, package, contract-package, recipe-catalog, standalone
+  Skill and evaluation-corpus distribution metadata at 2.5.1;
+- retained the V2.5.0 contract and runtime wire formats, so this installation
+  fix requires no artifact migration.
+
 ## 2.5.0 — 2026-08-22
 
 - added provider-neutral `CharacterMorphologySpec` and `MorphologyReview`
