@@ -2,7 +2,16 @@
 
 ## Unreleased
 
-- No unreleased changes.
+- added Director-owned `ActionSequenceSpec` and `action_sequence` routing for
+  multi-beat choreography, exact Character/Scene bindings, physical-design
+  checks, coverage requirements, closed continuity and visible qualified-review
+  risks without claiming stunt-safety approval;
+- allowed ShotSpec to select exact action-sequence beats before lens, camera and
+  temporal direction, with an end-to-end Story → Character/Scene → Action →
+  Shot/Temporal/Storyboard workflow example;
+- expanded the current source gate to 70 contracts, 67 uniquely owned routes,
+  14 built-in recipes, 33 behavior cases, 13 live replay cases and 37 runtime
+  tests across all nine standalone/composable Skills.
 
 ## 2.5.1 — 2026-08-22
 

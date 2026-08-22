@@ -50,6 +50,7 @@ the director system no longer owns general prompt management.
 | “Use this courtyard in several shots.” | Versioned geography, material, weather, physical light and interaction constraints. |
 | “I like this look but not the depicted person.” | A byte-bound reference asset, atomic style observation and explicit identity ignore rules. |
 | “拆解这张人像并反推可复用提示词。” | Separate face-identity, skin-material, appearance, style and capture observations, then compile only the requested reusable contracts. |
+| “Make this tea-house escape shootable.” | An `ActionSequenceSpec` with ordered beats, bound geography, physical-design checks, coverage, closed continuity and visible qualified-review risks. |
 | “Make the shot feel intimate.” | Blocking, attention order, lens, depth, motivated shot lighting and a stable temporal end state. |
 | “Write the actual image prompt.” | A reusable Chinese, English or bilingual PromptRecord with a visibility budget and testable constraints. |
 | “Build a 3×3 sheet reliably.” | Independent tile tasks and deterministic external assembly with per-tile hashes. |
@@ -79,7 +80,7 @@ upstream contract refs. The `$cineweave` router is optional.
 | `$cineweave-scene` | geography, architecture, materials, physical light and interaction | `SceneSpec`, `SceneState`, `SceneLightState`, bindings and reviews |
 | `$cineweave-style` | one-axis style exploration and visual/temporal representation grammar | style exploration contracts, `StylePackage`, `RepresentationBinding`, `StyleCompile`, `StyleLightGrammar` |
 | `$cineweave-reference` | content-addressed media, atomic observations, suitability and exact role bindings | `ReferenceAsset`, `ReferenceObservation`, `ReferenceReview`, `ReferenceBindingSet` |
-| `$cineweave-director` | shot purpose, blocking, camera, shot light use and time | `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, storyboard |
+| `$cineweave-director` | action choreography, shot purpose, blocking, camera, shot light use and time | `ActionSequenceSpec`, `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, storyboard |
 | `$cineweave-prompt` | general text-to-image prompt assets | `PromptRecord`, `ImagePrompt`, hypotheses and one-variable repairs |
 | `$cineweave-production` | recipes, controls, evidence, capabilities, rights, execution intent and QA | `AssetRecipe`, capability/license profiles, `AdapterDescriptor`, `ExecutionRequest`, `ExecutionReceipt` |
 
@@ -170,6 +171,19 @@ Define what the audience notices first, blocking and weight, relationship axis,
 stable end state. Return a ShotSpec, not an image prompt.
 ```
 
+### Choreograph action before shots
+
+```text
+Use $cineweave-director with these exact ScriptScene, CharacterBindings,
+PerformanceTimelines, SceneBinding and InteractionConstraintSets. Break the
+tea-house protection and window escape into ordered action beats, physical
+checks, coverage requirements and closed continuity. Flag weapons, height and
+water for qualified review. Return ActionSequenceSpec before choosing lenses.
+```
+
+The complete dependency example is
+[`workflow-plan-action-sequence.json`](packages/cineweave-contracts/examples/workflow-plan-action-sequence.json).
+
 ### Compile any image domain
 
 ```text
@@ -196,7 +210,7 @@ natural language + optional untrusted media
                               ▼
                             Style
                               ▼
-                           Director
+                    Action / Shot Director
                               ▼
                             Prompt
                               ▼
@@ -216,7 +230,7 @@ Skill. A product prompt can go directly to Prompt; a script rewrite can go
 directly to Story; a reference suitability review can go directly to Reference;
 a rights audit can go directly to Production.
 
-Four boundaries prevent common drift:
+Key boundaries prevent common drift:
 
 - Reference binds exact bytes and one role per observation; downstream Skills
   decide how accepted evidence affects their own domain.
@@ -231,6 +245,9 @@ Four boundaries prevent common drift:
   Director chooses how existing sources function in one shot.
 - Character defines actor behavior timing; Director aligns camera timing without
   rewriting the performance.
+- ActionSequenceSpec arranges exact Story, Character and Scene facts into beats,
+  coverage and sequence continuity; it does not rewrite those facts or imply
+  stunt-safety approval.
 - Director defines the shot; Prompt compiles the shot and other exact facts into
   model-facing language.
 
@@ -297,9 +314,9 @@ image model to invent the grid, labels and all panels in a single pass.
 
 ## Verification
 
-The V2.5.1 gate validates 69 contracts, 66 uniquely owned routes and 14 built-in
+The current source gate validates 70 contracts, 67 uniquely owned routes and 14 built-in
 deterministic recipes. It also validates every schema/example pair, semantic
-positive and negative cases, 32 static behavior cases, a 13-case deterministic
+positive and negative cases, 33 static behavior cases, a 13-case deterministic
 live-evaluation replay set and 37 runtime tests, plus standalone Skill bundles,
 reference links, rights boundaries, media-ingestion threats and distributable
 assets.

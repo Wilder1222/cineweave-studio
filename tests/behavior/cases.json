@@ -274,6 +274,17 @@
       "behaviorAssertions": ["stages before choosing a lens", "uses one dominant camera idea"]
     },
     {
+      "id": "director.direct.action-sequence",
+      "category": "direct",
+      "targetSkill": "cineweave-director",
+      "request": "Use $cineweave-director with the exact ScriptScene, CharacterBindings, PerformanceTimelines, SceneBinding and InteractionConstraintSets. Choreograph the tea-house protection and window escape as ordered action beats, coverage requirements and closed continuity before choosing individual lenses.",
+      "expectedSkill": "cineweave-director",
+      "expectedRoute": "action_sequence",
+      "mustProduce": ["cineweave_codex_action_sequence_spec"],
+      "mustNotProduce": ["cineweave_codex_shot_spec", "cineweave_codex_image_prompt"],
+      "behaviorAssertions": ["preserves Story Character and Scene ownership", "links every beat to coverage and continuity", "flags hazardous methods for qualified review without claiming safety approval"]
+    },
+    {
       "id": "director.edge.unmotivated-move",
       "category": "edge",
       "targetSkill": "cineweave-director",

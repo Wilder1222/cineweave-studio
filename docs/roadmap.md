@@ -1,5 +1,13 @@
 # CineWeave Studio roadmap
 
+## In development after V2.5.1
+
+- Director-owned `ActionSequenceSpec` for exact multi-beat choreography,
+  physical-design checks, coverage requirements, closed sequence continuity and
+  visible qualified-review risks before ShotSpec selection;
+- current source coverage of 70 contracts, 67 uniquely owned routes and 33
+  behavior cases.
+
 ## Shipped in V2.2
 
 - eight standalone/composable Skills with unique route and contract ownership;
@@ -72,7 +80,7 @@
   representation scopes for anime, manga, illustration, stylized 3D and hybrid;
 - fine-grained morphology, surface, linework, shading, depth, panel, typography
   and motion-style evidence roles;
-- 69 contracts, 66 uniquely owned routes and 14 built-in deterministic recipes,
+- 69 contracts, 66 uniquely owned routes, 32 behavior cases and 14 built-in deterministic recipes,
   including neutral morphology, natural-human, Anime, Manga, style-exploration
   and six-family cross-representation fixtures.
 

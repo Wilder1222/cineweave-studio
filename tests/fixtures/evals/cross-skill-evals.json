@@ -43,6 +43,24 @@
       ]
     },
     {
+      "id": "route-action-sequence-owner",
+      "mode": "action_sequence",
+      "prompt": "用精确 ScriptScene、CharacterBindings、PerformanceTimelines、SceneBinding 和 InteractionConstraintSets 设计茶楼保护与临河撤离；先给动作节拍、覆盖和连续性，不要先选镜头焦段。",
+      "loads": [
+        "action-direction",
+        "orchestration"
+      ],
+      "expectedOutput": "action-sequence-spec",
+      "assertions": [
+        "Story causality is consumed not rewritten",
+        "Character motion and timing are consumed not rewritten",
+        "Scene zones and contacts are consumed not invented",
+        "every action beat links to coverage and continuity",
+        "hazardous methods remain flagged for qualified review",
+        "lens and exact camera curves are deferred to ShotSpec and TemporalSpec"
+      ]
+    },
+    {
       "id": "integrated-image-prompt",
       "mode": "image_prompt",
       "prompt": "把受威胁角色绑定和暴雨玉廊绑定编译为一张关键帧。",

@@ -54,9 +54,9 @@
     },
     {
       "name": "cineweave-director",
-      "role": "shot_and_temporal_direction",
-      "owns": ["proposal", "shot_direction", "shot_lighting", "temporal_direction", "storyboard", "render_plan", "media_import", "repair"],
-      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "StoryBrief", "ScriptScene", "ReferenceObservation", "ReferenceBindingSet", "CharacterBinding", "PerformanceTimeline", "RepresentationBinding", "SceneBinding", "SceneLightState", "InteractionConstraintSet", "StyleCompile", "StyleLightGrammar", "PromptContracts", "ProductionContracts"],
+      "role": "action_shot_and_temporal_direction",
+      "owns": ["proposal", "action_sequence", "shot_direction", "shot_lighting", "temporal_direction", "storyboard", "render_plan", "media_import", "repair"],
+      "consumes": ["NaturalLanguageBrief", "CreativeBrief", "StoryBrief", "ScriptScene", "ReferenceObservation", "ReferenceBindingSet", "CharacterBinding", "PerformanceTimeline", "RepresentationBinding", "SceneBinding", "SceneLightState", "InteractionConstraintSet", "ActionSequenceSpec", "StyleCompile", "StyleLightGrammar", "PromptContracts", "ProductionContracts"],
       "standalone": true,
       "composable": true
     },
@@ -119,6 +119,7 @@
     { "kind": "cineweave_codex_style_review", "schema": "schemas/style-review.schema.json", "example": "examples/style-review.json", "owner": "cineweave-style" },
 
     { "kind": "cineweave_codex_director_proposals", "schema": "schemas/proposal-output.schema.json", "example": "examples/proposal-output.json", "owner": "cineweave-director" },
+    { "kind": "cineweave_codex_action_sequence_spec", "schema": "schemas/action-sequence-spec.schema.json", "example": "examples/action-sequence-spec.json", "owner": "cineweave-director" },
     { "kind": "cineweave_codex_shot_spec", "schema": "schemas/shot-spec.schema.json", "example": "examples/shot-spec.json", "owner": "cineweave-director" },
     { "kind": "cineweave_codex_shot_lighting_plan", "schema": "schemas/shot-lighting-plan.schema.json", "example": "examples/shot-lighting-plan.json", "owner": "cineweave-director" },
     { "kind": "cineweave_codex_temporal_spec", "schema": "schemas/temporal-spec.schema.json", "example": "examples/temporal-spec.json", "owner": "cineweave-director" },
@@ -182,7 +183,8 @@
     "visualRepresentationBindings": true,
     "naturalHumanFixtures": true,
     "styleFamilyFixtures": true,
-    "crossRepresentationFixtures": true
+    "crossRepresentationFixtures": true,
+    "actionSequenceChoreography": true
   },
   "composition": {
     "workflowContract": "cineweave_codex_workflow_plan",
@@ -204,6 +206,7 @@
     "rawReferencesRequireExplicitIngestion": true,
     "noBiometricMorphology": true,
     "noUniversalBeautyScore": true,
-    "styleCannotMutateCanonicalIdentity": true
+    "styleCannotMutateCanonicalIdentity": true,
+    "actionDesignDoesNotImplyStuntSafety": true
   }
 }

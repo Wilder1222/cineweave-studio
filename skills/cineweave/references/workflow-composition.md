@@ -18,6 +18,10 @@ one-off prompt
 one-off shot direction
   → cineweave-director
 
+multi-beat physical action
+  → story + character performance + scene interaction
+  → cineweave-director action sequence → shot direction + temporal direction → storyboard
+
 reference suitability or reusable reference binding
   → cineweave-reference
 
@@ -42,6 +46,12 @@ portrait reference decomposition and reusable prompt
 story scene with physical interaction
   → story + character + scene + style → director → prompt → production
 ```
+
+ActionSequenceSpec is upstream of ShotSpec. The action step binds exact
+CharacterBindings, optional PerformanceTimelines, SceneBinding and interaction
+constraints; the shot step selects exact action beat IDs and adds lens, camera
+and composition. Never reverse that dependency or treat action design as
+production-safety approval.
 
 Do not include Production for a low-risk exploration unless the user asks for a
 repeatable asset pack, rights/capability validation or deterministic assembly.

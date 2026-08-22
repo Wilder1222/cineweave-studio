@@ -1,7 +1,7 @@
 # CineWeave Contracts 2.5.1
 
 `cineweave-contracts` is the canonical exchange layer for CineWeave Studio. Its
-manifest records 69 contract kinds, one owner per contract and one owner per
+manifest records 70 contract kinds, one owner per contract and one owner per
 Skill route.
 
 ## Domains
@@ -16,8 +16,8 @@ Skill route.
   policy, StyleCompile with optional calibrated realism treatment, and StyleLightGrammar.
 - Reference: byte-bound assets, atomic observations, suitability reviews and
   exact role-scoped binding sets.
-- Director: proposals, ShotSpec, ShotLightingPlan, TemporalSpec, storyboard,
-  reference consumption and render planning.
+- Director: proposals, ActionSequenceSpec, ShotSpec, ShotLightingPlan,
+  TemporalSpec, storyboard, reference consumption and render planning.
 - Prompt: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief and PromptRepair.
 - Production: recipes, controls, evidence, capability, rights, adapter
   descriptors, exact execution requests, receipts and benchmarks.
@@ -52,6 +52,9 @@ causal beats, non-overlapping performance phases, physical/style light
 separation, source-bound shot lighting, ordered temporal events, one-variable
 repair, deterministic grids, execution authorization/cost integrity, artifact-
 graph summaries, safe bundle manifests and evaluation-summary consistency.
+Action semantics additionally enforce ordered beats, resolved participants and
+zones, symmetric coverage/risk links, closed continuity and visible qualified
+review for high-risk depiction.
 Reference semantics additionally enforce exact asset paths and hashes, bounded
 selectors, disjoint extract/ignore scopes, role authority, rights gates,
 binding conflict resolution and reference-media bundle policy. Portraits use

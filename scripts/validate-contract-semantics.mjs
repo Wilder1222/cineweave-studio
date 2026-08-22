@@ -843,9 +843,112 @@ function validateStyleLightGrammar(payload, errors) {
   push(errors, payload?.validation?.visualTemporalSeparated === true, "StyleLightGrammar must separate visual and temporal behavior");
 }
 
-function validateShotSpec(payload, errors) {
+function validateActionSequenceSpec(payload, errors) {
+  const participants = payload?.participants || [];
+  const participantIds = participants.map((item) => item?.participantId);
+  const knownParticipants = new Set(participantIds);
+  const zones = new Set(payload?.geography?.activeZoneIds || []);
+  const beats = payload?.beats || [];
+  const beatIds = beats.map((item) => item?.beatId);
+  const knownBeats = new Set(beatIds);
+  const coverage = payload?.coverageRequirements || [];
+  const coverageIds = coverage.map((item) => item?.coverageId);
+  const coverageById = new Map(coverage.map((item) => [item?.coverageId, item]));
+  const risks = payload?.riskRegister || [];
+  const riskIds = risks.map((item) => item?.riskId);
+  const riskById = new Map(risks.map((item) => [item?.riskId, item]));
+
+  push(errors, unique(participantIds), "ActionSequenceSpec participant IDs must be unique");
+  push(errors, payload?.bindings?.scene?.kind === "scene_binding", "ActionSequenceSpec must bind an exact SceneBinding");
+  for (const ref of payload?.bindings?.interactionConstraints || []) push(errors, ref?.kind === "cineweave_codex_interaction_constraint_set", "ActionSequenceSpec interaction refs must target InteractionConstraintSet");
+  for (const participant of participants) {
+    push(errors, participant?.characterBindingRef?.kind === "character_binding", `${participant?.participantId}: participant must bind CharacterBinding`);
+    if (participant?.performanceTimelineRef) push(errors, participant.performanceTimelineRef.kind === "cineweave_codex_performance_timeline", `${participant?.participantId}: performance ref must target PerformanceTimeline`);
+    push(errors, zones.has(participant?.entryZoneId), `${participant?.participantId}: unknown entry zone ${participant?.entryZoneId}`);
+    push(errors, zones.has(participant?.exitZoneId), `${participant?.participantId}: unknown exit zone ${participant?.exitZoneId}`);
+  }
+
+  for (const path of payload?.geography?.movementPaths || []) {
+    push(errors, zones.has(path?.fromZoneId), `${path?.pathRef}: unknown path start zone ${path?.fromZoneId}`);
+    push(errors, zones.has(path?.toZoneId), `${path?.pathRef}: unknown path end zone ${path?.toZoneId}`);
+  }
+  for (const use of payload?.geography?.environmentUses || []) for (const beatId of use?.beatIds || []) push(errors, knownBeats.has(beatId), `${use?.anchorRef}: unknown action beat ${beatId}`);
+
+  push(errors, unique(beatIds), "ActionSequenceSpec beat IDs must be unique");
+  push(errors, unique(coverageIds), "ActionSequenceSpec coverage IDs must be unique");
+  push(errors, unique(riskIds), "ActionSequenceSpec risk IDs must be unique");
+  const eventIds = [];
+  for (const [index, beat] of beats.entries()) {
+    push(errors, beat?.order === index + 1, `ActionSequenceSpec beat order must be contiguous at ${beat?.beatId}`);
+    for (const event of beat?.actions || []) {
+      eventIds.push(event?.eventId);
+      push(errors, knownParticipants.has(event?.participantId), `${event?.eventId}: unknown participant ${event?.participantId}`);
+      push(errors, zones.has(event?.fromZoneId), `${event?.eventId}: unknown start zone ${event?.fromZoneId}`);
+      push(errors, zones.has(event?.toZoneId), `${event?.eventId}: unknown end zone ${event?.toZoneId}`);
+      push(errors, Array.isArray(event?.constraintRefs) && event.constraintRefs.length > 0, `${event?.eventId}: observable action must cite at least one interaction or support constraint`);
+    }
+    for (const coverageId of beat?.coverageRequirementIds || []) {
+      const item = coverageById.get(coverageId);
+      push(errors, Boolean(item), `${beat?.beatId}: unknown coverage requirement ${coverageId}`);
+      if (item) push(errors, item.beatIds.includes(beat.beatId), `${beat?.beatId}: coverage ${coverageId} must link back to the beat`);
+    }
+    for (const riskId of beat?.riskIds || []) {
+      const item = riskById.get(riskId);
+      push(errors, Boolean(item), `${beat?.beatId}: unknown risk ${riskId}`);
+      if (item) push(errors, item.beatIds.includes(beat.beatId), `${beat?.beatId}: risk ${riskId} must link back to the beat`);
+    }
+  }
+  push(errors, unique(eventIds), "ActionSequenceSpec event IDs must be unique");
+
+  for (const check of payload?.physicalChecks || []) {
+    for (const beatId of check?.beatIds || []) push(errors, knownBeats.has(beatId), `${check?.checkId}: unknown action beat ${beatId}`);
+    if (check?.basis !== "declared_assumption") push(errors, Boolean(check?.basisRef), `${check?.checkId}: non-assumption physical check requires an exact basis ref`);
+  }
+  for (const item of coverage) for (const beatId of item?.beatIds || []) push(errors, knownBeats.has(beatId), `${item?.coverageId}: unknown action beat ${beatId}`);
+
+  const tracks = payload?.continuityTracks || [];
+  push(errors, unique(tracks.map((item) => item?.trackId)), "ActionSequenceSpec continuity track IDs must be unique");
+  for (const track of tracks) {
+    let lastOrder = 0;
+    for (const change of track?.changes || []) {
+      const beat = beats.find((item) => item?.beatId === change?.beatId);
+      push(errors, Boolean(beat), `${track?.trackId}: unknown continuity beat ${change?.beatId}`);
+      if (beat) {
+        push(errors, beat.order > lastOrder, `${track?.trackId}: continuity changes must follow beat order`);
+        lastOrder = beat.order;
+      }
+    }
+    const finalChange = track?.changes?.at(-1);
+    push(errors, finalChange?.state === track?.exitState, `${track?.trackId}: exit state must equal the final continuity change`);
+  }
+
+  for (const risk of risks) {
+    for (const beatId of risk?.beatIds || []) push(errors, knownBeats.has(beatId), `${risk?.riskId}: unknown action beat ${beatId}`);
+    if (["high", "critical"].includes(risk?.severity)) {
+      push(errors, risk?.requiresQualifiedReview === true, `${risk?.riskId}: high or critical risk requires qualified review`);
+      push(errors, risk?.status === "requires_review", `${risk?.riskId}: high or critical risk must remain in requires_review state`);
+    }
+  }
+  if (payload?.handoff?.shotBreakdownReady === true) push(errors, (payload?.handoff?.blockers || []).length === 0, "ActionSequenceSpec cannot be ready for shot breakdown with blockers");
+  push(errors, payload?.executionBoundary?.generatesMedia === false, "ActionSequenceSpec must not claim media generation");
+  push(errors, payload?.executionBoundary?.constitutesStuntSafetyApproval === false, "ActionSequenceSpec cannot constitute stunt-safety approval");
+  push(errors, payload?.validation?.cameraDetailsDeferred === true, "ActionSequenceSpec must defer lens and exact camera curves to shot contracts");
+  push(errors, payload?.validation?.performanceNotRewritten === true, "ActionSequenceSpec must preserve Character-owned performance");
+  push(errors, payload?.validation?.storyCausalityNotInvented === true, "ActionSequenceSpec must preserve Story-owned causality");
+}
+
+function validateShotSpec(payload, errors, actionSequenceSpec) {
   const characterIds = new Set((payload?.bindings?.characters || []).map((item) => item?.id));
   for (const item of payload?.blocking || []) if (characterIds.size) push(errors, characterIds.has(item?.subjectRef), `ShotSpec blocking references unknown subject ${item?.subjectRef}`);
+  if (payload?.actionSequenceRef) {
+    push(errors, payload.actionSequenceRef.kind === "cineweave_codex_action_sequence_spec", "ShotSpec actionSequenceRef must target ActionSequenceSpec");
+    push(errors, Array.isArray(payload?.actionBeatIds) && payload.actionBeatIds.length > 0 && unique(payload.actionBeatIds), "ShotSpec actionBeatIds must be a non-empty unique selection");
+    if (actionSequenceSpec) {
+      push(errors, payload.actionSequenceRef.id === actionSequenceSpec.actionSequenceId && payload.actionSequenceRef.version === actionSequenceSpec.version, "ShotSpec must bind the supplied exact ActionSequenceSpec identity and version");
+      const knownActionBeats = new Set((actionSequenceSpec.beats || []).map((item) => item?.beatId));
+      for (const beatId of payload?.actionBeatIds || []) push(errors, knownActionBeats.has(beatId), `ShotSpec selects unknown action beat ${beatId}`);
+    }
+  }
   push(errors, nonEmpty(payload?.camera?.movementIntent), "ShotSpec needs a motivated movement intent, including static");
   push(errors, payload?.validation?.oneDominantCameraIdea === true, "ShotSpec requires one dominant camera idea");
   push(errors, payload?.validation?.axisCoherent === true, "ShotSpec must preserve axis coherence");
@@ -1161,7 +1264,8 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_style_compile": validateStyleCompile(payload, errors); break;
     case "cineweave_codex_style_review": validateStyleReview(payload, errors); break;
     case "cineweave_codex_style_light_grammar": validateStyleLightGrammar(payload, errors); break;
-    case "cineweave_codex_shot_spec": validateShotSpec(payload, errors); break;
+    case "cineweave_codex_action_sequence_spec": validateActionSequenceSpec(payload, errors); break;
+    case "cineweave_codex_shot_spec": validateShotSpec(payload, errors, context.actionSequenceSpec); break;
     case "cineweave_codex_shot_lighting_plan": validateShotLightingPlan(payload, errors, context.sceneLightState); break;
     case "cineweave_codex_temporal_spec": validateTemporalSpec(payload, errors); break;
     case "cineweave_codex_prompt_repair": validatePromptRepair(payload, errors); break;
@@ -1189,6 +1293,7 @@ async function runSelfTest(mode = "all") {
   const referenceAsset = await readJson("examples/reference-asset.json");
   const referenceObservation = await readJson("examples/reference-observation.json");
   const referenceBindingSet = await readJson("examples/reference-binding-set.json");
+  const actionSequenceSpec = await readJson("examples/action-sequence-spec.json");
   const referenceObservations = [{ artifactRef: referenceBindingSet.bindings[0].observationRef, payload: referenceObservation }];
   const cases = [
     ["examples/character-spec.json", {}], ["examples/character-morphology-spec.json", {}], ["examples/morphology-review.json", {}], ["examples/character-exploration-brief.json", {}], ["examples/character-option-set.json", {}], ["examples/character-preference-feedback.json", {}], ["examples/character-binding.json", {}], ["examples/character-reference-plan.json", {}], ["examples/character-appearance-state.json", {}], ["examples/character-review.json", {}], ["examples/character-repair.json", {}],
@@ -1206,8 +1311,8 @@ async function runSelfTest(mode = "all") {
     ["examples/reference-review.json", {}], ["examples/reference-binding-set.json", { referenceObservations }],
     ["examples/integrated-image-prompt.json", { sceneSpec }], ["examples/integrated-storyboard.json", { sceneSpec }], ["examples/prompt-record.json", {}],
     ["examples/style-package.json", {}], ["examples/style-package-anime.json", {}], ["examples/style-package-manga.json", {}], ["examples/style-exploration-brief.json", {}], ["examples/style-option-set.json", {}], ["examples/style-preference-feedback.json", {}], ["examples/representation-binding.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
-    ["examples/shot-spec.json", {}], ["examples/shot-lighting-plan.json", { sceneLightState }], ["examples/temporal-spec.json", {}], ["examples/prompt-repair.json", {}],
-    ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}], ["examples/workflow-plan-character-morphology.json", {}], ["examples/workflow-plan-cross-representation.json", {}], ["examples/workflow-plan-reference-prompt.json", {}], ["examples/workflow-plan-portrait-reference.json", {}],
+    ["examples/action-sequence-spec.json", {}], ["examples/shot-spec.json", {}], ["examples/shot-spec-action.json", { actionSequenceSpec }], ["examples/shot-lighting-plan.json", { sceneLightState }], ["examples/temporal-spec.json", {}], ["examples/prompt-repair.json", {}],
+    ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}], ["examples/workflow-plan-character-morphology.json", {}], ["examples/workflow-plan-cross-representation.json", {}], ["examples/workflow-plan-reference-prompt.json", {}], ["examples/workflow-plan-portrait-reference.json", {}], ["examples/workflow-plan-action-sequence.json", {}],
   );
 
   let ok = true;
@@ -1253,7 +1358,12 @@ async function runSelfTest(mode = "all") {
   const badPerformanceTimeline = await readJson("examples/performance-timeline.json"); badPerformanceTimeline.phases[1].startSeconds = 0.5; negative.push(["reject overlapping PerformanceTimeline", badPerformanceTimeline, {}]);
   const badSceneLight = await readJson("examples/scene-light-state.json"); badSceneLight.sources[1].sourceId = badSceneLight.sources[0].sourceId; negative.push(["reject duplicate SceneLightState source", badSceneLight, {}]);
   const badStyleLight = await readJson("examples/style-light-grammar.json"); badStyleLight.validation.noPhysicalSourcePlacement = false; negative.push(["reject StyleLightGrammar physical placement", badStyleLight, {}]);
+  const badActionParticipant = await readJson("examples/action-sequence-spec.json"); badActionParticipant.beats[0].actions[0].participantId = "participant.unknown"; negative.push(["reject ActionSequenceSpec unknown participant", badActionParticipant, {}]);
+  const badActionCoverage = await readJson("examples/action-sequence-spec.json"); badActionCoverage.coverageRequirements[0].beatIds.shift(); negative.push(["reject ActionSequenceSpec asymmetric coverage link", badActionCoverage, {}]);
+  const badActionRisk = await readJson("examples/action-sequence-spec.json"); badActionRisk.riskRegister[0].requiresQualifiedReview = false; negative.push(["reject unreviewed high-risk action", badActionRisk, {}]);
+  const badActionContinuity = await readJson("examples/action-sequence-spec.json"); badActionContinuity.continuityTracks[0].exitState = "silently moved elsewhere"; negative.push(["reject open ActionSequenceSpec continuity", badActionContinuity, {}]);
   const badShot = await readJson("examples/shot-spec.json"); badShot.blocking[0].subjectRef = "binding.unknown"; negative.push(["reject ShotSpec unknown blocking subject", badShot, {}]);
+  const badActionShot = await readJson("examples/shot-spec-action.json"); badActionShot.actionBeatIds[0] = "action-beat.unknown"; negative.push(["reject ShotSpec unknown action beat", badActionShot, { actionSequenceSpec }]);
   const badShotLight = await readJson("examples/shot-lighting-plan.json"); badShotLight.key.sourceId = "light.unknown"; negative.push(["reject ShotLightingPlan unknown source", badShotLight, { sceneLightState }]);
   const badTemporal = await readJson("examples/temporal-spec.json"); badTemporal.actionTimeline[1].timeSeconds = 0.1; negative.push(["reject unordered TemporalSpec", badTemporal, {}]);
   const badPromptRepair = await readJson("examples/prompt-repair.json"); badPromptRepair.changeOnly.push("also change composition"); negative.push(["reject multi-variable PromptRepair", badPromptRepair, {}]);
