@@ -374,6 +374,50 @@
       "mustProduce": ["cineweave_codex_character_exploration_brief", "cineweave_codex_character_option_set"],
       "mustNotProduce": ["cineweave_codex_asset_recipe"],
       "behaviorAssertions": ["routes creative identity exploration to Character"]
+    },
+    {
+      "id": "prompt.edge.reference-reframe",
+      "category": "edge",
+      "targetSkill": "cineweave-prompt",
+      "request": "Use $cineweave-prompt to turn an approved seated stage reference into a 3:4 standing full-body portrait. Bind the exact ReferenceReview, explicitly replace pose, crop and source-only props, preserve only reviewed lighting/material relations, and flag missing back-view evidence.",
+      "expectedSkill": "cineweave-prompt",
+      "expectedRoute": "prompt_design",
+      "mustProduce": ["cineweave_codex_prompt_record"],
+      "mustNotProduce": ["cineweave_codex_character_spec"],
+      "behaviorAssertions": ["binds an exact ReferenceReview and explicit ReferenceTransform", "separates preserve replace and exclude target decisions", "does not leak seated pose or source-only props into the standing target", "flags source evidence gaps instead of inventing them"]
+    },
+    {
+      "id": "production.direct.heterogeneous-board-assembly",
+      "category": "direct",
+      "targetSkill": "cineweave-production",
+      "request": "Use $cineweave-production to assemble one professional character dossier: a top row of front, side and back turnarounds plus a lower 3x3 identity-and-costume detail grid. Use separate recipe runs, fixed non-overlapping regions, per-tile provenance and retry only failed tasks.",
+      "expectedSkill": "cineweave-production",
+      "expectedRoute": "board_assembly",
+      "mustProduce": ["cineweave_codex_board_assembly_plan"],
+      "mustNotProduce": ["cineweave_codex_image_prompt"],
+      "behaviorAssertions": ["uses separate turnaround and identity-detail recipe runs", "maps heterogeneous regions to independent task outputs", "retains per-tile recipe task and region provenance", "retries failed tasks only and does not ask one model to draw the full board"]
+    },
+    {
+      "id": "style.edge.semantic-emphasis-representation-variants",
+      "category": "edge",
+      "targetSkill": "cineweave-style",
+      "request": "Use $cineweave-style to compile the same locked adult character into photoreal and stylized-3D variants. Produce separate StyleCompile artifacts, bind each exact RepresentationBinding, protect identity, appearance, geography and physical light, and use semantic emphasis instead of provider prompt weights.",
+      "expectedSkill": "cineweave-style",
+      "expectedRoute": "style_compile",
+      "mustProduce": ["cineweave_codex_style_compile"],
+      "mustNotProduce": ["cineweave_codex_character_spec"],
+      "behaviorAssertions": ["emits separate representation variant artifacts", "binds exact identity translation for every variant", "protects appearance geography and physical light", "uses required strong supporting semantics without provider weight syntax"]
+    },
+    {
+      "id": "prompt.edge.conditional-surface-response",
+      "category": "edge",
+      "targetSkill": "cineweave-prompt",
+      "request": "Use $cineweave-prompt to write a full-body adult stage portrait where the acceptance target is realistic leg sheen. Explain a broad vertical soft-source reflection, knee/shin/ankle form, sandal-strap pressure and ground contact at full-body scale; do not default to oily, wet or latex skin or change the character's baseline complexion.",
+      "expectedSkill": "cineweave-prompt",
+      "expectedRoute": "prompt_design",
+      "mustProduce": ["cineweave_codex_prompt_record"],
+      "mustNotProduce": ["cineweave_codex_character_spec"],
+      "behaviorAssertions": ["loads conditional surface-response guidance for a primary material target", "uses source geometry form and contact rather than generic gloss adjectives", "keeps stable identity current appearance state and style treatment separate", "filters detail for full-body scale and avoids default wet oily or latex skin"]
     }
   ]
 }

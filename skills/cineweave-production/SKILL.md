@@ -12,6 +12,7 @@ You are the production-control and verification layer for CineWeave. Character, 
 This Skill owns:
 
 - `AssetRecipe`: a deterministic task graph and assembly plan for a specific production artifact;
+- `BoardAssemblyPlan`: an exact multi-recipe, heterogeneous-region assembly contract with per-tile recipe/task provenance;
 - `ControlChannelSet`: ordered hard, soft and advisory control channels;
 - `EvidenceBundle`: Observation-based evidence with one semantic role, quality and rights profile per item;
 - `CapabilityProfile`: provider-neutral adapter capabilities and known limits, never endpoint or credential data;
@@ -37,6 +38,7 @@ contracts required by the selected route. The portable contract index is
 Choose the smallest route that satisfies the request.
 
 - `asset_recipe`: create, instantiate, review or version a production recipe. Use `references/asset-recipes.md`. Return `../../packages/cineweave-contracts/schemas/asset-recipe.schema.json`.
+- `board_assembly`: compose accepted independent recipe tasks into a deterministic board with explicit regions, labels and per-tile provenance. Use `references/asset-recipes.md`. Return `../../packages/cineweave-contracts/schemas/board-assembly-plan.schema.json`.
 - `control_plan`: translate invariants and allowed changes into prioritized hard/soft/advisory controls. Use `references/control-channels.md`. Return `../../packages/cineweave-contracts/schemas/control-channel-set.schema.json`.
 - `evidence_bundle`: bind face, body, costume, pose, depth, mask, lighting, material and scene observations to explicit semantic roles. Use `references/evidence-and-rights.md`. Return `../../packages/cineweave-contracts/schemas/evidence-bundle.schema.json`.
 - `capability_profile`: describe an adapter class without endpoint, credential or hidden vendor parameters, then match required controls and evidence. Use `references/capability-matching.md`. Return `../../packages/cineweave-contracts/schemas/capability-profile.schema.json`.
@@ -70,6 +72,7 @@ Choose the smallest route that satisfies the request.
 - A contact sheet must generate independent tasks and use deterministic assembly; do not request a model to draw the entire grid in one pass.
 - In a staged character workflow, a hero portrait, full-body anchor, turnaround and expression sheet answer different evidence questions; do not use a close portrait as sole body/identity proof.
 - A combined turnaround-plus-expression deliverable is two named recipe runs with deterministic board assembly and per-tile provenance, not one multi-panel generation task.
+- A combined turnaround-plus-identity-detail deliverable uses `recipe.character-turnaround-3view`, `recipe.character-identity-reference-sheet-3x3` and one `BoardAssemblyPlan`; preserve every accepted task output and map each final tile to one exact recipe run and task.
 - A zero-prompt character exploration board uses `recipe.character-exploration-board-4up`: it receives a CharacterExplorationBrief and CharacterOptionSet, runs each option independently under one shared fixture, and leaves selection to the user.
 - Morphology lock evidence uses `recipe.character-morphology-neutral-3view`: independent neutral front, three-quarter and profile tasks followed by deterministic assembly and MorphologyBench review.
 - Natural-human coverage uses `recipe.natural-human-fixtures-3up`: independent neutral close, warm-backlight and natural full-body tasks. It is evaluated as evidence, not treated as a realism guarantee.
@@ -82,6 +85,7 @@ Choose the smallest route that satisfies the request.
 - Unknown commercial or identity rights never become allowed by assumption.
 - CapabilityProfile may name an adapter identifier but must not include endpoints, secrets or account-specific parameters.
 - AdapterDescriptor may declare credential environment-variable names and a network-policy ID, but never credential values, signed URLs, private absolute paths or an arbitrary shell command.
+- AdapterDescriptor may declare whether it accepts semantic emphasis, but it stores only `required`/`strong`/`supporting` levels and never provider-specific prompt-weight syntax or numerical mappings.
 - ExecutionRequest parameters are non-sensitive primitives. A parameter whose name resembles a token, key, password, secret, URL or endpoint must be rejected before execution.
 - `external` execution is blocked unless the exact immutable ExecutionRequest artifact has an approved ApprovalRecord and the caller explicitly enables external effects.
 - Retries count against both attempt and cost budgets. Every attempt, including a failed billable attempt, remains in the ExecutionReceipt.

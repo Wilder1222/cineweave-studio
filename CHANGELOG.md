@@ -9,9 +9,22 @@
 - allowed ShotSpec to select exact action-sequence beats before lens, camera and
   temporal direction, with an end-to-end Story → Character/Scene → Action →
   Shot/Temporal/Storyboard workflow example;
-- expanded the current source gate to 70 contracts, 67 uniquely owned routes,
-  14 built-in recipes, 33 behavior cases, 13 live replay cases and 37 runtime
-  tests across all nine standalone/composable Skills.
+- added source-to-target `ReferenceTransform` composition with exact reviewed
+  source refs, preserve/replace/exclude deltas, explicit unknowns and
+  acceptance criteria for prompt reframing;
+- added `BoardAssemblyPlan`, a 15th independent-task recipe and runtime support
+  for deterministic heterogeneous character dossiers combining a three-view
+  turnaround with a 3×3 identity-and-costume detail grid;
+- replaced core numeric style weights with semantic `required`/`strong`/
+  `supporting` emphasis, separately compiled representation variants and an
+  adapter boundary that does not store provider-specific syntax or mappings;
+- added conditional Prompt surface-response guidance and source/curve/contact
+  examples for material realism without changing identity or physical-light
+  ownership;
+- expanded the current source gate to 71 contracts, 68 uniquely owned routes,
+  15 built-in recipes, 37 behavior cases, validated evaluation fixtures, 13
+  live replay cases and 38 runtime tests across all nine standalone/composable
+  Skills.
 
 ## 2.5.1 — 2026-08-22
 

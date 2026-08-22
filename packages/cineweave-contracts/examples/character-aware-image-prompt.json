@@ -55,15 +55,15 @@
     "styleStack": [
       {
         "label": "restrained Chinese fantasy realism",
-        "weight": 0.55
+        "importance": "required"
       },
       {
         "label": "performance-led tension",
-        "weight": 0.3
+        "importance": "strong"
       },
       {
         "label": "natural material response",
-        "weight": 0.15
+        "importance": "supporting"
       }
     ]
   },

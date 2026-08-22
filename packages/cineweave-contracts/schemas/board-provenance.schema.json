@@ -34,7 +34,10 @@
               { "$ref": "common.schema.json#/$defs/contentHash" },
               { "type": "null" }
             ]
-          }
+          },
+          "recipeRunId": { "$ref": "common.schema.json#/$defs/identifier" },
+          "taskId": { "$ref": "common.schema.json#/$defs/identifier" },
+          "regionId": { "$ref": "common.schema.json#/$defs/identifier" }
         }
       }
     }

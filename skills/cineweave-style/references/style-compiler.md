@@ -41,6 +41,28 @@ locked identity / geography / interaction
 
 If a style atom conflicts with an exact Character or Scene fact, preserve the fact and return a conflict. Do not make a character younger, change body proportions, move a landmark or reverse a dominant side to satisfy a visual atom.
 
+## Semantic emphasis, not provider weights
+
+Each compiled block declares exactly one semantic importance level:
+
+- `required`: the image or video does not satisfy the requested representation without it;
+- `strong`: a conspicuous target characteristic that may yield to an exact higher-order fact;
+- `supporting`: a bounded finishing treatment that must not consume attention needed by the target subject or scene.
+
+Order blocks from the protected representation foundation outward. Do not encode priorities as numeric provider syntax such as `(term:1.2)`, LoRA tags or hidden reference-strength values. The canonical compiler only preserves semantic priority. A registered adapter may later lower those levels to its own safe execution mechanism, but the mapping is not stored in `StyleCompile`, `PromptRecord` or `ImagePrompt`.
+
+## Representation variants are separate artifacts
+
+Photoreal, anime, manga, illustration, stylized-3D and hybrid renders of the same character are not a find-and-replace on one prompt. Emit one exact `StyleCompile` per target family, each with:
+
+- its own `representationVariant` ID and representation family;
+- an exact `RepresentationBinding` that translates the same semantic anchors;
+- protected character identity and appearance, scene geography and physical light;
+- variant-specific geometry, surface, line, shading, depth and temporal directives;
+- its own validation and review outcome.
+
+The representation family may reinterpret how an anchor is visible; it may not mutate the CharacterSpec, AppearanceState, SceneBinding or approved physical-light placement. If a requested conversion lacks an approved binding, return that gap instead of treating a style adjective as an identity transformation.
+
 ## Realism profile
 
 `StyleCompile.realismProfile` records how approved facts should be represented, not what those facts are. Use normalized 0–1 creative-intent values for:

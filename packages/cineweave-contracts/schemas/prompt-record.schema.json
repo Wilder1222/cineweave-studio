@@ -26,6 +26,7 @@
     },
     "prompt": { "$ref": "#/$defs/prompt" },
     "styleBinding": { "$ref": "#/$defs/styleBinding" },
+    "referenceTransform": { "$ref": "reference-transform.schema.json" },
     "variables": {
       "type": "array",
       "maxItems": 24,
@@ -119,6 +120,7 @@
       "required": ["observationId", "role", "purpose", "preserve", "allowedTransforms"],
       "properties": {
         "observationId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "referenceReviewRef": { "$ref": "reference-transform.schema.json#/$defs/referenceReviewRef" },
         "role": { "$ref": "reference-observation.schema.json#/$defs/role" },
         "purpose": { "type": "string", "minLength": 1, "maxLength": 800 },
         "preserve": { "$ref": "#/$defs/stringList" },

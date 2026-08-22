@@ -18,3 +18,5 @@ Default conflict order:
 8. adapter-specific execution choices.
 
 When a StyleCompile is supplied, split its controls into visual and temporal channels. A style channel remains advisory unless the user explicitly promotes a bounded style invariant to a hard project control; it still cannot override identity, geography, interaction, rights or exact shot facts.
+
+`StyleCompile` semantic emphasis (`required`, `strong`, `supporting`) is separate from control enforcement (`hard`, `soft`, `advisory`). The former describes relative representation attention; the latter decides whether a failure blocks. Preserve this distinction through the provider-neutral contracts. An adapter may accept semantic levels or preserve their ordering, but numerical prompt weights and provider syntax stay in trusted adapter implementation rather than an adapter descriptor, prompt or render-plan contract.

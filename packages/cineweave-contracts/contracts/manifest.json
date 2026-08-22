@@ -71,7 +71,7 @@
     {
       "name": "cineweave-production",
       "role": "production_validation",
-      "owns": ["asset_recipe", "control_plan", "evidence_bundle", "capability_profile", "license_profile", "control_benchmark", "adapter_descriptor", "execution_request", "execution_receipt"],
+      "owns": ["asset_recipe", "board_assembly", "control_plan", "evidence_bundle", "capability_profile", "license_profile", "control_benchmark", "adapter_descriptor", "execution_request", "execution_receipt"],
       "consumes": ["CreativeBrief", "ReferenceAsset", "ReferenceObservation", "ReferenceBindingSet", "StoryContracts", "CharacterContracts", "RepresentationBinding", "SceneContracts", "StyleContracts", "DirectorContracts", "PromptContracts"],
       "standalone": true,
       "composable": true
@@ -140,6 +140,7 @@
     { "kind": "cineweave_codex_prompt_repair", "schema": "schemas/prompt-repair.schema.json", "example": "examples/prompt-repair.json", "owner": "cineweave-prompt" },
 
     { "kind": "cineweave_codex_asset_recipe", "schema": "schemas/asset-recipe.schema.json", "example": "examples/asset-recipe.json", "owner": "cineweave-production" },
+    { "kind": "cineweave_codex_board_assembly_plan", "schema": "schemas/board-assembly-plan.schema.json", "example": "examples/board-assembly-plan.json", "owner": "cineweave-production" },
     { "kind": "cineweave_codex_control_channel_set", "schema": "schemas/control-channel-set.schema.json", "example": "examples/control-channel-set.json", "owner": "cineweave-production" },
     { "kind": "cineweave_codex_evidence_bundle", "schema": "schemas/evidence-bundle.schema.json", "example": "examples/evidence-bundle.json", "owner": "cineweave-production" },
     { "kind": "cineweave_codex_capability_profile", "schema": "schemas/capability-profile.schema.json", "example": "examples/capability-profile.json", "owner": "cineweave-production" },
@@ -161,7 +162,7 @@
   "recipeCatalog": {
     "path": "recipes/catalog.json",
     "schema": "schemas/asset-recipe.schema.json",
-    "builtInRecipeCount": 14
+    "builtInRecipeCount": 15
   },
   "runtime": {
     "package": "packages/cineweave-runtime",

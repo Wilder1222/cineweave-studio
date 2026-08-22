@@ -34,6 +34,11 @@
       "contentHash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
     }
   ],
+  "semanticEmphasis": {
+    "acceptedLevels": [],
+    "translationMode": "unsupported",
+    "providerSpecificSyntaxStored": false
+  },
   "executionModes": [
     "dry_run",
     "fixture"

@@ -32,13 +32,13 @@
         "usedAt": { "type": "string", "format": "date-time" }
       }
     },
-    "styleWeight": {
+    "stylePriority": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["label", "weight"],
+      "required": ["label", "importance"],
       "properties": {
         "label": { "type": "string", "minLength": 1, "maxLength": 240 },
-        "weight": { "type": "number", "minimum": 0 }
+        "importance": { "enum": ["required", "strong", "supporting"] }
       }
     },
     "proposal": {
@@ -55,7 +55,7 @@
         "performance": { "type": "string", "minLength": 1, "maxLength": 4000 },
         "visualTreatment": { "type": "string", "minLength": 1, "maxLength": 4000 },
         "soundEdit": { "type": "string", "minLength": 1, "maxLength": 4000 },
-        "styleStack": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/styleWeight" } },
+        "styleStack": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/stylePriority" } },
         "preserve": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1, "maxLength": 500 } },
         "allowedChanges": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1, "maxLength": 500 } },
         "cost": { "type": "string", "minLength": 1, "maxLength": 4000 },

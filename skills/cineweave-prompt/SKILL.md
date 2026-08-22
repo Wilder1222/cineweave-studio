@@ -29,9 +29,9 @@ Use this Skill directly for portraits, products, food, architecture, interiors, 
 
 Choose the smallest route.
 
-- `prompt_design`: turn a natural-language intent into a reusable `PromptRecord`; read `references/prompt-architecture.md`, `references/prompt-lifecycle.md` and, when useful, `references/domain-recipes.md`.
+- `prompt_design`: turn a natural-language intent into a reusable `PromptRecord`; read `references/prompt-architecture.md`, `references/prompt-lifecycle.md` and, when useful, `references/domain-recipes.md`. When the requested target intentionally differs from a reviewed reference, also read `references/reference-transforms.md` and bind an explicit `referenceTransform`. Read `references/surface-response.md` only when skin, limbs, hair, textile, metal, glass or liquid response is a primary acceptance target.
 - `prompt_import`: preserve supplied source text, identify variables and contradictions, then normalize it without claiming improved generation quality; read `references/prompt-lifecycle.md` and return `PromptRecord`.
-- `prompt_compile`: compile one bounded image request. Consume an exact `ShotSpec` when directing decisions matter; otherwise state a minimal observable viewpoint. Return `ImagePrompt`.
+- `prompt_compile`: compile one bounded image request. Consume an exact `ShotSpec` when directing decisions matter; otherwise state a minimal observable viewpoint. When a source review is reframed, retain its exact `referenceTransform` in the output. Read `references/surface-response.md` only when a surface response is a primary acceptance target. Return `ImagePrompt`.
 - `prompt_compare`: produce controlled variants that change one declared hypothesis each; read `references/prompt-lifecycle.md` and store them in `PromptRecord.variants`.
 - `reference_hypothesis`: describe only visible mechanisms supported by supplied observations; read `references/reference-bindings.md`. Return `PromptHypothesis`.
 - `draft_brief`: prepare a bounded, human-reviewable image-generation brief after direction selection. Return `DraftBrief`; do not claim that media was generated.
@@ -43,11 +43,12 @@ Choose the smallest route.
 2. Separate facts into subject, state/action, environment, viewpoint/composition, physical light, materials, representational style, technical delivery and constraints.
 3. Resolve exact Character, Scene, Style, Shot or ReferenceBindingSet refs only when supplied or required. Do not invent hashes or Observation IDs.
 4. Compile only role-scoped observations from an exact binding. Route raw media or ambiguous multi-role uploads to `$cineweave-reference` first.
-5. Keep stable CharacterSpec surface facts, changeable AppearanceState skin material, RepresentationBinding anchor translation and StyleCompile realism treatment in separate source blocks; resolve conflicts by owner rather than merging adjectives.
-6. Allocate a visibility budget: describe only details that can affect the requested framing and scale.
-7. Compile the concise prompt first, then an expanded version only when extra blocks carry distinct control value.
-8. Use targeted negatives for likely failure modes; do not append a universal error dictionary.
-9. Define observable acceptance checks and one next experiment.
+5. If the target intentionally departs from a reviewed reference, bind the exact review and declare each source-to-target delta before writing prompt prose. A user-requested target replacement outranks source composition or pose.
+6. Keep stable CharacterSpec surface facts, changeable AppearanceState skin material, RepresentationBinding anchor translation and StyleCompile realism treatment in separate source blocks; resolve conflicts by owner rather than merging adjectives.
+7. Allocate a visibility budget: describe only details that can affect the requested framing and scale.
+8. Compile the concise prompt first, then an expanded version only when extra blocks carry distinct control value.
+9. Use targeted negatives for likely failure modes; do not append a universal error dictionary.
+10. Define observable acceptance checks and one next experiment.
 
 ## Prompt quality rules
 
@@ -57,6 +58,7 @@ Choose the smallest route.
 - Treat focal length and aperture reconstructed from a still as hypotheses unless declared evidence exists; compile observable perspective and focus behavior first.
 - For architecture, specify era/treatment, typology, massing, bay rhythm, circulation, materials, weathering and camera relation; do not use a culture label as a complete building description.
 - Keep physical lighting separate from style treatment. A warm palette is not a light source; bloom is not illumination.
+- Preserve StyleCompile semantic emphasis as ordered `required`, `strong` and `supporting` directives. Do not insert provider-weight syntax, LoRA tags or numeric reference-strength values into a provider-neutral prompt.
 - Keep `must preserve`, `may vary`, and `must avoid` separate.
 - Never claim that a prompt guarantees realism, identity consistency, historical accuracy or successful generation.
 

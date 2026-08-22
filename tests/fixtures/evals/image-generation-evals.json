@@ -90,6 +90,14 @@
       "loads": ["execution-adapter", "prompt-lifecycle"],
       "expectedOutput": "two linked render plans or one staged plan",
       "assertions": ["draft/explore/final stages are explicit", "variant count is bounded", "final requires human approval"]
+    },
+    {
+      "id": "portrait-surface-response-conditional",
+      "mode": "image_prompt",
+      "prompt": "为一张成年人物的全身舞台站立照编译生图 Prompt。重点是腿部的柔和丝缎光泽：大尺寸竖向柔光在胫骨曲面形成宽柔反射，保留膝、胫、踝、凉鞋带压痕和地面接触阴影；脸部保持柔雾。不要默认湿亮、油膜、乳胶或镜面皮肤，也不要把肤色变浅当作通透感。",
+      "loads": ["prompt-architecture", "surface-response", "reference-bindings"],
+      "expectedOutput": "image-prompt-output",
+      "assertions": ["surface response is conditioned on material state source geometry visible form contact and full-body scale", "face and leg material response remain distinct", "highlight follows the declared broad source and limb curvature", "joint structure strap pressure and ground contact are observable anchors", "no default wet oily latex mirror-like skin or complexion rewrite", "provider neutral"]
     }
   ]
 }

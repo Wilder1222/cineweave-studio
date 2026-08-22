@@ -11,6 +11,13 @@ function isObject(value) { return value !== null && typeof value === "object" &&
 function nonEmpty(value) { return typeof value === "string" && value.trim().length > 0; }
 function push(errors, condition, message) { if (!condition) errors.push(message); }
 function unique(values) { return new Set(values).size === values.length; }
+function containsProviderWeightSyntax(value) {
+  const pattern = /(?:<lora:[^>\r\n]+>|\([^()\r\n]{1,240}:\s*[-+]?(?:\d+\.\d+|\.\d+)\)|\b(?:prompt|token|style)[ _-]?weight\s*=|\b\d+(?:\.\d+)?\s*::)/i;
+  if (typeof value === "string") return pattern.test(value);
+  if (Array.isArray(value)) return value.some(containsProviderWeightSyntax);
+  if (isObject(value)) return Object.values(value).some(containsProviderWeightSyntax);
+  return false;
+}
 
 function validateCharacterSpec(payload, errors) {
   if (payload?.morphologySpecRef) push(errors, payload.morphologySpecRef.kind === "cineweave_codex_character_morphology_spec", "CharacterSpec morphologySpecRef must reference CharacterMorphologySpec");
@@ -340,6 +347,56 @@ function validateAssetRecipe(payload, errors, controlSet) {
   push(errors, payload?.executionBoundary?.generatesMedia === false, "AssetRecipe must not claim media generation");
 }
 
+function validateBoardAssemblyPlan(payload, errors) {
+  const recipeRuns = payload?.recipeRuns || [];
+  const regions = payload?.regions || [];
+  const placements = payload?.tilePlacements || [];
+  const runIds = recipeRuns.map((item) => item?.recipeRunId);
+  const regionIds = regions.map((item) => item?.regionId);
+  const tileIds = placements.map((item) => item?.tileId);
+  push(errors, unique(runIds), "BoardAssemblyPlan recipe run IDs must be unique");
+  push(errors, unique(regionIds), "BoardAssemblyPlan region IDs must be unique");
+  push(errors, unique(tileIds), "BoardAssemblyPlan tile IDs must be unique");
+  const expectedTaskKeys = new Set();
+  for (const run of recipeRuns) {
+    push(errors, run?.recipeRef?.kind === "cineweave_codex_asset_recipe", `${run?.recipeRunId}: BoardAssemblyPlan recipe ref must target AssetRecipe`);
+    for (const taskId of run?.taskIds || []) expectedTaskKeys.add(`${run?.recipeRunId}/${taskId}`);
+  }
+  const placementTaskKeys = placements.map((item) => `${item?.recipeRunId}/${item?.taskId}`);
+  push(errors, unique(placementTaskKeys), "BoardAssemblyPlan recipe tasks must have one final tile placement");
+  push(errors, placementTaskKeys.every((key) => expectedTaskKeys.has(key)), "BoardAssemblyPlan placement references an undeclared recipe task");
+  push(errors, expectedTaskKeys.size === placementTaskKeys.length && placementTaskKeys.every((key) => expectedTaskKeys.has(key)), "BoardAssemblyPlan must place every declared recipe task exactly once");
+  for (const region of regions) {
+    push(errors, region?.x + region?.width <= 1.000000001 && region?.y + region?.height <= 1.000000001, `${region?.regionId}: BoardAssemblyPlan region must remain inside the canvas`);
+  }
+  for (let left = 0; left < regions.length; left += 1) for (let right = left + 1; right < regions.length; right += 1) {
+    const a = regions[left]; const b = regions[right];
+    const overlaps = a?.x < b?.x + b?.width && a?.x + a?.width > b?.x && a?.y < b?.y + b?.height && a?.y + a?.height > b?.y;
+    push(errors, !overlaps, `BoardAssemblyPlan regions overlap: ${a?.regionId}/${b?.regionId}`);
+  }
+  const regionById = new Map(regions.map((item) => [item?.regionId, item]));
+  const occupiedCells = new Set();
+  for (const placement of placements) {
+    const region = regionById.get(placement?.regionId);
+    push(errors, Boolean(region), `${placement?.tileId}: BoardAssemblyPlan placement uses unknown region`);
+    if (region) {
+      push(errors, placement?.row < region.rows && placement?.column < region.columns, `${placement?.tileId}: BoardAssemblyPlan placement lies outside its region grid`);
+      const cell = `${placement.regionId}/${placement.row}/${placement.column}`;
+      push(errors, !occupiedCells.has(cell), `${placement?.tileId}: BoardAssemblyPlan region cell is already occupied`);
+      occupiedCells.add(cell);
+    }
+  }
+  push(errors, payload?.failurePolicy?.strategy === "retry_failed_tiles_only", "BoardAssemblyPlan must retry failed tiles only");
+  push(errors, payload?.failurePolicy?.preserveAcceptedOutputs === true, "BoardAssemblyPlan must preserve accepted outputs");
+  push(errors, payload?.failurePolicy?.blockOnRequiredTileFailure === true, "BoardAssemblyPlan must block on a required tile failure");
+  push(errors, payload?.validation?.exactRecipeTasks === true, "BoardAssemblyPlan must bind exact recipe tasks");
+  push(errors, payload?.validation?.regionsNonOverlapping === true, "BoardAssemblyPlan must validate non-overlapping regions");
+  push(errors, payload?.validation?.perTileProvenance === true, "BoardAssemblyPlan must preserve per-tile provenance");
+  push(errors, payload?.validation?.heterogeneousLayoutsAllowed === true, "BoardAssemblyPlan must explicitly allow heterogeneous layouts");
+  push(errors, payload?.validation?.deterministicAssembly === true, "BoardAssemblyPlan must use deterministic assembly");
+  push(errors, payload?.executionBoundary?.generatesMedia === false, "BoardAssemblyPlan must not claim media generation");
+}
+
 function validateControlSet(payload, errors) {
   const channels = payload?.channels || [];
   push(errors, unique(channels.map((item) => item?.channelId)), "ControlChannel IDs must be unique");
@@ -422,6 +479,12 @@ function validateAdapterDescriptor(payload, errors, capabilityProfile) {
     push(errors, !(payload?.executionModes || []).includes("external"), "Fixture adapters must not expose external mode");
     push(errors, (payload?.security?.credentialEnvVars || []).length === 0, "Fixture adapters must not request credentials");
   }
+  const emphasis = payload?.semanticEmphasis || {};
+  const acceptedLevels = emphasis?.acceptedLevels || [];
+  push(errors, unique(acceptedLevels), "Adapter semantic emphasis levels must be unique");
+  push(errors, emphasis?.providerSpecificSyntaxStored === false, "Adapter descriptors must not store provider-specific emphasis syntax");
+  if (emphasis?.translationMode === "unsupported") push(errors, acceptedLevels.length === 0, "Unsupported semantic emphasis must not claim accepted levels");
+  else push(errors, acceptedLevels.length > 0, "Semantic emphasis translation requires accepted levels");
   if (capabilityProfile) {
     push(errors, payload?.adapterId === capabilityProfile?.adapterId, "AdapterDescriptor adapterId must match CapabilityProfile adapterId");
     push(errors, payload?.capabilityProfileRef?.kind === capabilityProfile?.kind, "AdapterDescriptor must bind the CapabilityProfile kind");
@@ -577,6 +640,8 @@ function validateIntegratedImage(payload, errors) {
     push(errors, payload?.validation?.interactionConstraintsResolved === true, "Interaction constraints must be marked resolved");
   }
   if (payload?.styleBinding) validateStyleBinding(payload.styleBinding, errors, "Image Prompt style binding");
+  if (payload?.referenceTransform) validateReferenceTransform(payload.referenceTransform, errors, "Image Prompt reference transform");
+  push(errors, !containsProviderWeightSyntax(payload?.promptBlocks), "Image Prompt blocks must not contain provider-specific weight syntax");
 }
 
 function validateStyleBinding(binding, errors, label = "Style binding") {
@@ -593,6 +658,30 @@ function validateStyleBinding(binding, errors, label = "Style binding") {
 
 function validatePromptRecord(payload, errors) {
   if (payload?.styleBinding) validateStyleBinding(payload.styleBinding, errors, "PromptRecord style binding");
+  for (const reference of payload?.references || []) {
+    if (reference?.referenceReviewRef) push(errors, reference.referenceReviewRef.kind === "cineweave_codex_reference_review", "PromptRecord referenceReviewRef must target ReferenceReview");
+  }
+  if (payload?.referenceTransform) validateReferenceTransform(payload.referenceTransform, errors, "PromptRecord reference transform");
+  push(errors, !containsProviderWeightSyntax(payload?.prompt), "PromptRecord blocks must not contain provider-specific weight syntax");
+}
+
+function validateReferenceTransform(transform, errors, label = "Reference transform") {
+  const reviewRefs = transform?.sourceReviewRefs || [];
+  const deltas = transform?.targetDeltas || [];
+  const criteria = transform?.acceptanceCriteria || [];
+  push(errors, reviewRefs.length > 0 && unique(reviewRefs.map(exactRefKey)), `${label} source review refs must be non-empty and unique`);
+  for (const ref of reviewRefs) push(errors, ref?.kind === "cineweave_codex_reference_review", `${label} source review refs must target ReferenceReview`);
+  push(errors, unique(deltas.map((item) => item?.dimension)), `${label} target dimensions must be unique`);
+  push(errors, deltas.some((item) => ["replace", "exclude"].includes(item?.sourceTreatment)), `${label} must replace or exclude at least one source dimension`);
+  for (const delta of deltas) {
+    if (delta?.sourceTreatment === "replace") push(errors, ["user_declared", "target_contract", "safe_default"].includes(delta?.evidenceBasis), `${label} replacement ${delta?.dimension} must not claim source evidence as its target basis`);
+  }
+  if (deltas.some((item) => item?.sourceTreatment === "unresolved")) push(errors, Array.isArray(transform?.unknowns) && transform.unknowns.length > 0, `${label} unresolved dimensions require explicit unknowns`);
+  push(errors, unique(criteria.map((item) => item?.criterionId)), `${label} acceptance criterion IDs must be unique`);
+  push(errors, transform?.validation?.sourceReviewsBound === true, `${label} must bind source reviews`);
+  push(errors, transform?.validation?.targetDeltasExplicit === true, `${label} must declare target deltas`);
+  push(errors, transform?.validation?.changedDimensionsBounded === true, `${label} must bound changed dimensions`);
+  push(errors, transform?.validation?.unknownsFlagged === true, `${label} must flag unknowns`);
 }
 
 function validateIntegratedStoryboard(payload, errors) {
@@ -718,9 +807,20 @@ function validateStyleReferencePlan(payload, errors) {
 function validateStyleCompile(payload, errors) {
   const channels = payload?.blocks || [];
   push(errors, unique(channels.map((item) => item?.channel)), "StyleCompile channels must be unique");
+  push(errors, channels.every((item) => ["required", "strong", "supporting"].includes(item?.importance)), "StyleCompile blocks must use semantic importance");
+  push(errors, !containsProviderWeightSyntax(channels), "StyleCompile directives must not contain provider-specific weight syntax");
   push(errors, payload?.validation?.identityNotOverwritten === true, "StyleCompile must preserve identity");
   push(errors, payload?.validation?.sceneNotOverwritten === true, "StyleCompile must preserve scene facts");
   push(errors, payload?.validation?.temporalSeparated === true, "StyleCompile must separate temporal directives");
+  push(errors, payload?.validation?.providerNeutral === true, "StyleCompile must remain Provider-neutral");
+  const variant = payload?.representationVariant;
+  if (variant) {
+    push(errors, isObject(payload?.representationBindingRef), "Representation variants require an exact RepresentationBinding");
+    push(errors, variant?.separateCompileArtifact === true, "Representation variants must use a separate StyleCompile artifact");
+    push(errors, variant?.identityTranslationBound === true, "Representation variants must bind identity translation");
+    const protectedDomains = new Set(variant?.protectedDomains || []);
+    for (const domain of ["character_identity", "character_appearance", "scene_geography", "physical_light"]) push(errors, protectedDomains.has(domain), `Representation variants must protect ${domain}`);
+  }
   const realism = payload?.realismProfile;
   if (realism) {
     push(errors, realism?.calibration?.scale === "normalized_creative_intent", "StyleCompile realism scales must be normalized creative intent");
@@ -1088,6 +1188,8 @@ function validateReferenceObservation(payload, errors, referenceAsset) {
 
 function validateReferenceReview(payload, errors) {
   if (payload?.source?.assetRef) push(errors, payload.source.assetRef.kind === "cineweave_codex_reference_asset", "ReferenceReview source asset must be an exact ReferenceAsset");
+  push(errors, nonEmpty(payload?.reviewId) && Number.isInteger(payload?.version), "ReferenceReview requires a versioned review identity");
+  push(errors, payload?.validation?.reviewIdentityVersioned === true, "ReferenceReview must declare its versioned identity");
   const dimensions = (payload?.scores || []).map((item) => item?.dimension);
   push(errors, unique(dimensions), "ReferenceReview score dimensions must be unique");
   const contract = payload?.referenceContract || {};
@@ -1243,6 +1345,7 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_scene_repair": validateRepair(payload, errors, "Scene"); break;
     case "cineweave_codex_scene_light_state": validateSceneLightState(payload, errors); break;
     case "cineweave_codex_asset_recipe": validateAssetRecipe(payload, errors, context.controlSet); break;
+    case "cineweave_codex_board_assembly_plan": validateBoardAssemblyPlan(payload, errors); break;
     case "cineweave_codex_control_channel_set": validateControlSet(payload, errors); break;
     case "cineweave_codex_evidence_bundle": validateEvidenceBundle(payload, errors); break;
     case "cineweave_codex_capability_profile": validateCapabilityProfile(payload, errors); break;
@@ -1303,14 +1406,14 @@ async function runSelfTest(mode = "all") {
     ["examples/performance-timeline.json", {}],
     ["examples/scene-spec.json", {}], ["examples/scene-state.json", { sceneSpec }], ["examples/scene-binding.json", { sceneSpec }], ["examples/scene-reference-plan.json", { sceneSpec }], ["examples/interaction-constraint-set.json", {}], ["examples/scene-review.json", { sceneSpec }], ["examples/scene-repair.json", { sceneSpec }],
     ["examples/scene-light-state.json", {}],
-    ["examples/asset-recipe.json", { controlSet }], ["recipes/character-morphology-neutral-3view.json", {}], ["recipes/natural-human-fixtures-3up.json", {}], ["recipes/style-exploration-board-4up.json", {}], ["recipes/anime-character-fixtures-3up.json", {}], ["recipes/manga-character-fixtures-3up.json", {}], ["recipes/cross-representation-character-6up.json", {}], ["examples/control-channel-set.json", {}], ["examples/evidence-bundle.json", {}], ["examples/capability-profile.json", {}], ["examples/license-profile.json", {}], ["examples/control-benchmark.json", {}],
+    ["examples/asset-recipe.json", { controlSet }], ["recipes/character-morphology-neutral-3view.json", {}], ["recipes/character-identity-reference-sheet-3x3.json", {}], ["recipes/natural-human-fixtures-3up.json", {}], ["recipes/style-exploration-board-4up.json", {}], ["recipes/anime-character-fixtures-3up.json", {}], ["recipes/manga-character-fixtures-3up.json", {}], ["recipes/cross-representation-character-6up.json", {}], ["examples/board-assembly-plan.json", {}], ["examples/control-channel-set.json", {}], ["examples/evidence-bundle.json", {}], ["examples/capability-profile.json", {}], ["examples/license-profile.json", {}], ["examples/control-benchmark.json", {}],
     ["examples/adapter-descriptor.json", {}], ["examples/execution-request.json", {}], ["examples/execution-receipt.json", {}], ["examples/execution-receipt-blocked.json", {}], ["examples/skill-evaluation-run.json", {}],
     ["examples/artifact-graph.json", {}], ["examples/project-bundle-manifest.json", {}],
     ["examples/reference-asset.json", {}], ["examples/reference-observation.json", { referenceAsset }],
     ["examples/reference-observation-portrait-face.json", { referenceAsset }], ["examples/reference-observation-portrait-skin.json", { referenceAsset }], ["examples/reference-observation-portrait-capture.json", { referenceAsset }],
     ["examples/reference-review.json", {}], ["examples/reference-binding-set.json", { referenceObservations }],
-    ["examples/integrated-image-prompt.json", { sceneSpec }], ["examples/integrated-storyboard.json", { sceneSpec }], ["examples/prompt-record.json", {}],
-    ["examples/style-package.json", {}], ["examples/style-package-anime.json", {}], ["examples/style-package-manga.json", {}], ["examples/style-exploration-brief.json", {}], ["examples/style-option-set.json", {}], ["examples/style-preference-feedback.json", {}], ["examples/representation-binding.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
+    ["examples/integrated-image-prompt.json", { sceneSpec }], ["examples/integrated-image-prompt-reference-reframe.json", {}], ["examples/integrated-storyboard.json", { sceneSpec }], ["examples/prompt-record.json", {}], ["examples/prompt-record-reference-reframe.json", {}],
+    ["examples/style-package.json", {}], ["examples/style-package-anime.json", {}], ["examples/style-package-manga.json", {}], ["examples/style-exploration-brief.json", {}], ["examples/style-option-set.json", {}], ["examples/style-preference-feedback.json", {}], ["examples/representation-binding.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-compile-anime.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
     ["examples/action-sequence-spec.json", {}], ["examples/shot-spec.json", {}], ["examples/shot-spec-action.json", { actionSequenceSpec }], ["examples/shot-lighting-plan.json", { sceneLightState }], ["examples/temporal-spec.json", {}], ["examples/prompt-repair.json", {}],
     ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}], ["examples/workflow-plan-character-morphology.json", {}], ["examples/workflow-plan-cross-representation.json", {}], ["examples/workflow-plan-reference-prompt.json", {}], ["examples/workflow-plan-portrait-reference.json", {}], ["examples/workflow-plan-action-sequence.json", {}],
   );
@@ -1332,6 +1435,7 @@ async function runSelfTest(mode = "all") {
   const badPrompt = await readJson("examples/integrated-image-prompt.json"); delete badPrompt.sceneBinding; negative.push(["reject scene blocks without SceneBinding", badPrompt, {}]);
   const badControl = await readJson("examples/control-channel-set.json"); badControl.channels[0].fallback.action = "warn"; negative.push(["reject hard control that does not block", badControl, {}]);
   const badRecipe = await readJson("examples/asset-recipe.json"); badRecipe.assembly.ordering.pop(); negative.push(["reject incomplete recipe assembly", badRecipe, { controlSet }]);
+  const badBoardAssemblyPlan = await readJson("examples/board-assembly-plan.json"); badBoardAssemblyPlan.tilePlacements[1].column = 0; negative.push(["reject duplicate BoardAssemblyPlan region cell", badBoardAssemblyPlan, {}]);
   const badStyleExplorationRecipe = await readJson("recipes/style-exploration-board-4up.json"); badStyleExplorationRecipe.tasks[0].delta[0].fieldPath = "camera.focalLength"; negative.push(["reject style exploration that changes camera", badStyleExplorationRecipe, {}]);
   const badCrossRepresentationRecipe = await readJson("recipes/cross-representation-character-6up.json"); badCrossRepresentationRecipe.tasks.pop(); badCrossRepresentationRecipe.assembly.ordering.pop(); negative.push(["reject incomplete cross-representation family coverage", badCrossRepresentationRecipe, {}]);
   const badEvidence = await readJson("examples/evidence-bundle.json"); badEvidence.evidence = badEvidence.evidence.filter((item) => item.role !== "body_identity"); negative.push(["reject missing required evidence role", badEvidence, {}]);
@@ -1341,6 +1445,8 @@ async function runSelfTest(mode = "all") {
   const badStyle = await readJson("examples/style-package.json"); badStyle.recipe.atomRefs[0].atomId = "unknown.style.atom"; negative.push(["reject StylePackage unknown atom", badStyle, {}]);
   const badStyleActivation = await readJson("examples/style-package.json"); badStyleActivation.status = "active"; negative.push(["reject active StylePackage without activation approval", badStyleActivation, {}]);
   const badRealismProfile = await readJson("examples/style-compile.json"); badRealismProfile.realismProfile.calibration.identityProtected = false; negative.push(["reject StyleCompile realism profile that can overwrite identity", badRealismProfile, {}]);
+  const badStyleCompileWeight = await readJson("examples/style-compile.json"); badStyleCompileWeight.blocks[0].directives.push("(natural human anatomy:1.2)"); negative.push(["reject provider-specific weight syntax in StyleCompile", badStyleCompileWeight, {}]);
+  const badStyleCompileVariant = await readJson("examples/style-compile-anime.json"); badStyleCompileVariant.representationVariant.protectedDomains = badStyleCompileVariant.representationVariant.protectedDomains.filter((item) => item !== "scene_geography"); negative.push(["reject representation variant that does not protect scene geography", badStyleCompileVariant, {}]);
   const badBrief = await readJson("examples/creative-brief.json"); badBrief.validation.styleDoesNotOwnIdentity = false; negative.push(["reject CreativeBrief style identity overwrite", badBrief, {}]);
   const badStyleBinding = await readJson("examples/prompt-record.json"); badStyleBinding.styleBinding.mode = "compiled"; delete badStyleBinding.styleBinding.styleCompileRef; negative.push(["reject compiled PromptRecord without StyleCompile ref", badStyleBinding, {}]);
   const badWorkflow = await readJson("examples/workflow-plan.json"); badWorkflow.steps[0].dependsOn = [badWorkflow.steps[2].stepId]; negative.push(["reject cyclic WorkflowPlan", badWorkflow, {}]);
@@ -1368,6 +1474,7 @@ async function runSelfTest(mode = "all") {
   const badTemporal = await readJson("examples/temporal-spec.json"); badTemporal.actionTimeline[1].timeSeconds = 0.1; negative.push(["reject unordered TemporalSpec", badTemporal, {}]);
   const badPromptRepair = await readJson("examples/prompt-repair.json"); badPromptRepair.changeOnly.push("also change composition"); negative.push(["reject multi-variable PromptRepair", badPromptRepair, {}]);
   const badAdapter = await readJson("examples/adapter-descriptor.json"); badAdapter.executionModes.push("external"); negative.push(["reject network-free adapter exposing external mode", badAdapter, {}]);
+  const badAdapterEmphasis = await readJson("examples/adapter-descriptor.json"); badAdapterEmphasis.semanticEmphasis.acceptedLevels.push("required"); negative.push(["reject unsupported adapter semantic emphasis", badAdapterEmphasis, {}]);
   const badExecutionRequest = await readJson("examples/execution-request.json"); badExecutionRequest.parameters.push({ name: "api_key", value: "not-a-real-value", sensitive: false }); negative.push(["reject sensitive execution parameter", badExecutionRequest, {}]);
   const badExecutionReceipt = await readJson("examples/execution-receipt.json"); badExecutionReceipt.costSummary.actualAmount = 1; negative.push(["reject receipt cost that omits attempt accounting", badExecutionReceipt, {}]);
   const badEvaluationRun = await readJson("examples/skill-evaluation-run.json"); badEvaluationRun.summary.passed = 1; negative.push(["reject inconsistent SkillEvaluationRun summary", badEvaluationRun, {}]);
@@ -1379,6 +1486,8 @@ async function runSelfTest(mode = "all") {
   const badReferenceObservation = await readJson("examples/reference-observation.json"); badReferenceObservation.selector = { type: "spatial_rect", normalizedRect: { x: 0.8, y: 0.2, width: 0.4, height: 0.4 } }; negative.push(["reject ReferenceObservation region outside asset", badReferenceObservation, { referenceAsset }]);
   const badReferenceRights = await readJson("examples/reference-observation.json"); badReferenceRights.rightsGate.allowedForProduction = true; negative.push(["reject unresolved reference rights promoted to production", badReferenceRights, { referenceAsset }]);
   const badReferenceBinding = await readJson("examples/reference-binding-set.json"); badReferenceBinding.rightsPolicy.allProfilesResolved = true; negative.push(["reject inconsistent ReferenceBindingSet rights resolution", badReferenceBinding, { referenceObservations }]);
+  const badReferenceTransform = await readJson("examples/prompt-record-reference-reframe.json"); badReferenceTransform.referenceTransform.targetDeltas[0].sourceTreatment = "replace"; badReferenceTransform.referenceTransform.targetDeltas[0].evidenceBasis = "source_visible"; negative.push(["reject source-evidence basis for a target replacement", badReferenceTransform, {}]);
+  const badReferenceTransformDimension = await readJson("examples/integrated-image-prompt-reference-reframe.json"); badReferenceTransformDimension.referenceTransform.targetDeltas.push(structuredClone(badReferenceTransformDimension.referenceTransform.targetDeltas[0])); negative.push(["reject duplicate ReferenceTransform dimensions", badReferenceTransformDimension, {}]);
   const badReferenceBundlePolicy = await readJson("examples/project-bundle-manifest.json"); badReferenceBundlePolicy.contentPolicy.containsReferenceMedia = !badReferenceBundlePolicy.contentPolicy.containsReferenceMedia; negative.push(["reject inconsistent project bundle reference-media policy", badReferenceBundlePolicy, {}]);
 
   if (mode === "all") for (const [label, payload, context] of negative) {

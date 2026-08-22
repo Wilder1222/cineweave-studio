@@ -5,7 +5,7 @@
 - Director-owned `ActionSequenceSpec` for exact multi-beat choreography,
   physical-design checks, coverage requirements, closed sequence continuity and
   visible qualified-review risks before ShotSpec selection;
-- current source coverage of 70 contracts, 67 uniquely owned routes and 33
+- current source coverage of 71 contracts, 68 uniquely owned routes and 37
   behavior cases.
 
 ## Shipped in V2.2

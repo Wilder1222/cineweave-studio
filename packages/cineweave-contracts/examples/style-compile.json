@@ -4,17 +4,24 @@
   "compileId": "compile.song-poetic-portrait-image-01",
   "stylePackageRef": { "id": "song-poetic-period-drama", "version": 1, "contentHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
   "representationBindingRef": { "id": "representation.jialing.song-photoreal", "version": 1, "contentHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },
+  "representationVariant": {
+    "variantId": "variant.song-poetic-photoreal",
+    "family": "photoreal",
+    "separateCompileArtifact": true,
+    "identityTranslationBound": true,
+    "protectedDomains": ["character_identity", "character_appearance", "scene_geography", "physical_light"]
+  },
   "target": { "medium": "image", "output": "shot", "stage": "appearance", "aspectRatio": "3:4" },
   "blocks": [
-    { "channel": "medium", "directives": ["live-action image representation", "natural human anatomy and physical materials"] },
-    { "channel": "geometry", "directives": ["preserve canonical facial relations and adult body proportions", "retain controlled natural asymmetry"] },
-    { "channel": "surface", "directives": ["regional human skin variation", "shot-scale-appropriate microtexture", "restrained nonuniform specular response"], "negativeDirectives": ["porcelain uniformity", "beauty-filter smoothing", "razor-sharp pores"] },
-    { "channel": "depth", "directives": ["consistent photographic perspective", "selective focus with believable optical falloff"] },
-    { "channel": "costume", "directives": ["restrained Song-inspired layering", "muted jade and moon-white textile palette", "real folds, weight and contact"] },
-    { "channel": "lighting", "directives": ["soft motivated window or overcast courtyard light", "controlled falloff and contact shadow"] },
-    { "channel": "performance", "directives": ["small facial amplitude", "eyes carry the emotion", "head follows gaze with slight delay"] },
-    { "channel": "palette", "directives": ["low saturation jade, moon-white, tea-brown and old wood", "warm skin highlights against cool surroundings"], "negativeDirectives": ["neon saturation", "plastic specular bloom"] },
-    { "channel": "postprocess", "directives": ["subtle grain, low sharpening, restrained highlight rolloff"] }
+    { "channel": "medium", "importance": "required", "directives": ["live-action image representation", "natural human anatomy and physical materials"] },
+    { "channel": "geometry", "importance": "required", "directives": ["preserve canonical facial relations and adult body proportions", "retain controlled natural asymmetry"] },
+    { "channel": "surface", "importance": "strong", "directives": ["regional human skin variation", "shot-scale-appropriate microtexture", "restrained nonuniform specular response"], "negativeDirectives": ["porcelain uniformity", "beauty-filter smoothing", "razor-sharp pores"] },
+    { "channel": "depth", "importance": "strong", "directives": ["consistent photographic perspective", "selective focus with believable optical falloff"] },
+    { "channel": "costume", "importance": "strong", "directives": ["restrained Song-inspired layering", "muted jade and moon-white textile palette", "real folds, weight and contact"] },
+    { "channel": "lighting", "importance": "strong", "directives": ["soft motivated window or overcast courtyard light", "controlled falloff and contact shadow"] },
+    { "channel": "performance", "importance": "supporting", "directives": ["small facial amplitude", "eyes carry the emotion", "head follows gaze with slight delay"] },
+    { "channel": "palette", "importance": "supporting", "directives": ["low saturation jade, moon-white, tea-brown and old wood", "warm skin highlights against cool surroundings"], "negativeDirectives": ["neon saturation", "plastic specular bloom"] },
+    { "channel": "postprocess", "importance": "supporting", "directives": ["subtle grain, low sharpening, restrained highlight rolloff"] }
   ],
   "preserve": ["exact CharacterSpec identity anchors", "exact AppearanceState construction", "Director camera and crop decisions", "SceneBinding geography if supplied"],
   "allowedVariation": ["minor accessory exploration if AppearanceState leaves it free", "warm/cool light within package bounds", "background detail within SceneSpec"],

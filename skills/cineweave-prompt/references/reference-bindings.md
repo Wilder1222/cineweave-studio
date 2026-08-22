@@ -29,6 +29,8 @@ One asset may have multiple observations, but each observation has one primary r
 
 Prompt compilation preserves this provenance. It may combine the visible results into fluent text, but acceptance checks and repair targets must still point back to the owning block.
 
+When the output intentionally changes the source pose, frame, canvas or scene, bind the exact `ReferenceReview` and use `referenceTransform`; do not leave source-only instructions in the final prompt. See [reference-transforms.md](reference-transforms.md).
+
 ## Good reference sets
 
 A reusable style set should keep style stable while varying subject, composition, scene and dominant color. A character identity set should use neutral light and several angles before beauty lighting. A pose reference should not silently become an identity reference.

@@ -81,8 +81,8 @@ upstream contract refs. The `$cineweave` router is optional.
 | `$cineweave-style` | one-axis style exploration and visual/temporal representation grammar | style exploration contracts, `StylePackage`, `RepresentationBinding`, `StyleCompile`, `StyleLightGrammar` |
 | `$cineweave-reference` | content-addressed media, atomic observations, suitability and exact role bindings | `ReferenceAsset`, `ReferenceObservation`, `ReferenceReview`, `ReferenceBindingSet` |
 | `$cineweave-director` | action choreography, shot purpose, blocking, camera, shot light use and time | `ActionSequenceSpec`, `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, storyboard |
-| `$cineweave-prompt` | general text-to-image prompt assets | `PromptRecord`, `ImagePrompt`, hypotheses and one-variable repairs |
-| `$cineweave-production` | recipes, controls, evidence, capabilities, rights, execution intent and QA | `AssetRecipe`, capability/license profiles, `AdapterDescriptor`, `ExecutionRequest`, `ExecutionReceipt` |
+| `$cineweave-prompt` | general text-to-image prompt assets | `PromptRecord`, `ImagePrompt`, explicit reference transforms, hypotheses and one-variable repairs |
+| `$cineweave-production` | recipes, deterministic board assembly, controls, evidence, capabilities, rights, execution intent and QA | `AssetRecipe`, `BoardAssemblyPlan`, capability/license profiles, `AdapterDescriptor`, `ExecutionRequest`, `ExecutionReceipt` |
 
 ### Start without prompt terminology
 
@@ -314,17 +314,17 @@ image model to invent the grid, labels and all panels in a single pass.
 
 ## Verification
 
-The current source gate validates 70 contracts, 67 uniquely owned routes and 14 built-in
+The current source gate validates 71 contracts, 68 uniquely owned routes and 15 built-in
 deterministic recipes. It also validates every schema/example pair, semantic
-positive and negative cases, 33 static behavior cases, a 13-case deterministic
-live-evaluation replay set and 37 runtime tests, plus standalone Skill bundles,
-reference links, rights boundaries, media-ingestion threats and distributable
-assets.
+positive and negative cases, 37 static behavior cases, validated modern and legacy
+evaluation fixtures, a 13-case deterministic live-evaluation replay set and 38 runtime
+tests, plus standalone Skill bundles, reference links, rights boundaries,
+media-ingestion threats and distributable assets.
 
 ```bash
 npm test
 npm run validate
-npm run evals:live -- --plan --model <model>
+node scripts/run-live-skill-evals.mjs --plan --model <model>
 ```
 
 CI runs on Windows and Linux. See [release policy](docs/release.md),

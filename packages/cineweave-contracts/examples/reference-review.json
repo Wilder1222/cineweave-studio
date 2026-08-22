@@ -1,6 +1,9 @@
 {
   "kind": "cineweave_codex_reference_review",
   "contractVersion": "2.0.0",
+  "reviewId": "review.dark-fantasy-portrait-v1",
+  "version": 1,
+  "status": "reviewed",
   "skillReceipt": {
     "repository": "https://github.com/owner/repository",
     "ref": "v2.4.0",
@@ -117,6 +120,7 @@
     "observableEvidence": true,
     "roleScoped": true,
     "rightsFlagged": true,
-    "noPrivateUrls": true
+    "noPrivateUrls": true,
+    "reviewIdentityVersioned": true
   }
 }

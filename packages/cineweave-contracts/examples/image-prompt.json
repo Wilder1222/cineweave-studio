@@ -49,9 +49,9 @@
     "actionMoment": "the woman has stopped walking and lifts her gaze just as the palace becomes fully legible",
     "endState": "the reveal has settled into a quiet, reviewable composition",
     "styleStack": [
-      { "label": "东方诗意", "weight": 0.45 },
-      { "label": "史诗巨构", "weight": 0.35 },
-      { "label": "清冷纪实光线", "weight": 0.2 }
+      { "label": "东方诗意", "importance": "required" },
+      { "label": "史诗巨构", "importance": "strong" },
+      { "label": "清冷纪实光线", "importance": "supporting" }
     ]
   },
   "promptBlocks": {

@@ -16,6 +16,12 @@
       "outputType": "turnaround"
     },
     {
+      "recipeId": "recipe.character-identity-reference-sheet-3x3",
+      "path": "recipes/character-identity-reference-sheet-3x3.json",
+      "ownerSkill": "cineweave-production",
+      "outputType": "identity_reference"
+    },
+    {
       "recipeId": "recipe.character-action-sheet-2x3",
       "path": "recipes/character-action-sheet-2x3.json",
       "ownerSkill": "cineweave-character",

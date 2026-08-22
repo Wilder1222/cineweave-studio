@@ -4,10 +4,13 @@
   "title": "CineWeave Codex Reference Suitability Review",
   "type": "object",
   "additionalProperties": false,
-  "required": ["kind", "contractVersion", "skillReceipt", "purpose", "source", "decision", "primaryRole", "referenceType", "authority", "scores", "evidence", "referenceContract", "pairingRecommendations", "validation"],
+  "required": ["kind", "contractVersion", "reviewId", "version", "status", "skillReceipt", "purpose", "source", "decision", "primaryRole", "referenceType", "authority", "scores", "evidence", "referenceContract", "pairingRecommendations", "validation"],
   "properties": {
     "kind": { "const": "cineweave_codex_reference_review" },
     "contractVersion": { "const": "2.0.0" },
+    "reviewId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$" },
+    "version": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["draft", "reviewed", "superseded"] },
     "worldId": { "type": "string", "minLength": 1, "maxLength": 160 },
     "skillReceipt": { "$ref": "#/$defs/skillReceipt" },
     "purpose": { "type": "string", "minLength": 1, "maxLength": 1500 },
@@ -30,12 +33,13 @@
     "validation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["observableEvidence", "roleScoped", "rightsFlagged", "noPrivateUrls"],
+      "required": ["observableEvidence", "roleScoped", "rightsFlagged", "noPrivateUrls", "reviewIdentityVersioned"],
       "properties": {
         "observableEvidence": { "const": true },
         "roleScoped": { "const": true },
         "rightsFlagged": { "const": true },
-        "noPrivateUrls": { "const": true }
+        "noPrivateUrls": { "const": true },
+        "reviewIdentityVersioned": { "const": true }
       }
     }
   },

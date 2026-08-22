@@ -25,6 +25,23 @@ For a reusable character workflow, keep these artifacts distinct:
 
 The last two recipes share the exact identity and appearance inputs but use different one-variable task deltas. A combined delivery may place their accepted outputs on one deterministic canvas, but must retain each recipe/task provenance, preserve tile resolution and retry failed tasks only. Labels, borders and layout are assembly concerns, never image-model content requirements.
 
+## Heterogeneous identity dossiers
+
+`recipe.character-identity-reference-sheet-3x3` is a generic detail recipe for
+one character's front/three-quarter/profile face, hair/headwear, shoulder and
+bodice construction, hands/material, full-body silhouette, costume motion and
+mood portrait. It is not an expression-sheet substitute: its camera scale and
+detail slot intentionally vary while identity, appearance and background stay
+locked.
+
+For the common “three views plus nine detail tiles” deliverable, run
+`recipe.character-turnaround-3view` and this 3×3 recipe independently, then
+author a `BoardAssemblyPlan`. The plan reserves non-overlapping regions with
+their own grid geometry, maps every final tile to one exact recipe run/task,
+states minimum tile dimensions, and uses `retry_failed_tiles_only`. A large
+final canvas is a deterministic delivery setting, not a claim that any one
+model generated an “8K board” in a single pass.
+
 ## Character exploration board
 
 `recipe.character-exploration-board-4up` comes before identity lock. It accepts

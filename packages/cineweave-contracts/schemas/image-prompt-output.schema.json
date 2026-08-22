@@ -46,6 +46,9 @@
     "styleBinding": {
       "$ref": "#/$defs/styleBinding"
     },
+    "referenceTransform": {
+      "$ref": "reference-transform.schema.json"
+    },
     "characterBindings": {
       "type": "array",
       "maxItems": 12,
@@ -418,7 +421,7 @@
             "additionalProperties": false,
             "required": [
               "label",
-              "weight"
+              "importance"
             ],
             "properties": {
               "label": {
@@ -426,9 +429,12 @@
                 "minLength": 1,
                 "maxLength": 240
               },
-              "weight": {
-                "type": "number",
-                "minimum": 0
+              "importance": {
+                "enum": [
+                  "required",
+                  "strong",
+                  "supporting"
+                ]
               }
             }
           }

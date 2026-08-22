@@ -77,6 +77,19 @@
         "video reference or structured temporal semantics are requested",
         "runtime plan can be blocked on missing temporal evidence"
       ]
+    },
+    {
+      "id": "semantic-emphasis-and-representation-variant",
+      "mode": "style_compile",
+      "prompt": "同一锁定角色需要真人电影和自然主义动漫两个版本。分别编译两个 StyleCompile，两个版本都必须绑定精确 RepresentationBinding，保留外貌状态、场景地理和物理光源；用 required、strong、supporting 表示重点，不能写任何 Provider 数值权重。",
+      "expectedOutput": "separate representation-variant StyleCompile payloads",
+      "assertions": [
+        "each family has an independently versioned representation variant compile",
+        "every variant binds exact identity translation",
+        "character identity appearance scene geography and physical light are protected",
+        "semantic emphasis uses required strong and supporting levels",
+        "provider-specific prompt weights and hidden conversion tables are absent"
+      ]
     }
   ]
 }

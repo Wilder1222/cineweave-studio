@@ -33,6 +33,7 @@ verified output hashes + ExecutionReceipt artifact
   supported and binds one exact CapabilityProfile.
 - `implementation.entrypointId` is a registry identifier, never a file path.
 - `implementation.contentHash` is verified against the registered adapter.
+- `semanticEmphasis` records only which canonical levels (`required`, `strong`, `supporting`) the adapter accepts and whether it can preserve ordering or translate them natively. It never stores provider-specific prompt syntax, numeric weights or a hidden conversion table.
 - Environment-variable names may identify required credentials; values never
   enter contracts, logs or receipts.
 - Network is `forbidden` or `external_mode_only`. The core fixture adapter is

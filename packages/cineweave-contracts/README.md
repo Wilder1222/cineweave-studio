@@ -1,7 +1,7 @@
 # CineWeave Contracts 2.5.1
 
 `cineweave-contracts` is the canonical exchange layer for CineWeave Studio. Its
-manifest records 70 contract kinds, one owner per contract and one owner per
+manifest records 71 contract kinds, one owner per contract and one owner per
 Skill route.
 
 ## Domains
@@ -13,14 +13,17 @@ Skill route.
   review and repair.
 - Scene: geography, state, physical SceneLightState, interaction and repair.
 - Style: one-axis exploration, StylePackage, RepresentationBinding, reference
-  policy, StyleCompile with optional calibrated realism treatment, and StyleLightGrammar.
+  policy, semantic-emphasis/representation-variant StyleCompile with optional
+  calibrated realism treatment, and StyleLightGrammar.
 - Reference: byte-bound assets, atomic observations, suitability reviews and
   exact role-scoped binding sets.
 - Director: proposals, ActionSequenceSpec, ShotSpec, ShotLightingPlan,
   TemporalSpec, storyboard, reference consumption and render planning.
-- Prompt: PromptRecord, ImagePrompt, PromptHypothesis, DraftBrief and PromptRepair.
-- Production: recipes, controls, evidence, capability, rights, adapter
-  descriptors, exact execution requests, receipts and benchmarks.
+- Prompt: PromptRecord, ImagePrompt, explicit reference transforms,
+  PromptHypothesis, DraftBrief and PromptRepair.
+- Production: recipes, deterministic BoardAssemblyPlan, controls, evidence,
+  capability, rights, adapter descriptors, exact execution requests, receipts
+  and benchmarks.
 - Runtime: project, artifact, exact dependency graph, approval, safe project
   bundle, board-provenance and Skill-evaluation records.
 
@@ -30,8 +33,9 @@ Skill route.
 - `schemas/` — provider-neutral JSON Schema contracts.
 - `examples/` — a valid example for every manifest contract, plus validated
   Anime and Manga StylePackage examples.
-- `recipes/` — 14 deterministic production recipes, including morphology,
-  style exploration, Natural Human, Anime, Manga and cross-representation fixtures.
+- `recipes/` — 15 deterministic production recipes, including morphology,
+  three-view plus identity-detail dossiers, style exploration, Natural Human,
+  Anime, Manga and cross-representation fixtures.
 - `references/` — shared semantics.
 
 Each Skill declares its portable subset in `skills/<skill>/contracts.json`.

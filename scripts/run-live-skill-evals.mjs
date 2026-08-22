@@ -319,7 +319,7 @@ async function gradeDirectory({ suite, plugin, cases, directory, outputPath }) {
     } catch (error) { results.push(errorResult(item, error)); }
   }
   const finishedAt = new Date().toISOString();
-  const run = buildRun({ suite, plugin, cases, results, mode: "fixture_replay", model: null, startedAt, finishedAt, command: "npm run evals:live -- --grade tests/fixtures/live-responses" });
+  const run = buildRun({ suite, plugin, cases, results, mode: "fixture_replay", model: null, startedAt, finishedAt, command: "node scripts/run-live-skill-evals.mjs --grade tests/fixtures/live-responses" });
   await validateRun(run, outputPath);
   return run;
 }
@@ -364,7 +364,7 @@ async function runLive({ suite, plugin, cases, directory, model, timeoutSeconds 
     }
   } finally { await rm(work, { recursive: true, force: true }); }
   const finishedAt = new Date().toISOString();
-  const command = `npm run evals:live -- --run --acknowledge-model-costs --model ${model} --out-dir .cineweave-evals/run`;
+  const command = `node scripts/run-live-skill-evals.mjs --run --acknowledge-model-costs --model ${model} --out-dir .cineweave-evals/run`;
   const run = buildRun({ suite, plugin, cases, results, mode: "live_codex", model, startedAt, finishedAt, command, installedPlugin });
   const runPath = join(directory, "evaluation-run.json");
   await validateRun(run, runPath);

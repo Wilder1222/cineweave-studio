@@ -1,6 +1,6 @@
 # Purpose-specific reference review
 
-A review answers “is this exact asset useful for this declared job?” It is not an absolute beauty score and does not certify ownership, history, camera metadata or production readiness.
+A review answers “is this exact asset useful for this declared job?” It is not an absolute beauty score and does not certify ownership, history, camera metadata or production readiness. Every reusable review has a stable `reviewId`, integer `version` and lifecycle `status`, so a downstream transform can bind the exact assessment rather than an unnamed prose summary.
 
 ## Review sequence
 
@@ -12,6 +12,7 @@ A review answers “is this exact asset useful for this declared job?” It is n
 6. State what to preserve, borrow and exclude.
 7. Flag rights, likeness, privacy and transfer unknowns independently.
 8. Recommend complementary references that fill missing evidence.
+9. When the target image will intentionally depart from the reference, hand downstream Prompt an exact review ref; Prompt owns the explicit source-to-target transform.
 
 ## Suitability anchors
 

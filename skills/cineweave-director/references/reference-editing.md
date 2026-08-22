@@ -44,6 +44,8 @@ Every edit plan must state:
 
 Use “change only X; preserve Y” as a semantic constraint, not as a provider-specific prompt trick.
 
+If the requested target deliberately differs from a reviewed source (for example, seated portrait → standing full-body 3:4), send Prompt the exact `ReferenceReview` ref plus an explicit source-to-target transform. Preserve, replace and exclude decisions must be separate; do not leave source-only pose, crop or prop details in the handoff.
+
 ## Mask semantics
 
 For inpainting, the contract is explicit:

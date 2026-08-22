@@ -98,6 +98,14 @@
       "loads": ["prompt-architecture", "domain-recipes"],
       "expectedOutput": "prompt-record",
       "assertions": ["domain is food", "cinematic shot package is not required", "material and composition remain concrete", "observation-ready viewpoint, crop, light, and surface decisions"]
+    },
+    {
+      "id": "reference-reframe-seated-to-standing",
+      "mode": "prompt_management",
+      "prompt": "把一张已评审的坐姿舞台人物参考重构为 3:4 站立全身图：保留服装配色、柔光和经评审的材质关系，明确替换坐姿、画幅和来源道具，并标出后背服装和鞋履证据缺口。",
+      "loads": ["reference-transforms", "reference-bindings", "prompt-architecture"],
+      "expectedOutput": "PromptRecord with an exact ReferenceTransform",
+      "assertions": ["exact ReferenceReview is bound", "preserve replace and exclude dimensions are explicit", "target pose crop and source-only props are not inferred from source evidence", "unknown back-view and footwear evidence remains flagged", "acceptance criteria prevent seated-pose leakage"]
     }
   ]
 }

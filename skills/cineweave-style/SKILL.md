@@ -43,7 +43,7 @@ Choose the smallest route and load only the relevant references.
 - `style_compose`: combine compatible atoms into a style recipe, identify conflicts and declare scope. Read `references/style-system.md` and `references/style-taxonomy.md`; return `../../packages/cineweave-contracts/schemas/style-package.schema.json`.
 - `style_package`: create, version, import, fork or activate a reusable StylePackage with references, policy, compiler profiles and validation cases. Read `references/style-system.md` and `references/reference-policy.md`; return `../../packages/cineweave-contracts/schemas/style-package.schema.json`.
 - `representation_binding`: bind an exact CharacterSpec, optional CharacterMorphologySpec and StylePackage into scale-aware identity translation rules. Read `references/visual-representation-system.md`; return `../../packages/cineweave-contracts/schemas/representation-binding.schema.json`. It may reinterpret anchors but cannot mutate Canon or contain Provider weights.
-- `style_compile`: compile a StylePackage and optional calibrated realism profile for a declared image or video target while keeping character identity, skin/material facts, scene facts and camera decisions separate. Read `references/style-compiler.md`; return `../../packages/cineweave-contracts/schemas/style-compile.schema.json`.
+- `style_compile`: compile one declared representation variant of a StylePackage and optional calibrated realism profile for an image or video target while keeping character identity, skin/material facts, scene facts and camera decisions separate. Use semantic importance (`required`, `strong`, `supporting`), never provider-weight syntax. Read `references/style-compiler.md`; return `../../packages/cineweave-contracts/schemas/style-compile.schema.json`.
 - `style_light_grammar`: define how approved physical light is represented in the selected medium without placing or moving sources. Read `references/lighting-grammar.md`; return `../../packages/cineweave-contracts/schemas/style-light-grammar.schema.json`.
 - `style_review`: compare candidate Observation IDs against StylePackage invariants, forbidden traits and medium/temporal rules. Read `references/style-review.md`; return `../../packages/cineweave-contracts/schemas/style-review.schema.json`.
 
@@ -61,6 +61,7 @@ Choose the smallest route and load only the relevant references.
 10. A representation family is a capability pack inside Style, not a new Skill. Natural human, anime, manga, illustration, stylized 3D and hybrid share one canonical contract model.
 11. Hybrid representation is scoped by geometry, surface, hair, costume, background, light and motion; do not encode it as an unexplained percentage blend.
 12. Style exploration holds canonical Character, Appearance, Scene, action, framing and fixture constant and varies one primary style axis per round.
+13. Semantic emphasis is `required`, `strong` or `supporting`, not a Provider weight. A photoreal, anime, manga, illustration, stylized-3D or hybrid reinterpretation is one separately versioned `StyleCompile` artifact with its own exact `RepresentationBinding`.
 
 ## Operating sequence
 
@@ -71,7 +72,7 @@ Choose the smallest route and load only the relevant references.
 5. Choose reference policy: `none`, `design_time_only`, `optional_runtime`, `required_runtime` or `adaptive`.
 6. Compose or load the exact StylePackage version, representation foundation and reference plan.
 7. Create or resolve a RepresentationBinding whenever identity anchors require medium-specific translation.
-8. Compile target-specific semantic directives and shot-scale realism treatment; keep image style, physical material state and temporal style separate.
+8. Compile one target-specific representation variant with semantic importance and shot-scale realism treatment; keep image style, physical material state and temporal style separate. Do not use a word swap or a numeric prompt weight as a representation conversion.
 9. Validate a candidate with the matching family bench and route one failed style dimension to a minimal repair.
 
 ## Reference loading guide

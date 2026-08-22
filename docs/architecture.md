@@ -65,6 +65,12 @@ applies rights gates for exact target contracts. Character, Scene, Style,
 Director and Prompt consume these records without taking ownership of ingest or
 silently treating one upload as identity, costume, pose and style at once.
 
+When a target intentionally departs from a reviewed source, Prompt carries an
+explicit `ReferenceTransform`: exact reviewed sources, per-dimension preserve /
+replace / exclude decisions, unresolved evidence and acceptance criteria. A
+target replacement is user- or contract-declared; it never masquerades as a
+visible source fact.
+
 For portrait decomposition, the common evidence split is:
 
 ```text
@@ -204,7 +210,7 @@ boundaries.
 
 ## Contracts and portable bundles
 
-The canonical manifest owns 70 contract kinds. Each Skill declares its portable
+The canonical manifest owns 71 contract kinds. Each Skill declares its portable
 subset in `skills/<skill>/contracts.json`. Bundle construction copies only the
 needed schemas and recipes and rewrites local references, so a specialist bundle
 does not depend on the repository layout.

@@ -22,9 +22,9 @@
       "visualTreatment": "月白、石青、暖象牙与少量暗金；冷环境光叠加黄昏逆光；雾分层而不吞没建筑。",
       "soundEdit": "脚步声停止，风声短暂变薄，远处钟声在天宫出现时进入；揭示后保留呼吸空间。",
       "styleStack": [
-        { "label": "东方诗意", "weight": 0.45 },
-        { "label": "史诗巨构", "weight": 0.35 },
-        { "label": "神圣仪式", "weight": 0.2 }
+        { "label": "东方诗意", "importance": "required" },
+        { "label": "史诗巨构", "importance": "strong" },
+        { "label": "神圣仪式", "importance": "supporting" }
       ],
       "preserve": ["女主身份与月白朱绫轮廓", "天宫位于远方高处", "人物必须作为尺度锚点"],
       "allowedChanges": ["前景柱的遮挡宽度", "雾层密度", "逆光强度"],
@@ -43,9 +43,9 @@
       "visualTreatment": "灰青空气透视、低饱和青金建筑、局部暖光；避免全局金色和魔法发光。",
       "soundEdit": "低频风声和远处城市声持续，钟声不做高潮而像空间本身的呼吸。",
       "styleStack": [
-        { "label": "清冷孤寂", "weight": 0.4 },
-        { "label": "东方诗意", "weight": 0.35 },
-        { "label": "神圣仪式", "weight": 0.25 }
+        { "label": "清冷孤寂", "importance": "required" },
+        { "label": "东方诗意", "importance": "strong" },
+        { "label": "神圣仪式", "importance": "supporting" }
       ],
       "preserve": ["人物极小比例", "长焦压缩关系", "低饱和材质差异"],
       "allowedChanges": ["云层递进数量", "人物与天宫的垂直间距", "风声强度"],

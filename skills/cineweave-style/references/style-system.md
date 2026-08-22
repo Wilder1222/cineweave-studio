@@ -104,6 +104,10 @@ When converting the same character across live action, hand-drawn animation, bla
 
 Style is a renderer of approved semantics, not a replacement for those semantics.
 
+Treat each representation family as a separate compile artifact, not a numerical blend. A photoreal approval does not implicitly authorize its anime, manga, illustration, stylized-3D or hybrid version. Each version binds the same identity anchors through an exact `RepresentationBinding`, protects AppearanceState, Scene geography and physical light, and receives its own review.
+
+Within a compile, express priority as `required`, `strong` or `supporting`. Those levels communicate creative intent across adapters; they are not prompt weights, model flags or a request to expose provider-specific syntax.
+
 ## Realism at compile time
 
 Do not encode “realism” as one opaque quality token. StylePackage may define the representation family and surface grammar; StyleCompile may instantiate a calibrated `realismProfile` for one target and shot scale. Keep anatomy fidelity, microdetail readability, material differentiation, natural asymmetry, optical imperfection, idealization and beauty retouch independently adjustable.

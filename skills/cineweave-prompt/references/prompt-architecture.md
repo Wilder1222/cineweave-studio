@@ -42,6 +42,10 @@ Remove details that fail these checks. A close portrait may need facial structur
 
 For portraits, keep four sources traceable even when the final sentence reads fluently: CharacterSpec owns stable identity and surface baseline, CharacterAppearanceState owns the current skin/makeup condition, RepresentationBinding owns medium-specific anchor translation, and StyleCompile owns realism/retouch representation. A style adjective cannot rewrite either Character source.
 
+Keep `StyleCompile` emphasis semantic and ordered: `required`, then `strong`, then `supporting`. Do not replace it with provider-weight syntax or numeric reference strength. A different representation family requires a separately bound StyleCompile; it is not a string-level “make it more anime/CG” rewrite.
+
+When surface response is a primary acceptance target, compile it as current state → source and reflection geometry → visible form/contact → shot-scale detail. Read [surface-response.md](surface-response.md) for the conditional guide; otherwise do not add material microdetail by default.
+
 ## Chinese compilation pattern
 
 ```text

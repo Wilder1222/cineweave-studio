@@ -72,8 +72,11 @@ async function checkManifestContracts() {
   for (const [schema, example] of [
     ["schemas/execution-receipt.schema.json", "examples/execution-receipt-blocked.json"],
     ["schemas/shot-spec.schema.json", "examples/shot-spec-action.json"],
+    ["schemas/prompt-record.schema.json", "examples/prompt-record-reference-reframe.json"],
+    ["schemas/image-prompt-output.schema.json", "examples/integrated-image-prompt-reference-reframe.json"],
     ["schemas/style-package.schema.json", "examples/style-package-anime.json"],
-    ["schemas/style-package.schema.json", "examples/style-package-manga.json"]
+    ["schemas/style-package.schema.json", "examples/style-package-manga.json"],
+    ["schemas/style-compile.schema.json", "examples/style-compile-anime.json"]
   ]) {
     const result = await validateDocument(join(contractRoot, schema), join(contractRoot, example));
     if (!result.valid) fail(`${example} does not validate: ${result.errors.join("; ")}`);
@@ -185,6 +188,7 @@ async function main() {
   await runScript("focused Skill package tests", "scripts/validate-skill-packages.mjs");
   await runScript("distributable asset audit", "scripts/audit-distributable-assets.mjs");
   await runScript("behavior evaluation definition tests", "scripts/run-behavior-evals.mjs", ["--validate"]);
+  await runScript("evaluation fixture definition tests", "scripts/validate-eval-fixtures.mjs");
   await runScript("live Skill evaluation definition tests", "scripts/run-live-skill-evals.mjs", ["--validate"]);
   await runScript("live Skill deterministic replay", "scripts/run-live-skill-evals.mjs", ["--grade", join(repoRoot, "tests", "fixtures", "live-responses"), "--summary-only"]);
   await checkMigration();

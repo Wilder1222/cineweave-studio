@@ -118,6 +118,19 @@
         "tasks are decomposed",
         "labels are added during deterministic assembly"
       ]
+    },
+    {
+      "id": "turnaround-plus-identity-detail-sheet-assembly",
+      "route": "board_assembly",
+      "prompt": "同一个锁定人物需要一张最终角色档案板：顶部 3 个等高区域放正面、侧面、背面三视图，底部一个 3x3 区域放面部、头饰、服装、手部材质和姿态细节。",
+      "expectedContract": "BoardAssemblyPlan",
+      "assertions": [
+        "turnaround and identity-detail tasks use separate exact recipe runs",
+        "top three-view and lower 3x3 regions have non-overlapping deterministic geometry",
+        "each final cell maps to one recipe run task and region provenance record",
+        "only failed required task outputs block assembly while successful tasks remain immutable",
+        "the image model is not asked to draw the composite board in one pass"
+      ]
     }
   ]
 }
