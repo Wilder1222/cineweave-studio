@@ -66,6 +66,7 @@
       "enum": [
         "cineweave-character",
         "cineweave-scene",
+        "cineweave-style",
         "cineweave-director",
         "cineweave-production"
       ]
@@ -83,6 +84,11 @@
     "outputType": {
       "enum": [
         "identity_reference",
+        "morphology_turnaround",
+        "human_realism_fixture",
+        "representation_fixture",
+        "style_exploration",
+        "cross_representation_sheet",
         "expression_sheet",
         "turnaround",
         "action_sheet",
@@ -472,6 +478,8 @@
         "role": {
           "enum": [
             "identity",
+            "morphology",
+            "representation",
             "appearance",
             "performance",
             "scene",

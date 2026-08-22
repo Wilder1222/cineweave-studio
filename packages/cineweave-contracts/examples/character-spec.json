@@ -5,6 +5,12 @@
   "name": "沈砚秋",
   "version": 1,
   "status": "draft",
+  "morphologySpecRef": {
+    "kind": "cineweave_codex_character_morphology_spec",
+    "id": "morphology.shen-yanqiu.v1",
+    "version": 1,
+    "contentHash": "sha256:abababababababababababababababababababababababababababababababab"
+  },
   "collection": "cloud-dynasty-main-cast",
   "tags": [
     "character",
@@ -118,6 +124,40 @@
         "右肩与右前臂略强",
         "握剑位置有轻微手茧"
       ]
+    },
+    "surfaceProfile": {
+      "baselineComplexion": {
+        "toneRange": "light warm-neutral human complexion",
+        "undertone": "neutral peach with restrained warmth"
+      },
+      "regionalVariation": [
+        { "region": "eyelids", "behavior": "Slightly warmer than the outer cheeks." },
+        { "region": "nose", "behavior": "Subtle natural warmth around the nose tip and alar region." },
+        { "region": "under_eye", "behavior": "Age-appropriate tonal transition remains visible." },
+        { "region": "neck", "behavior": "Naturally a little cooler and darker than central facial planes." }
+      ],
+      "microTexture": {
+        "poreVisibility": "subtle",
+        "peachFuzz": "natural",
+        "underEyeTexture": "preserved",
+        "fineLines": "age_appropriate"
+      },
+      "eyes": {
+        "scleraTone": "natural off-white rather than pure white",
+        "tearLineMoisture": "natural"
+      },
+      "lips": {
+        "naturalLines": true,
+        "edgeCharacter": "Soft natural edge with mild left-right asymmetry."
+      },
+      "persistentMarks": ["Very faint freckles near the nasal bridge."],
+      "forbidden": ["Porcelain uniformity", "Beauty-filter smoothing", "Lighting or makeup encoded as identity"],
+      "calibration": {
+        "providerNeutral": true,
+        "notBiometric": true,
+        "excludesMakeup": true,
+        "excludesLighting": true
+      }
     },
     "forbiddenChanges": [
       "不得改成尖下巴",

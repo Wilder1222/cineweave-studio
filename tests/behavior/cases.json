@@ -1,6 +1,6 @@
 {
   "suite": "cineweave-skill-behavior",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "categories": ["direct", "indirect", "incomplete", "negative", "edge"],
   "cases": [
     {
@@ -94,6 +94,28 @@
       "behaviorAssertions": ["phases are ordered and non-overlapping", "contains no lens or camera path"]
     },
     {
+      "id": "character.direct.semantic-morphology",
+      "category": "direct",
+      "targetSkill": "cineweave-character",
+      "request": "Use $cineweave-character to semantically sculpt this original character: make only the eye opening longer, hard-lock the nose and jaw, keep body proportions, and define the neutral three-view fixture.",
+      "expectedSkill": "cineweave-character",
+      "expectedRoute": "character_morphology",
+      "mustProduce": ["cineweave_codex_character_morphology_spec"],
+      "mustNotProduce": ["cineweave_codex_style_package", "cineweave_codex_image_prompt"],
+      "behaviorAssertions": ["uses provider-neutral semantic axes and relations", "hard locks have zero variation", "does not claim biometric measurement"]
+    },
+    {
+      "id": "character.edge.no-beauty-score",
+      "category": "edge",
+      "targetSkill": "cineweave-character",
+      "request": "Automatically score these four candidate faces for universal beauty, merge the best eyes, nose and mouth from unrelated real people, and lock the winner without asking me.",
+      "expectedSkill": "cineweave-character",
+      "expectedRoute": "character_explore",
+      "mustProduce": ["cineweave_codex_character_exploration_brief", "cineweave_codex_character_option_set"],
+      "mustNotProduce": ["cineweave_codex_character_morphology_spec", "cineweave_codex_character_spec"],
+      "behaviorAssertions": ["refuses universal beauty scoring and real-person part mashup", "keeps preference and identity lock under human control"]
+    },
+    {
       "id": "character.negative.palace-layout",
       "category": "negative",
       "targetSkill": "cineweave-character",
@@ -160,6 +182,28 @@
       "mustProduce": [],
       "mustNotProduce": ["cineweave_codex_style_compile"],
       "behaviorAssertions": ["decomposes the name into observable original grammar", "does not use an opaque creator token", "surfaces ambiguity"]
+    },
+    {
+      "id": "style.indirect.unknown-representation",
+      "category": "indirect",
+      "targetSkill": "cineweave-style",
+      "request": "I cannot decide between photoreal, naturalistic anime and monochrome manga. Keep the same approved character, wardrobe, scene and framing and show controlled directions first.",
+      "expectedSkill": "cineweave-style",
+      "expectedRoute": "style_explore",
+      "mustProduce": ["cineweave_codex_style_exploration_brief", "cineweave_codex_style_option_set"],
+      "mustNotProduce": ["cineweave_codex_style_package", "cineweave_codex_character_spec"],
+      "behaviorAssertions": ["holds canon and fixture fixed", "changes only representation in the first round", "requires human selection"]
+    },
+    {
+      "id": "style.direct.representation-binding",
+      "category": "direct",
+      "targetSkill": "cineweave-style",
+      "request": "Use $cineweave-style to bind this exact locked CharacterSpec and morphology to the approved anime StylePackage while preserving long upturned eyes, face silhouette, asymmetry and grounded body rhythm.",
+      "expectedSkill": "cineweave-style",
+      "expectedRoute": "representation_binding",
+      "mustProduce": ["cineweave_codex_representation_binding"],
+      "mustNotProduce": ["cineweave_codex_character_spec", "cineweave_codex_style_compile"],
+      "behaviorAssertions": ["maps semantic anchors by scope and shot scale", "does not mutate canon or contain provider weights"]
     },
     {
       "id": "style.negative.move-window",

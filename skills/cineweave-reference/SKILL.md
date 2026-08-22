@@ -29,7 +29,7 @@ Choose the smallest route and load only the required reference.
 
 - `reference_ingest`: verify and store a local PNG, JPEG, WebP, MP4/M4V, MOV or WebM without retaining its source path or filename. Read `references/reference-lifecycle.md`; when the runtime is available, run `cineweave-studio reference-ingest`. Return the immutable `ReferenceAsset` envelope. Never fabricate an ingest result.
 - `reference_verify`: verify an exact ReferenceAsset against its content-addressed blob. Run `cineweave-studio reference-verify`; return the verification report and block on mismatch.
-- `reference_observe`: inspect supplied visible media, choose one primary role and selector, and return `../../packages/cineweave-contracts/schemas/reference-observation.schema.json`. Read `references/role-taxonomy.md`. Create multiple observations when one asset legitimately serves multiple roles.
+- `reference_observe`: inspect supplied visible media, choose one primary role and selector, and return `../../packages/cineweave-contracts/schemas/reference-observation.schema.json`. Read `references/role-taxonomy.md`. For portrait decomposition or prompt reconstruction, also read `references/portrait-decomposition.md`. Create multiple individually valid observations when one asset legitimately serves multiple roles; never collapse them into one mega-observation.
 - `reference_review`: judge suitability for a declared purpose, separate visible from inferred evidence, score only relevant dimensions and return `../../packages/cineweave-contracts/schemas/reference-review.schema.json`. Read `references/reference-review.md` and `references/role-taxonomy.md`.
 - `reference_bind`: combine exact approved or reviewed observations for declared targets, resolve role conflicts and rights gates, and return `../../packages/cineweave-contracts/schemas/reference-binding-set.schema.json`. Read `references/reference-lifecycle.md` and `references/role-taxonomy.md`.
 - `reference_set`: return `../../packages/cineweave-contracts/schemas/reference-set.schema.json` only for a legacy consumer; prefer `reference_bind` for new work.
@@ -52,7 +52,7 @@ Choose the smallest route and load only the required reference.
 1. Identify whether the task is ingestion, observation, suitability review, binding or verification.
 2. Ingest once and preserve the exact ReferenceAsset ref; do not repeatedly copy the same bytes.
 3. Inspect the actual media. If it is unavailable, request it instead of inventing evidence.
-4. Split the requested use into atomic roles and selectors.
+4. Split the requested use into atomic roles and selectors. A portrait decomposition may return a named `observations` collection, but every member must remain an independently valid ReferenceObservation.
 5. Record evidence basis, confidence, transfer scope, authority and contamination risks.
 6. Resolve or explicitly leave rights and likeness unknown.
 7. Build a binding set with identity and geography ahead of lower-authority style or composition evidence.
@@ -60,10 +60,10 @@ Choose the smallest route and load only the required reference.
 
 ## Handoffs
 
-- Character receives identity, body, appearance, expression, pose and performance observations.
+- Character receives identity, body, skin-material, appearance, expression, pose and performance observations. Stable baseline surface evidence belongs to CharacterSpec; changeable visible skin state belongs to CharacterAppearanceState.
 - Scene receives geography, architecture, prop layout, material, weather and atmosphere observations.
 - Style receives linework, palette, representation, material and temporal-style observations without source identity.
-- Director receives composition, camera-motion, lighting-use and performance observations after domain facts are locked.
+- Director receives capture, composition, camera-motion, lighting-use and performance observations after domain facts are locked.
 - Prompt receives an exact ReferenceBindingSet, not an undifferentiated upload list.
 - Production receives unresolved rights, privacy, provider-transfer and approval gates.
 

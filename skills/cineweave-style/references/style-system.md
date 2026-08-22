@@ -103,3 +103,9 @@ When converting the same character across live action, hand-drawn animation, bla
 - review identity after conversion rather than assuming the style compiler preserved it.
 
 Style is a renderer of approved semantics, not a replacement for those semantics.
+
+## Realism at compile time
+
+Do not encode “realism” as one opaque quality token. StylePackage may define the representation family and surface grammar; StyleCompile may instantiate a calibrated `realismProfile` for one target and shot scale. Keep anatomy fidelity, microdetail readability, material differentiation, natural asymmetry, optical imperfection, idealization and beauty retouch independently adjustable.
+
+These are provider-neutral normalized creative-intent values. They describe how approved facts are rendered, not a person’s physical skin, a biometric measurement or a promise that a Provider will produce a realistic image. Stable surface facts remain in CharacterSpec and temporary visible skin state remains in CharacterAppearanceState.

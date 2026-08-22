@@ -1,0 +1,11 @@
+{
+  "caseId": "live.character.semantic-morphology",
+  "selectedSkill": "cineweave-character",
+  "route": "character_morphology",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_codex_character_morphology_spec"],
+  "response": "建立一个 provider-neutral 语义轴：只把眼型的水平长度向狭长方向小幅调整。鼻部结构、下颌关系和身体比例设为硬锁，允许变化半径为零；其他轴保持当前值。身份锁定前使用同一中性表情、妆发、服装、光线和机位，分别检查正面、四分之三侧面与完整侧面的一致性。技术检查只判断结构、关系和锁定保持，不进行任何自动美貌判断。",
+  "questions": [],
+  "unsupportedClaims": []
+}
+

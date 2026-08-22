@@ -16,6 +16,11 @@
   "purpose": "验证人物、造型、场景、交互、分镜、电影语言和权利控制在不同适配器上的可执行性与修复闭环。",
   "scopes": [
     "CharacterBench",
+    "MorphologyBench",
+    "HumanRealismBench",
+    "AnimeBench",
+    "MangaBench",
+    "CrossRepresentationBench",
     "AppearanceBench",
     "SceneBench",
     "InteractionBench",
@@ -33,6 +38,41 @@
         "metric.anchor-rule",
         "metric.human-identity"
       ]
+    },
+    {
+      "dimensionId": "dimension.morphology",
+      "scope": "morphology",
+      "description": "语义轴、结构关系、锁定和允许变化范围在正面、四分之三与侧面保持一致。",
+      "severity": "blocking",
+      "metricIds": ["metric.morphology-rule", "metric.human-morphology"]
+    },
+    {
+      "dimensionId": "dimension.surface-realism",
+      "scope": "surface_realism",
+      "description": "自然人体表面、头发、眼唇、光线和光学行为按镜头尺度可见且不过度精修。",
+      "severity": "important",
+      "metricIds": ["metric.surface-realism-rule", "metric.human-surface-realism"]
+    },
+    {
+      "dimensionId": "dimension.anime-representation",
+      "scope": "graphic_consistency",
+      "description": "动画角色的身份转译、抽象程度、眼型、发型块面、线条、赛璐璐阴影、色彩和背景融合保持同一套 Style DNA。",
+      "severity": "important",
+      "metricIds": ["metric.anime-grammar-rule", "metric.human-anime-representation"]
+    },
+    {
+      "dimensionId": "dimension.manga-representation",
+      "scope": "graphic_consistency",
+      "description": "漫画角色的身份轮廓、墨线层级、黑白块面、网点、负空间和动作效果保持可读且一致。",
+      "severity": "important",
+      "metricIds": ["metric.manga-grammar-rule", "metric.human-manga-representation"]
+    },
+    {
+      "dimensionId": "dimension.cross-representation",
+      "scope": "cross_representation",
+      "description": "跨真人、动画、漫画、插画和三维表现时保留语义身份锚点。",
+      "severity": "blocking",
+      "metricIds": ["metric.cross-representation-anchor", "metric.human-cross-representation"]
     },
     {
       "dimensionId": "dimension.appearance",
@@ -101,6 +141,81 @@
       "description": "关键面部和身体锚点是否可见且未漂移。",
       "direction": "boolean",
       "passThreshold": true
+    },
+    {
+      "metricId": "metric.morphology-rule",
+      "type": "rule",
+      "description": "硬锁轴、结构关系和允许变化半径在中性多视图中未被越权修改。",
+      "direction": "boolean",
+      "passThreshold": true
+    },
+    {
+      "metricId": "metric.human-morphology",
+      "type": "human",
+      "description": "人工确认多视图表达同一原创形态设计，且不使用吸引力总分。",
+      "direction": "higher_is_better",
+      "passThreshold": 0.9,
+      "range": "0..1"
+    },
+    {
+      "metricId": "metric.surface-realism-rule",
+      "type": "rule",
+      "description": "检查区域性色差、微纹理、眼唇、发丝、光线方向、焦点衰减和过度锐化标签。",
+      "direction": "boolean",
+      "passThreshold": true
+    },
+    {
+      "metricId": "metric.human-surface-realism",
+      "type": "human",
+      "description": "人工确认候选看起来具有可信人体和摄影行为，而不是评判美貌。",
+      "direction": "higher_is_better",
+      "passThreshold": 0.85,
+      "range": "0..1"
+    },
+    {
+      "metricId": "metric.anime-grammar-rule",
+      "type": "rule",
+      "description": "检查动画 RepresentationBinding、几何抽象、眼型关系、发型块面、线条层级、赛璐璐阴影和色彩约束。",
+      "direction": "boolean",
+      "passThreshold": true
+    },
+    {
+      "metricId": "metric.human-anime-representation",
+      "type": "human",
+      "description": "人工确认动画候选仍是同一角色，并且风格语法统一；不评价美貌。",
+      "direction": "higher_is_better",
+      "passThreshold": 0.85,
+      "range": "0..1"
+    },
+    {
+      "metricId": "metric.manga-grammar-rule",
+      "type": "rule",
+      "description": "检查漫画 RepresentationBinding、墨线层级、黑白块面、网点、轮廓、负空间和动作效果约束。",
+      "direction": "boolean",
+      "passThreshold": true
+    },
+    {
+      "metricId": "metric.human-manga-representation",
+      "type": "human",
+      "description": "人工确认角色在失去肤色和摄影纹理后仍可识别，且漫画阅读性成立。",
+      "direction": "higher_is_better",
+      "passThreshold": 0.85,
+      "range": "0..1"
+    },
+    {
+      "metricId": "metric.cross-representation-anchor",
+      "type": "rule",
+      "description": "每个 RepresentationBinding 声明的关键轮廓、五官关系、标记和动作锚点均可验证。",
+      "direction": "boolean",
+      "passThreshold": true
+    },
+    {
+      "metricId": "metric.human-cross-representation",
+      "type": "human",
+      "description": "人工确认不同媒介版本仍是同一设计角色，而非服装相似的不同人物。",
+      "direction": "higher_is_better",
+      "passThreshold": 0.88,
+      "range": "0..1"
     },
     {
       "metricId": "metric.human-identity",
@@ -196,6 +311,131 @@
     }
   ],
   "cases": [
+    {
+      "caseId": "case.morphology-neutral-3view",
+      "category": "morphology",
+      "recipeRef": {
+        "id": "recipe.character-morphology-neutral-3view",
+        "version": 1,
+        "contentHash": "sha256:4545454545454545454545454545454545454545454545454545454545454545"
+      },
+      "controlSetRef": {
+        "id": "controls.shen-expression-sheet",
+        "version": 1,
+        "contentHash": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+      },
+      "evidenceBundleRef": {
+        "id": "evidence.shen-production",
+        "version": 1,
+        "contentHash": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "perturbation": "Only camera view changes across front, three-quarter and profile tasks.",
+      "expectedInvariants": ["Hard morphology axes", "Structural relations", "Neutral expression", "Grooming, wardrobe, camera family and light"],
+      "expectedAllowedChanges": ["View angle only"],
+      "failureLabels": ["locked_axis_drift", "relation_break", "profile_inconsistency", "identity_collapse"],
+      "repetitions": 3,
+      "humanReviewRequired": true
+    },
+    {
+      "caseId": "case.natural-human-fixtures",
+      "category": "surface_realism",
+      "recipeRef": {
+        "id": "recipe.natural-human-fixtures-3up",
+        "version": 1,
+        "contentHash": "sha256:5656565656565656565656565656565656565656565656565656565656565656"
+      },
+      "controlSetRef": {
+        "id": "controls.shen-expression-sheet",
+        "version": 1,
+        "contentHash": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+      },
+      "evidenceBundleRef": {
+        "id": "evidence.shen-production",
+        "version": 1,
+        "contentHash": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "perturbation": "Run neutral close, warm backlight and natural full-body fixtures against one locked character and appearance.",
+      "expectedInvariants": ["Identity", "Stable surface profile", "Appearance construction", "Source-consistent skin and material response"],
+      "expectedAllowedChanges": ["Fixture-specific framing and light use only"],
+      "failureLabels": ["plastic_skin", "uniform_skin_tone", "oversharpened_microtexture", "hair_edge_failure", "focus_falloff_error", "weight_contact_error"],
+      "repetitions": 3,
+      "humanReviewRequired": true
+    },
+    {
+      "caseId": "case.anime-character-fixtures",
+      "category": "anime_representation",
+      "recipeRef": {
+        "id": "recipe.anime-character-fixtures-3up",
+        "version": 1,
+        "contentHash": "sha256:6767676767676767676767676767676767676767676767676767676767676767"
+      },
+      "controlSetRef": {
+        "id": "controls.shen-expression-sheet",
+        "version": 1,
+        "contentHash": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+      },
+      "evidenceBundleRef": {
+        "id": "evidence.shen-production",
+        "version": 1,
+        "contentHash": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "perturbation": "Run neutral-close, expression-medium and action-fullbody fixtures through one exact anime RepresentationBinding and StyleCompile.",
+      "expectedInvariants": ["Canonical identity anchors", "Appearance construction", "Anime abstraction budget", "Line, cel-shadow and palette grammar"],
+      "expectedAllowedChanges": ["Fixture-specific framing, expression and pose only"],
+      "failureLabels": ["anime_identity_drift", "eye_shape_collapse", "hair_mass_drift", "line_hierarchy_break", "cel_shadow_inconsistency", "background_style_mismatch"],
+      "repetitions": 3,
+      "humanReviewRequired": true
+    },
+    {
+      "caseId": "case.manga-character-fixtures",
+      "category": "manga_representation",
+      "recipeRef": {
+        "id": "recipe.manga-character-fixtures-3up",
+        "version": 1,
+        "contentHash": "sha256:7878787878787878787878787878787878787878787878787878787878787878"
+      },
+      "controlSetRef": {
+        "id": "controls.shen-expression-sheet",
+        "version": 1,
+        "contentHash": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+      },
+      "evidenceBundleRef": {
+        "id": "evidence.shen-production",
+        "version": 1,
+        "contentHash": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "perturbation": "Run neutral-ink, dramatic-medium and action-panel fixtures through one exact manga RepresentationBinding and StyleCompile.",
+      "expectedInvariants": ["Canonical identity anchors", "Appearance silhouette", "Ink hierarchy", "Black-mass, screentone and negative-space grammar"],
+      "expectedAllowedChanges": ["Fixture-specific framing, expression, pose and motivated motion effects only"],
+      "failureLabels": ["manga_identity_drift", "ink_hierarchy_break", "black_mass_noise", "screentone_inconsistency", "silhouette_collapse", "generated_text_artifact"],
+      "repetitions": 3,
+      "humanReviewRequired": true
+    },
+    {
+      "caseId": "case.cross-representation-character",
+      "category": "cross_representation",
+      "recipeRef": {
+        "id": "recipe.cross-representation-character-6up",
+        "version": 1,
+        "contentHash": "sha256:8989898989898989898989898989898989898989898989898989898989898989"
+      },
+      "controlSetRef": {
+        "id": "controls.shen-expression-sheet",
+        "version": 1,
+        "contentHash": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+      },
+      "evidenceBundleRef": {
+        "id": "evidence.shen-production",
+        "version": 1,
+        "contentHash": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "perturbation": "Change only the selected representation family across photoreal, anime, manga, illustration, stylized-3D and hybrid tiles.",
+      "expectedInvariants": ["Semantic facial relations", "Signature silhouette", "Distinctive marks", "Hair identity", "Body rhythm", "Gesture fingerprint", "Shared neutral fixture"],
+      "expectedAllowedChanges": ["Only transformations explicitly allowed by each exact RepresentationBinding"],
+      "failureLabels": ["cross_style_identity_collapse", "signature_silhouette_drift", "mark_loss", "hair_identity_drift", "binding_violation", "family_grammar_contamination"],
+      "repetitions": 3,
+      "humanReviewRequired": true
+    },
     {
       "caseId": "case.expression-sheet",
       "category": "expression",
@@ -300,6 +540,8 @@
     "requiredForBlockingDimensions": true,
     "rubric": [
       "人物是否仍可无服装识别",
+      "动画与漫画是否分别遵守自己的表现语法",
+      "跨表现版本是否仍是同一原创角色而非只共享服装",
       "造型是否符合结构和材质设定",
       "人物是否真实接触场景与道具",
       "行为与情绪是否有前因后果",
@@ -329,7 +571,7 @@
     "createdAt": "2026-08-20T18:00:00.000Z",
     "updatedAt": "2026-08-20T18:00:00.000Z",
     "changeLog": [
-      "v1: establish Character, Scene, Interaction, Storyboard and Rights benchmarks"
+      "v1: establish Character, Morphology, Natural Human, Anime, Manga, Cross Representation, Scene, Interaction, Storyboard and Rights benches"
     ]
   }
 }

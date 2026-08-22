@@ -25,6 +25,18 @@ function validateCrossContracts({ benchmark, recipe, controls, evidence, capabil
   for (const role of evidence.requirements.requiredRoles || []) if (!roles.has(role)) errors.push(`missing required evidence role ${role}`);
   for (const item of evidence.evidence || []) if (item.licenseProfileRef.id !== license.profileId) errors.push(`${item.evidenceId} does not resolve to supplied license profile`);
   if (license.commercialUse === "allowed" && license.status !== "verified") errors.push("commercial use allowed requires verified license status");
+  const categories = new Set((benchmark.cases || []).map((item) => item.category));
+  const requiredCategoryByScope = new Map([
+    ["MorphologyBench", "morphology"],
+    ["HumanRealismBench", "surface_realism"],
+    ["AnimeBench", "anime_representation"],
+    ["MangaBench", "manga_representation"],
+    ["CrossRepresentationBench", "cross_representation"]
+  ]);
+  for (const scope of benchmark.scopes || []) {
+    const requiredCategory = requiredCategoryByScope.get(scope);
+    if (requiredCategory && !categories.has(requiredCategory)) errors.push(`${scope} requires a ${requiredCategory} case`);
+  }
   if (!(benchmark.cases || []).some((item) => item.category === "rights")) errors.push("ControlBench requires a rights case");
   return errors;
 }
@@ -50,6 +62,11 @@ async function selfTest() {
   badRights.license.status = "draft";
   if (!validateCrossContracts(badRights).length) { console.error("Negative test failed: unresolved commercial rights were accepted"); return false; }
   console.log("Rejected as expected: unresolved commercial rights");
+
+  const badFamilyCoverage = structuredClone(data);
+  badFamilyCoverage.benchmark.cases = badFamilyCoverage.benchmark.cases.filter((item) => item.category !== "anime_representation");
+  if (!validateCrossContracts(badFamilyCoverage).length) { console.error("Negative test failed: AnimeBench without an anime case was accepted"); return false; }
+  console.log("Rejected as expected: missing AnimeBench family case");
   return true;
 }
 

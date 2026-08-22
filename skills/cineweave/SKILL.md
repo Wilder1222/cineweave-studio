@@ -44,6 +44,9 @@ when a task needs more than one specialist or must be handed to a team.
 6. Preserve hard/soft/free/undefined locks and make unresolved high-impact information visible.
 7. Do not call a provider, generate media, lock Canon, claim a successful review or grant rights. Execution remains human-approved.
 8. For a zero-prompt character request, route the feeling and card answers to `$cineweave-character` `character_explore`; do not invent a CharacterSpec, beauty score or final identity on the router.
+9. For “拆解参考图 / 反推提示词” portrait requests, route the actual media through atomic Reference observations first. Compose Character, Style, Director and Prompt only for the requested reusable outputs; a prior prose description without the image cannot substitute for visual evidence.
+10. For semantic face/body editing, route to `$cineweave-character` `character_morphology`, then `morphology_review` before identity lock. Sliders, cards and A/B feedback are inputs to the same provider-neutral morphology contract.
+11. For an unknown visual direction, route to `$cineweave-style` `style_explore` and `style_converge`; once Character and Style are approved, use `representation_binding` before cross-medium compilation.
 
 ## Output contracts
 

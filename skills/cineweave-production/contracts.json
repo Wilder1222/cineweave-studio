@@ -1,11 +1,11 @@
 {
-  "contractPackage": "cineweave-contracts@2.4.0",
+  "contractPackage": "cineweave-contracts@2.5.0",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalApprovedContracts", "OptionalEvidence", "OptionalReferenceContracts"],
     "produces": ["AssetRecipe", "ControlChannelSet", "EvidenceBundle", "CapabilityProfile", "LicenseProfile", "ControlBenchmark", "AdapterDescriptor", "ExecutionRequest", "ExecutionReceipt"]
   },
   "composed": {
-    "consumes": ["CreativeBrief", "ReferenceAsset", "ReferenceObservation", "ReferenceBindingSet", "StoryContracts", "CharacterContracts", "SceneContracts", "StyleCompile", "DirectorContracts", "PromptContracts"],
+    "consumes": ["CreativeBrief", "ReferenceAsset", "ReferenceObservation", "ReferenceBindingSet", "StoryContracts", "CharacterContracts", "RepresentationBinding", "SceneContracts", "StyleCompile", "DirectorContracts", "PromptContracts"],
     "produces": ["AssetRecipe", "ControlChannelSet", "EvidenceBundle", "CapabilityProfile", "LicenseProfile", "ControlBenchmark", "AdapterDescriptor", "ExecutionRequest", "ExecutionReceipt"]
   },
   "contractKinds": [
@@ -22,6 +22,7 @@
     "cineweave_codex_story_brief",
     "cineweave_codex_beat_sheet",
     "cineweave_codex_character_spec",
+    "cineweave_codex_character_morphology_spec",
     "cineweave_codex_character_appearance_state",
     "character_binding",
     "cineweave_codex_performance_timeline",
@@ -30,6 +31,7 @@
     "cineweave_codex_scene_light_state",
     "scene_binding",
     "cineweave_codex_style_compile",
+    "cineweave_codex_representation_binding",
     "cineweave_codex_shot_spec",
     "cineweave_codex_shot_lighting_plan",
     "cineweave_codex_temporal_spec",

@@ -33,6 +33,12 @@ zero-prompt reusable character
 character keyframe from supplied media with a defined visual system
   → reference → character + style → director → prompt
 
+portrait reference decomposition and reusable prompt
+  → reference ingest/review/atomic observations
+  → character identity + appearance state + style compile + director shot
+  → exact reference binding to those targets
+  → prompt compile
+
 story scene with physical interaction
   → story + character + scene + style → director → prompt → production
 ```
@@ -42,3 +48,7 @@ repeatable asset pack, rights/capability validation or deterministic assembly.
 Never create a cycle such as Director requiring Production while Production
 requires an unfinished Director output. Split the work into an approval-gated
 next phase instead.
+
+The binding step follows target-contract creation because ReferenceBindingSet requires exact target refs. Atomic observations may inform target creation; the later binding records the reviewed precedence, exclusions and rights gates for those exact results.
+
+Keep two branches optional. Insert `character_morphology → morphology_review` only when the user wants an editable reusable face/body design; one beauty portrait may seed a draft but cannot pass the neutral multi-view identity gate. Insert `style_package → representation_binding` only when identity must survive a declared representation change or the selected StylePackage requires it. A one-off prompt under the current representation does not need either branch.

@@ -118,8 +118,8 @@ export async function ingestReferenceAsset(projectRoot, filePath, options = {}) 
   const project = resolve(projectRoot);
   const store = join(project, ".cineweave");
   const projectManifest = await readStrictJson(join(store, "project.json"));
-  if (projectManifest.contractVersion !== "2.4.0" || projectManifest.runtimeVersion !== "2.4.0" || projectManifest.storage?.referenceBlobDirectory !== "reference-blobs") {
-    throw new Error("Reference ingestion requires a project initialized by the V2.4 runtime; legacy projects remain readable but are not mutated");
+  if (!["2.4.0", "2.5.0"].includes(projectManifest.contractVersion) || projectManifest.runtimeVersion !== projectManifest.contractVersion || projectManifest.storage?.referenceBlobDirectory !== "reference-blobs") {
+    throw new Error("Reference ingestion requires a project initialized by the V2.4+ runtime; legacy projects remain readable but are not mutated");
   }
   const sourceClass = options.sourceClass || "user_upload";
   if (!sourceClasses.has(sourceClass)) throw new TypeError(`Unsupported reference source class: ${sourceClass}`);

@@ -1,11 +1,11 @@
 {
-  "contractPackage": "cineweave-contracts@2.4.0",
+  "contractPackage": "cineweave-contracts@2.5.0",
   "standalone": {
     "accepts": ["NaturalLanguageBrief", "OptionalReferenceBindingSet"],
     "produces": ["DirectorProposals", "ShotSpec", "ShotLightingPlan", "TemporalSpec", "Storyboard", "RenderPlan", "MediaImport"]
   },
   "composed": {
-    "consumes": ["CreativeBrief", "StoryBrief", "ScriptScene", "ReferenceObservation", "ReferenceReview", "ReferenceBindingSet", "CharacterBinding", "PerformanceTimeline", "SceneBinding", "SceneLightState", "InteractionConstraintSet", "StyleCompile", "StyleLightGrammar", "PromptRecord", "ImagePrompt", "ProductionContracts"],
+    "consumes": ["CreativeBrief", "StoryBrief", "ScriptScene", "ReferenceObservation", "ReferenceReview", "ReferenceBindingSet", "CharacterBinding", "PerformanceTimeline", "RepresentationBinding", "SceneBinding", "SceneLightState", "InteractionConstraintSet", "StyleCompile", "StyleLightGrammar", "PromptRecord", "ImagePrompt", "ProductionContracts"],
     "produces": ["DirectorProposals", "ShotSpec", "ShotLightingPlan", "TemporalSpec", "Storyboard", "RenderPlan", "MediaImport"]
   },
   "contractKinds": [
@@ -21,6 +21,7 @@
     "cineweave_codex_script_scene",
     "character_binding",
     "cineweave_codex_performance_timeline",
+    "cineweave_codex_representation_binding",
     "scene_binding",
     "cineweave_codex_scene_light_state",
     "cineweave_codex_interaction_constraint_set",

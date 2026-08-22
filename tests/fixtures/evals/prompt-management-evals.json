@@ -55,9 +55,9 @@
       "id": "portrait-reference-decomposition",
       "mode": "prompt_management",
       "prompt": "把这张东方古典幻想人物参考图拆成面容、妆容、发型配饰、服装材质、姿态情绪、镜头、光线、色调和环境，再整理成可复用中文 Prompt。",
-      "loads": ["portrait-reference-craft", "prompt-architecture", "reference-bindings"],
-      "expectedOutput": "prompt-record or reference-review plus prompt-record",
-      "assertions": ["visible evidence is separated from inference", "emotion becomes pose/gaze/action evidence", "camera details are marked as hypotheses when not supplied", "identity and appearance ownership is explicit", "negative constraints target likely failures"]
+      "loads": ["portrait-decomposition", "portrait-reference-craft", "prompt-architecture", "reference-bindings"],
+      "expectedOutput": "atomic reference observations plus owned target contracts and prompt-record",
+      "assertions": ["actual image media is required before visual claims", "every observation has one primary role", "face_identity, skin_surface, skin_material, appearance, capture and style evidence remain separate", "visible evidence is separated from inference", "emotion becomes pose/gaze/action evidence", "camera details are marked as hypotheses when not supplied", "stable skin baseline, appearance skin state and realism treatment have different owners", "negative constraints target likely failures"]
     },
     {
       "id": "portrait-character-dna-handoff",

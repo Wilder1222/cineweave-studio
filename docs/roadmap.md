@@ -58,7 +58,25 @@
 - 63 contracts, 61 routes, 28 behavior cases, 11 live replay cases and reference
   ingestion, tamper, deduplication, selector, rights and bundle tests.
 
-## Next incremental priorities (V2.4.x)
+## Shipped in V2.5
+
+- provider-neutral `CharacterMorphologySpec` with semantic face/body axes,
+  structural relations, locks, allowed variation and explicit constraints;
+- neutral front/three-quarter/profile identity fixture, `MorphologyReview`,
+  human-only identity lock and one-axis repair semantics;
+- one-axis style exploration through `StyleExplorationBrief`, `StyleOptionSet`
+  and editable `StylePreferenceFeedback`;
+- VRS representation model, abstraction/detail budgets and exact
+  `RepresentationBinding` between canonical Character and StylePackage;
+- natural-human rendering as a cross-Skill fixture/bench path, alongside
+  representation scopes for anime, manga, illustration, stylized 3D and hybrid;
+- fine-grained morphology, surface, linework, shading, depth, panel, typography
+  and motion-style evidence roles;
+- 69 contracts, 66 uniquely owned routes and 14 built-in deterministic recipes,
+  including neutral morphology, natural-human, Anime, Manga, style-exploration
+  and six-family cross-representation fixtures.
+
+## Next incremental priorities (V2.5.x)
 
 Priority remains based on user value and architectural risk.
 
@@ -78,7 +96,7 @@ Priority remains based on user value and architectural risk.
    original byte-bound asset, and add pluggable malware/content-credential
    inspection reports whose absence remains visible.
 
-## V2.5 — production workspace
+## V2.6 — production workspace
 
 1. Editable cards for Brief, Story, Character, Scene, Style, Shot and Prompt.
 2. Visual artifact graph, exact-version diff and approval history.

@@ -3,9 +3,13 @@
   "contractVersion": "2.0.0",
   "compileId": "compile.song-poetic-portrait-image-01",
   "stylePackageRef": { "id": "song-poetic-period-drama", "version": 1, "contentHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+  "representationBindingRef": { "id": "representation.jialing.song-photoreal", "version": 1, "contentHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },
   "target": { "medium": "image", "output": "shot", "stage": "appearance", "aspectRatio": "3:4" },
   "blocks": [
     { "channel": "medium", "directives": ["live-action image representation", "natural human anatomy and physical materials"] },
+    { "channel": "geometry", "directives": ["preserve canonical facial relations and adult body proportions", "retain controlled natural asymmetry"] },
+    { "channel": "surface", "directives": ["regional human skin variation", "shot-scale-appropriate microtexture", "restrained nonuniform specular response"], "negativeDirectives": ["porcelain uniformity", "beauty-filter smoothing", "razor-sharp pores"] },
+    { "channel": "depth", "directives": ["consistent photographic perspective", "selective focus with believable optical falloff"] },
     { "channel": "costume", "directives": ["restrained Song-inspired layering", "muted jade and moon-white textile palette", "real folds, weight and contact"] },
     { "channel": "lighting", "directives": ["soft motivated window or overcast courtyard light", "controlled falloff and contact shadow"] },
     { "channel": "performance", "directives": ["small facial amplitude", "eyes carry the emotion", "head follows gaze with slight delay"] },
@@ -15,6 +19,24 @@
   "preserve": ["exact CharacterSpec identity anchors", "exact AppearanceState construction", "Director camera and crop decisions", "SceneBinding geography if supplied"],
   "allowedVariation": ["minor accessory exploration if AppearanceState leaves it free", "warm/cool light within package bounds", "background detail within SceneSpec"],
   "forbidden": ["changing face geometry", "changing body proportions", "copying a source person's likeness without permission", "using style to move locked geography"],
+  "realismProfile": {
+    "representationalRealism": 0.9,
+    "anatomyFidelity": 0.95,
+    "surfaceMicrodetailVisibility": 0.55,
+    "materialDifferentiation": 0.92,
+    "naturalAsymmetryRetention": 0.82,
+    "opticalImperfection": 0.28,
+    "idealization": 0.4,
+    "beautyRetouch": 0.52,
+    "calibration": {
+      "scale": "normalized_creative_intent",
+      "providerNeutral": true,
+      "notQualityScore": true,
+      "identityProtected": true,
+      "materialStateProtected": true,
+      "doesNotPromiseOutput": true
+    }
+  },
   "referenceInputs": [
     { "referenceId": "ref-costume-song", "role": "costume", "required": true, "preserve": ["layering", "textile weight", "muted palette"], "ignore": ["source face", "source pose"] },
     { "referenceId": "ref-light-song", "role": "lighting", "required": false, "preserve": ["soft directional response"], "ignore": ["exact set layout", "identity"] }

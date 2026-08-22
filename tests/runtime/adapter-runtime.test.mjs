@@ -27,7 +27,7 @@ const fixedHash = (character) => `sha256:${character.repeat(64)}`;
 function skillReceipt(timestamp) {
   return {
     repository: "https://github.com/Wilder1222/cineweave-studio",
-    ref: "v2.4.0",
+    ref: "v2.5.0",
     commit: "0123456789abcdef0123456789abcdef01234567",
     contentHash: fixedHash("a"),
     installedBy: "codex-environment",

@@ -4,7 +4,7 @@ An AssetRecipe is not a prose prompt. It is a repeatable production task graph w
 
 ## Recipe policy
 
-1. Choose one output purpose: identity, expression, turnaround, action, appearance, scene state, establishing frame or storyboard board.
+1. Choose one output purpose: identity, morphology, style exploration, representation fixture, expression, turnaround, action, appearance, scene state, establishing frame, cross-representation sheet or storyboard board.
 2. Lock shared identity, appearance, scene, camera, background and lighting facts before defining task deltas.
 3. Generate each contact-sheet tile independently.
 4. Change one primary semantic variable per task. Numeric intensity and concealment may refine that same variable.
@@ -39,3 +39,50 @@ sheet. Assemble independent tiles deterministically, retry only failed tiles,
 then route quality review and user selection back to `$cineweave-character`
 `character_converge`. Do not automatically convert a selected option into a
 locked CharacterSpec.
+
+## Morphology and style exploration
+
+`recipe.character-morphology-neutral-3view` validates one semantic morphology
+checkpoint in neutral front, three-quarter and profile views. Grooming,
+wardrobe, expression, camera family, background and light remain fixed. The
+view is the only task delta. A passing board still needs human approval before
+identity lock.
+
+`recipe.style-exploration-board-4up` performs the orthogonal experiment. It
+holds exact CharacterSpec, AppearanceState, SceneSpec, action, framing, camera,
+background and physical light constant. Each tile selects one option on the
+single axis declared by StyleExplorationBrief and StyleOptionSet. The board may
+support preference feedback; it cannot auto-activate a StylePackage.
+
+## Representation-family fixtures
+
+`recipe.natural-human-fixtures-3up` tests neutral close, warm backlight and
+natural full-body conditions. It covers anatomy, regional surface variation,
+eyes/lips, hair, motivated light, optical falloff, weight and contact.
+
+`recipe.anime-character-fixtures-3up` tests neutral close, expression medium
+and action full body under one exact anime RepresentationBinding and
+StyleCompile. It covers identity translation, bounded geometry, eye design,
+hair masses, line hierarchy, cel shading, palette and background integration.
+
+`recipe.manga-character-fixtures-3up` tests neutral ink, dramatic medium and one
+action panel under one exact manga binding and compile. It covers identity
+contour, ink hierarchy, black mass, screentone, silhouette, negative space and
+motivated motion effects. Exact text, bubbles and page furniture are assembled
+after accepted panels exist.
+
+These recipes are not interchangeable. HumanRealismBench must not reject anime
+for omitting pores, and MangaBench must not require photographic bokeh.
+
+## Cross-representation sheet
+
+`recipe.cross-representation-character-6up` compares photoreal, anime, manga,
+illustration, stylized-3D and scope-based hybrid candidates. All six use one
+neutral expression, pose, view, framing, appearance, scene content and physical
+light. Only `representation.family` changes, and every family must have an exact
+RepresentationBinding plus StyleCompile.
+
+Review semantic facial relations, signature silhouette, distinctive marks,
+hair identity, body rhythm and gesture fingerprint. Pixel similarity alone is
+not sufficient evidence. Retry one failed tile and preserve every accepted
+tile before deterministic reassembly.

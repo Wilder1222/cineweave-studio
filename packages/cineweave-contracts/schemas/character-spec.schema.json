@@ -56,6 +56,9 @@
         "retired"
       ]
     },
+    "morphologySpecRef": {
+      "$ref": "#/$defs/morphologySpecRef"
+    },
     "collection": {
       "type": "string",
       "minLength": 1,
@@ -164,6 +167,17 @@
     "stableId": {
       "type": "string",
       "pattern": "^[a-zA-Z][a-zA-Z0-9._-]{1,159}$"
+    },
+    "morphologySpecRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "version", "contentHash"],
+      "properties": {
+        "kind": { "const": "cineweave_codex_character_morphology_spec" },
+        "id": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "version": { "type": "integer", "minimum": 1 },
+        "contentHash": { "type": "string", "pattern": "^sha256:[0-9a-fA-F]{64}$" }
+      }
     },
     "observationId": {
       "type": "string",
@@ -328,6 +342,78 @@
         }
       }
     },
+    "surfaceProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baselineComplexion", "regionalVariation", "microTexture", "eyes", "lips", "forbidden", "calibration"],
+      "properties": {
+        "baselineComplexion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["toneRange", "undertone"],
+          "properties": {
+            "toneRange": { "type": "string", "minLength": 1, "maxLength": 500 },
+            "undertone": { "type": "string", "minLength": 1, "maxLength": 500 }
+          }
+        },
+        "regionalVariation": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["region", "behavior"],
+            "properties": {
+              "region": { "enum": ["forehead", "eyelids", "under_eye", "nose", "cheeks", "mouth_area", "jaw", "neck", "ears", "hands", "body"] },
+              "behavior": { "type": "string", "minLength": 1, "maxLength": 800 }
+            }
+          }
+        },
+        "microTexture": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["poreVisibility", "peachFuzz", "underEyeTexture", "fineLines"],
+          "properties": {
+            "poreVisibility": { "enum": ["none", "subtle", "moderate", "pronounced"] },
+            "peachFuzz": { "enum": ["none", "subtle", "natural", "pronounced"] },
+            "underEyeTexture": { "enum": ["smoothed", "restrained", "preserved", "pronounced"] },
+            "fineLines": { "enum": ["minimal", "age_appropriate", "visible", "pronounced"] }
+          }
+        },
+        "eyes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["scleraTone", "tearLineMoisture"],
+          "properties": {
+            "scleraTone": { "type": "string", "minLength": 1, "maxLength": 500 },
+            "tearLineMoisture": { "enum": ["restrained", "natural", "pronounced"] }
+          }
+        },
+        "lips": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["naturalLines", "edgeCharacter"],
+          "properties": {
+            "naturalLines": { "type": "boolean" },
+            "edgeCharacter": { "type": "string", "minLength": 1, "maxLength": 500 }
+          }
+        },
+        "persistentMarks": { "$ref": "#/$defs/optionalStringList" },
+        "forbidden": { "$ref": "#/$defs/stringList" },
+        "calibration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["providerNeutral", "notBiometric", "excludesMakeup", "excludesLighting"],
+          "properties": {
+            "providerNeutral": { "const": true },
+            "notBiometric": { "const": true },
+            "excludesMakeup": { "const": true },
+            "excludesLighting": { "const": true }
+          }
+        }
+      }
+    },
     "bodyIdentity": {
       "type": "object",
       "additionalProperties": false,
@@ -403,6 +489,9 @@
         "body": {
           "$ref": "#/$defs/bodyIdentity"
         },
+        "surfaceProfile": {
+          "$ref": "#/$defs/surfaceProfile"
+        },
         "forbiddenChanges": {
           "$ref": "#/$defs/stringList"
         }
@@ -431,7 +520,8 @@
             "injury",
             "age_state",
             "weather_response",
-            "accessory"
+            "accessory",
+            "skin_state"
           ]
         },
         "label": {

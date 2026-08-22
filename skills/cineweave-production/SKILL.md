@@ -16,7 +16,7 @@ This Skill owns:
 - `EvidenceBundle`: Observation-based evidence with one semantic role, quality and rights profile per item;
 - `CapabilityProfile`: provider-neutral adapter capabilities and known limits, never endpoint or credential data;
 - `LicenseProfile`: code, weight, dependency, asset and identity-rights status;
-- `ControlBenchmark`: repeatable Character, Appearance, Scene, Interaction, Storyboard and Rights evaluation cases.
+- `ControlBenchmark`: repeatable Character, Morphology, Appearance, Scene, Interaction, Representation, Surface, CrossRepresentation, Storyboard, Temporal and Rights evaluation cases.
 - `AdapterDescriptor`: an exact, versioned runtime adapter identity and operation surface without endpoint or secret values;
 - `ExecutionRequest`: a budgeted, idempotent request bound to exact approved production artifacts;
 - `ExecutionReceipt`: immutable evidence of authorization, attempts, costs, verified output hashes and failure state.
@@ -50,6 +50,7 @@ Choose the smallest route that satisfies the request.
 
 1. Resolve exact Character, Appearance, Scene, State, Binding and Shot versions.
 2. Resolve the exact StylePackage/StyleCompile when style affects the artifact; keep it below locked identity, geography and interaction controls.
+   Resolve an exact RepresentationBinding when medium-specific identity translation is required.
 3. Choose or instantiate the smallest matching AssetRecipe.
 4. Convert preserve rules into hard controls, intended variation into soft controls and style preference into advisory controls.
 5. Resolve exact ReferenceAsset, ReferenceObservation and ReferenceBindingSet refs, then assemble an EvidenceBundle. Do not allow one reference to silently serve incompatible roles.
@@ -70,6 +71,12 @@ Choose the smallest route that satisfies the request.
 - In a staged character workflow, a hero portrait, full-body anchor, turnaround and expression sheet answer different evidence questions; do not use a close portrait as sole body/identity proof.
 - A combined turnaround-plus-expression deliverable is two named recipe runs with deterministic board assembly and per-tile provenance, not one multi-panel generation task.
 - A zero-prompt character exploration board uses `recipe.character-exploration-board-4up`: it receives a CharacterExplorationBrief and CharacterOptionSet, runs each option independently under one shared fixture, and leaves selection to the user.
+- Morphology lock evidence uses `recipe.character-morphology-neutral-3view`: independent neutral front, three-quarter and profile tasks followed by deterministic assembly and MorphologyBench review.
+- Natural-human coverage uses `recipe.natural-human-fixtures-3up`: independent neutral close, warm-backlight and natural full-body tasks. It is evaluated as evidence, not treated as a realism guarantee.
+- One-axis style discovery uses `recipe.style-exploration-board-4up`: exact Character, Appearance, Scene, camera and physical light stay fixed while each independent tile selects one StyleOptionSet option. Selection remains human-owned.
+- Anime coverage uses `recipe.anime-character-fixtures-3up`: neutral close, expression medium and action full-body tasks share one exact RepresentationBinding and StyleCompile, then AnimeBench reports dimension-level findings.
+- Manga coverage uses `recipe.manga-character-fixtures-3up`: neutral ink, dramatic medium and action-panel tasks share one exact RepresentationBinding and StyleCompile. Final lettering remains deterministic post-assembly work.
+- Cross-medium identity uses `recipe.cross-representation-character-6up`: the shared neutral fixture stays locked while only the exact representation family changes. CrossRepresentationBench reviews semantic anchors, not same-medium pixel similarity alone.
 - Successful recipe tasks remain immutable when retrying failed tasks.
 - Capability `partial` or `experimental` support requires explicit review; it is not equivalent to strong support.
 - Unknown commercial or identity rights never become allowed by assumption.

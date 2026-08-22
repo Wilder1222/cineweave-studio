@@ -28,10 +28,10 @@ For a one-off shot or storyboard, accept a direct brief and optional exact Refer
 ## Routes
 
 - `proposal`: create 2–5 directions that differ in blocking, attention and camera logic, not adjective synonyms. Read `references/directing.md` and `references/cinematography.md`. Return `DirectorProposals`.
-- `shot_direction`: define one dramatic beat as blocking, camera, composition, action moment and stable end state. Read `references/directing.md`, `references/cinematography.md` and `references/orchestration.md`. Return `ShotSpec`.
+- `shot_direction`: define one dramatic beat as blocking, camera, composition, action moment and stable end state. Read `references/directing.md`, `references/cinematography.md` and `references/orchestration.md`; for portrait-reference reconstruction also read `references/portrait-reference-craft.md`, and for photoreal human fixtures read `references/natural-human-capture.md`. Return `ShotSpec`.
 - `shot_lighting`: combine exact SceneLightState physical sources with optional StyleLightGrammar treatment. Read `references/shot-lighting.md`. Return `ShotLightingPlan`.
 - `temporal_direction`: define motivated camera curves, focus/action events, secondary motion, dynamic light and edit bridges. Read `references/temporal-direction.md`. Return `TemporalSpec`.
-- `storyboard`: build the minimum sequence whose shots change information, attention, spatial relation or pressure. Read `references/storyboarding.md`, `references/directing.md`, `references/cinematography.md` and `references/orchestration.md`. Return `Storyboard`.
+- `storyboard`: build the minimum sequence whose shots or panels change information, attention, spatial relation or pressure. Read `references/storyboarding.md`, `references/directing.md`, `references/cinematography.md` and `references/orchestration.md`; for comic or manga output also read `references/comic-panel-direction.md`. Return `Storyboard`.
 - `render_plan`: prepare a provider-neutral generate/edit/inpaint/multi-reference plan after exact prompt and production contracts exist. Read `references/execution-adapter.md` and `references/orchestration.md`. Return `RenderPlan`.
 - `media_import`: verify already-created local media and prepare Draft import metadata. Read `references/execution-adapter.md`. Return `MediaImport`.
 - `repair`: classify one observed failure and route the smallest change to Character, Scene, Style, Prompt or Director ownership. Do not claim the repair succeeded.
@@ -59,6 +59,7 @@ State one purpose, one audience feeling change, one readable action and one end-
 - SceneLightState when source position and shadow continuity matter;
 - InteractionConstraintSet for contact, support, occlusion or prop use;
 - StyleCompile/StyleLightGrammar only for representation;
+- RepresentationBinding when a canonical character is translated into a declared medium;
 - EvidenceBundle and rights/capability contracts before an execution-ready RenderPlan.
 
 A neutral portrait can be directed without SceneBinding. An establishing shot can use SceneBinding without CharacterBinding. Missing reusable facts stay unresolved.

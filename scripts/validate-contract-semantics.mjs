@@ -13,6 +13,7 @@ function push(errors, condition, message) { if (!condition) errors.push(message)
 function unique(values) { return new Set(values).size === values.length; }
 
 function validateCharacterSpec(payload, errors) {
+  if (payload?.morphologySpecRef) push(errors, payload.morphologySpecRef.kind === "cineweave_codex_character_morphology_spec", "CharacterSpec morphologySpecRef must reference CharacterMorphologySpec");
   const anchors = payload?.identityCore?.immutableAnchors || [];
   push(errors, anchors.length >= 3, "CharacterSpec requires at least three immutable anchors");
   push(errors, unique(anchors.map((item) => item?.anchorId)), "CharacterSpec anchor IDs must be unique");
@@ -21,6 +22,13 @@ function validateCharacterSpec(payload, errors) {
   push(errors, unique(variables.map((item) => item?.variableId)), "Character appearance variable IDs must be unique");
   const states = payload?.behaviorModel?.states || [];
   push(errors, unique(states.map((item) => item?.stateId)), "Character behavior state IDs must be unique");
+  const surface = payload?.identityCore?.surfaceProfile;
+  if (surface) {
+    push(errors, surface?.calibration?.providerNeutral === true, "CharacterSpec stable surface profile must remain Provider-neutral");
+    push(errors, surface?.calibration?.notBiometric === true, "CharacterSpec stable surface profile must not be biometric");
+    push(errors, surface?.calibration?.excludesMakeup === true, "CharacterSpec stable surface profile must exclude makeup state");
+    push(errors, surface?.calibration?.excludesLighting === true, "CharacterSpec stable surface profile must exclude lighting treatment");
+  }
   push(errors, payload?.rights?.sourceClass !== undefined, "CharacterSpec rights must be explicit");
 }
 
@@ -111,6 +119,56 @@ function validateCharacterPreferenceFeedback(payload, errors) {
   push(errors, payload?.executionBoundary?.generatesMedia === false, "CharacterPreferenceFeedback must not claim media generation");
 }
 
+function validateCharacterMorphologySpec(payload, errors) {
+  const axes = payload?.axes || [];
+  const axisIds = axes.map((item) => item?.axisId);
+  const knownAxes = new Set(axisIds);
+  push(errors, unique(axisIds), "CharacterMorphologySpec axis IDs must be unique");
+  for (const axis of axes) {
+    push(errors, axis?.featurePath?.startsWith(`${axis?.region}.`), `${axis?.axisId}: featurePath must match its region`);
+    if (axis?.lock === "hard") push(errors, axis?.variationRadius === 0, `${axis?.axisId}: hard-locked axis must have zero variation radius`);
+  }
+  const relations = payload?.relations || [];
+  push(errors, unique(relations.map((item) => item?.relationId)), "CharacterMorphologySpec relation IDs must be unique");
+  for (const relation of relations) {
+    push(errors, unique(relation?.memberAxisIds || []), `${relation?.relationId}: relation members must be unique`);
+    for (const axisId of relation?.memberAxisIds || []) push(errors, knownAxes.has(axisId), `${relation?.relationId}: unknown morphology axis ${axisId}`);
+  }
+  if (payload?.identityLockGate?.status === "approved") push(errors, isObject(payload?.identityLockGate?.approvalRef), "Approved morphology lock gate requires an exact approval ref");
+  if (payload?.status === "approved") push(errors, payload?.identityLockGate?.status === "approved", "Approved morphology requires an approved human lock gate");
+  push(errors, payload?.validation?.noBiometricInference === true, "CharacterMorphologySpec must prohibit biometric inference");
+  push(errors, payload?.validation?.noUniversalBeautyScore === true, "CharacterMorphologySpec must prohibit universal beauty scores");
+  push(errors, payload?.validation?.noRealPersonPartMashup === true, "CharacterMorphologySpec must prohibit real-person part mashups");
+  push(errors, payload?.executionBoundary?.containsProviderWeights === false, "CharacterMorphologySpec cannot contain provider weights");
+  push(errors, payload?.executionBoundary?.generatesMedia === false, "CharacterMorphologySpec must not claim media generation");
+}
+
+function validateMorphologyReview(payload, errors) {
+  const dimensions = payload?.dimensions || [];
+  push(errors, unique(dimensions.map((item) => item?.dimensionId)), "MorphologyReview dimension IDs must be unique");
+  const evidence = new Set(payload?.evidenceObservationIds || []);
+  for (const dimension of dimensions) for (const id of dimension?.evidenceObservationIds || []) push(errors, evidence.has(id), `${dimension?.dimensionId}: review evidence must be declared at the review level`);
+  const hasBlockingFailure = dimensions.some((item) => item?.status === "fail" && item?.severity === "blocking");
+  const hasFailure = dimensions.some((item) => item?.status === "fail");
+  if (hasBlockingFailure) push(errors, payload?.decision?.overallStatus === "fail", "MorphologyReview blocking failure requires overallStatus=fail");
+  if (hasFailure) push(errors, payload?.decision?.identityLockApproved === false, "MorphologyReview with a failure cannot approve identity lock");
+  if (payload?.decision?.identityLockApproved) {
+    push(errors, payload?.decision?.overallStatus === "pass", "MorphologyReview identity lock requires overallStatus=pass");
+    push(errors, payload?.decision?.nextAction === "lock_identity", "MorphologyReview identity lock requires nextAction=lock_identity");
+    push(errors, isObject(payload?.decision?.approvalRef), "MorphologyReview identity lock requires an exact approval ref");
+  }
+  if (payload?.decision?.nextAction === "repair_axis") {
+    const repair = payload?.repairRecommendation;
+    push(errors, isObject(repair), "MorphologyReview repair_axis requires a repair recommendation");
+    if (repair) {
+      push(errors, !(repair?.preserveAxisIds || []).includes(repair?.changeOnlyAxisId), "MorphologyReview cannot preserve and change the same axis");
+      push(errors, unique(repair?.preserveAxisIds || []), "MorphologyReview preserve axis IDs must be unique");
+    }
+  }
+  push(errors, payload?.validation?.oneVariableRepair === true, "MorphologyReview must use one-variable repair");
+  push(errors, payload?.validation?.noUniversalBeautyScore === true, "MorphologyReview must prohibit universal beauty scores");
+}
+
 function validateAppearanceState(payload, errors) {
   const assignments = payload?.assignments || [];
   push(errors, unique(assignments.map((item) => item?.variableId)), "AppearanceState variable assignments must be unique");
@@ -122,6 +180,14 @@ function validateAppearanceState(payload, errors) {
     push(errors, unique(materials.map((item) => item?.materialId)), "Costume material IDs must be unique");
     push(errors, payload.styling?.makeup?.identityPreservation?.length > 0, "Makeup must state identity preservation");
     push(errors, payload.styling?.costume?.pairingLogic?.length > 0, "Costume must declare pairing logic");
+    const skin = payload.styling?.skinMaterial;
+    if (skin) {
+      push(errors, skin?.calibration?.scale === "normalized_creative_intent", "Skin material scales must be normalized creative intent");
+      push(errors, skin?.calibration?.notMeasuredPhysicalProperty === true, "Skin material scales must not claim measured physical properties");
+      push(errors, skin?.calibration?.notBiometric === true, "Skin material state must not be biometric");
+      push(errors, skin?.calibration?.notProviderControl === true, "Skin material scales must not claim direct Provider controls");
+      push(errors, nonEmpty(skin?.baselineRelation) && nonEmpty(skin?.identityPreservation), "Skin material state must preserve the CharacterSpec baseline");
+    }
   }
 }
 
@@ -236,6 +302,41 @@ function validateAssetRecipe(payload, errors, controlSet) {
     const known = new Set((controlSet.channels || []).map((item) => item.channelId));
     for (const task of tasks) for (const id of task.controlChannelIds || []) push(errors, known.has(id), `${task.taskId}: unknown control channel ${id}`);
   }
+  const acceptedKinds = new Set((payload?.inputSlots || []).flatMap((slot) => slot?.acceptedKinds || []));
+  const deltaFields = tasks.map((task) => task?.delta?.[0]?.fieldPath);
+  const deltaValues = new Set(tasks.map((task) => task?.delta?.[0]?.value));
+  if (payload?.outputType === "morphology_turnaround") {
+    push(errors, tasks.length === 3, "Morphology turnaround requires front, three-quarter and profile tasks");
+    push(errors, ["front", "three_quarter", "profile"].every((value) => deltaValues.has(value)), "Morphology turnaround must cover front, three-quarter and profile views");
+    push(errors, acceptedKinds.has("cineweave_codex_character_morphology_spec"), "Morphology turnaround requires CharacterMorphologySpec");
+  }
+  if (payload?.outputType === "human_realism_fixture") {
+    push(errors, tasks.length === 3, "Natural-human benchmark requires exactly three fixtures");
+    push(errors, ["neutral_close", "warm_backlight", "natural_fullbody"].every((value) => deltaValues.has(value)), "Natural-human benchmark must cover neutral close, warm backlight and natural full-body fixtures");
+  }
+  if (payload?.outputType === "style_exploration") {
+    push(errors, tasks.length === 4, "Style exploration board requires exactly four comparable options");
+    push(errors, deltaFields.every((field) => field === "styleOptionSet.options"), "Style exploration tasks must select StyleOptionSet options only");
+    for (const kind of ["cineweave_codex_style_exploration_brief", "cineweave_codex_style_option_set", "cineweave_codex_character_spec", "cineweave_codex_character_appearance_state", "cineweave_codex_scene_spec"]) {
+      push(errors, acceptedKinds.has(kind), `Style exploration requires ${kind}`);
+    }
+    push(errors, payload?.layout?.cameraConsistency === true && payload?.layout?.backgroundPolicy === "locked" && payload?.layout?.lightingPolicy === "locked", "Style exploration must lock camera, background and lighting");
+  }
+  if (payload?.outputType === "representation_fixture") {
+    push(errors, tasks.length === 3, "Representation family benchmark requires exactly three fixtures");
+    push(errors, acceptedKinds.has("cineweave_codex_representation_binding"), "Representation family benchmark requires RepresentationBinding");
+    push(errors, acceptedKinds.has("cineweave_codex_style_compile"), "Representation family benchmark requires StyleCompile");
+    if (payload?.recipeId?.includes("anime")) push(errors, [...deltaValues].every((value) => String(value).startsWith("anime_")), "Anime fixtures must use anime fixture profiles");
+    if (payload?.recipeId?.includes("manga")) push(errors, [...deltaValues].every((value) => String(value).startsWith("manga_")), "Manga fixtures must use manga fixture profiles");
+  }
+  if (payload?.outputType === "cross_representation_sheet") {
+    const requiredFamilies = ["photoreal", "anime", "manga", "illustration", "stylized_3d", "hybrid"];
+    push(errors, tasks.length === requiredFamilies.length, "Cross-representation sheet requires exactly six family tasks");
+    push(errors, deltaFields.every((field) => field === "representation.family"), "Cross-representation tasks may change only representation.family");
+    push(errors, requiredFamilies.every((family) => deltaValues.has(family)), "Cross-representation sheet must cover photoreal, anime, manga, illustration, stylized-3D and hybrid families");
+    push(errors, acceptedKinds.has("cineweave_codex_representation_binding"), "Cross-representation sheet requires RepresentationBindings");
+    push(errors, payload?.layout?.cameraConsistency === true && payload?.layout?.backgroundPolicy === "locked" && payload?.layout?.lightingPolicy === "locked", "Cross-representation comparison must lock camera, background and lighting");
+  }
   push(errors, payload?.executionBoundary?.generatesMedia === false, "AssetRecipe must not claim media generation");
 }
 
@@ -288,6 +389,18 @@ function validateBenchmark(payload, errors) {
   push(errors, unique(cases.map((item) => item?.caseId)), "Benchmark case IDs must be unique");
   const known = new Set(metricIds);
   for (const dimension of dimensions) for (const id of dimension.metricIds || []) push(errors, known.has(id), `${dimension.dimensionId}: unknown metric ${id}`);
+  const requiredCategoryByScope = new Map([
+    ["MorphologyBench", "morphology"],
+    ["HumanRealismBench", "surface_realism"],
+    ["AnimeBench", "anime_representation"],
+    ["MangaBench", "manga_representation"],
+    ["CrossRepresentationBench", "cross_representation"]
+  ]);
+  const categories = new Set(cases.map((item) => item?.category));
+  for (const scope of payload?.scopes || []) {
+    const requiredCategory = requiredCategoryByScope.get(scope);
+    if (requiredCategory) push(errors, categories.has(requiredCategory), `${scope} requires a ${requiredCategory} case`);
+  }
   push(errors, cases.some((item) => item?.category === "rights"), "ControlBench must include a rights case");
   push(errors, payload?.acceptance?.blockingDimensionPassRate === 1, "Blocking dimensions require perfect pass rate");
 }
@@ -495,6 +608,71 @@ function validateIntegratedStoryboard(payload, errors) {
   }
 }
 
+function validateStyleExplorationBrief(payload, errors) {
+  for (const binding of payload?.referenceBindings || []) {
+    const overlap = (binding?.transfer || []).filter((item) => (binding?.ignore || []).includes(item));
+    push(errors, overlap.length === 0, "StyleExplorationBrief transfer and ignore directives must be disjoint");
+  }
+  push(errors, payload?.selectionPolicy?.onePrimaryAxisPerRound === true, "StyleExplorationBrief requires one primary axis per round");
+  push(errors, payload?.selectionPolicy?.fixedCanonRequired === true, "StyleExplorationBrief must fix canon across options");
+  push(errors, payload?.validation?.namedStyleIsAliasOnly === true, "StyleExplorationBrief named styles must remain aliases only");
+  push(errors, payload?.validation?.staticReferenceDoesNotProveMotion === true, "StyleExplorationBrief cannot infer motion grammar from static references");
+  push(errors, payload?.validation?.styleDoesNotOwnIdentity === true, "StyleExplorationBrief must keep style separate from identity");
+  push(errors, payload?.executionBoundary?.generatesMedia === false, "StyleExplorationBrief must not claim media generation");
+}
+
+function validateStyleOptionSet(payload, errors) {
+  const options = payload?.options || [];
+  push(errors, options.length >= 2 && options.length <= 6, "StyleOptionSet requires two to six options");
+  push(errors, unique(options.map((item) => item?.optionId)), "StyleOptionSet option IDs must be unique");
+  for (const option of options) push(errors, option?.primaryDelta?.axis === payload?.explorationAxis, `${option?.optionId}: primary style delta must match the exploration axis`);
+  push(errors, payload?.selectionPolicy?.requiresHumanSelection === true, "StyleOptionSet requires human selection");
+  push(errors, payload?.selectionPolicy?.onePrimaryDeltaPerOption === true, "StyleOptionSet requires one primary delta per option");
+  push(errors, payload?.validation?.canonFixedAcrossOptions === true, "StyleOptionSet must keep canon fixed across options");
+  push(errors, payload?.validation?.styleNotAutoActivated === true, "StyleOptionSet must not auto-activate a style");
+  push(errors, payload?.executionBoundary?.generatesMedia === false, "StyleOptionSet must not claim media generation");
+}
+
+function validateStylePreferenceFeedback(payload, errors) {
+  const signals = payload?.signals || [];
+  push(errors, unique(signals.map((item) => item?.signalId)), "StylePreferenceFeedback signal IDs must be unique");
+  const scopes = new Set(signals.map((item) => item?.scope));
+  push(errors, scopes.size === 1, "StylePreferenceFeedback must address one exploration axis per round");
+  for (const signal of signals) if (signal?.type === "compare") {
+    push(errors, nonEmpty(signal?.comparisonOptionId), `${signal?.signalId}: compare feedback requires comparisonOptionId`);
+    push(errors, signal?.comparisonOptionId !== signal?.optionId, `${signal?.signalId}: comparison must name a different option`);
+  }
+  if (payload?.convergence?.nextAction === "draft_style_package") push(errors, (payload?.convergence?.selectedOptionIds || []).length > 0, "StylePreferenceFeedback needs a selection before drafting StylePackage");
+  push(errors, payload?.convergence?.styleActivationRequested === false, "StylePreferenceFeedback cannot request automatic style activation");
+  push(errors, payload?.policy?.namedStyleIsAliasOnly === true, "StylePreferenceFeedback named styles must remain aliases only");
+  push(errors, payload?.policy?.noUniversalQualityScore === true, "StylePreferenceFeedback must prohibit universal style scores");
+  push(errors, payload?.executionBoundary?.generatesMedia === false, "StylePreferenceFeedback must not claim media generation");
+}
+
+function validateRepresentationBinding(payload, errors) {
+  const mappings = payload?.mapping || [];
+  push(errors, unique(mappings.map((item) => item?.mappingId)), "RepresentationBinding mapping IDs must be unique");
+  push(errors, unique(mappings.map((item) => item?.scope)), "RepresentationBinding scopes must be mapped at most once");
+  const globalAnchors = new Set(payload?.preserveSemanticAnchorIds || []);
+  const globalOverlap = (payload?.allowedTransformations || []).filter((item) => (payload?.forbiddenTransformations || []).includes(item));
+  push(errors, globalOverlap.length === 0, "RepresentationBinding global allow and forbid transformations must be disjoint");
+  for (const mapping of mappings) {
+    const overlap = (mapping?.allowedTransformations || []).filter((item) => (mapping?.forbiddenTransformations || []).includes(item));
+    push(errors, overlap.length === 0, `${mapping?.mappingId}: allowed and forbidden transformations must be disjoint`);
+    for (const anchor of mapping?.preserveAnchorIds || []) push(errors, globalAnchors.has(anchor), `${mapping?.mappingId}: mapping anchor ${anchor} must be globally preserved`);
+  }
+  if (payload?.status === "active") {
+    push(errors, payload?.activationGate?.status === "approved", "Active RepresentationBinding requires an approved gate");
+    push(errors, payload?.activationGate?.validationPassed === true, "Active RepresentationBinding requires passed validation");
+    push(errors, isObject(payload?.activationGate?.approvalRef), "Active RepresentationBinding requires an exact approval ref");
+  }
+  push(errors, payload?.validation?.characterOwnsIdentity === true, "RepresentationBinding must keep identity owned by Character");
+  push(errors, payload?.validation?.styleDoesNotMutateCanon === true, "RepresentationBinding cannot mutate canon");
+  push(errors, payload?.validation?.noProviderWeights === true, "RepresentationBinding cannot contain provider weights");
+  push(errors, payload?.executionBoundary?.containsProviderWeights === false, "RepresentationBinding execution boundary must exclude provider weights");
+  push(errors, payload?.executionBoundary?.generatesMedia === false, "RepresentationBinding must not claim media generation");
+}
+
 function validateStylePackage(payload, errors) {
   const atoms = payload?.atoms || [];
   const atomIds = atoms.map((item) => item?.atomId);
@@ -505,10 +683,23 @@ function validateStylePackage(payload, errors) {
   push(errors, Array.isArray(payload?.semanticSpec?.temporalDna) && payload.semanticSpec.temporalDna.length > 0, "StylePackage requires temporal DNA");
   push(errors, Array.isArray(payload?.validationSuite?.cases) && payload.validationSuite.cases.length >= 2, "StylePackage requires positive and boundary validation cases");
   push(errors, payload?.activationGate?.humanApprovalRequired === true, "StylePackage activation requires a human gate");
+  const representationFields = [payload?.representationModel, payload?.abstractionBudget, payload?.detailBudgetByScale, payload?.identityTranslationPolicy];
+  if (representationFields.some((item) => item !== undefined)) {
+    push(errors, representationFields.every((item) => item !== undefined), "StylePackage representation foundation fields must be supplied together");
+    const dimensions = payload?.abstractionBudget?.dimensions || [];
+    push(errors, unique(dimensions.map((item) => item?.dimension)), "StylePackage abstraction dimensions must be unique");
+    const policy = payload?.identityTranslationPolicy;
+    if (policy) {
+      push(errors, policy?.requiresRepresentationBinding === true, "StylePackage identity translation requires RepresentationBinding");
+      const overlap = (policy?.allow || []).filter((item) => (policy?.forbid || []).includes(item));
+      push(errors, overlap.length === 0, "StylePackage identity translation allow and forbid rules must be disjoint");
+    }
+  }
   if (payload?.status === "active") {
     push(errors, payload?.activationGate?.status === "approved", "Active StylePackage requires approved activation gate");
     push(errors, payload?.activationGate?.rightsResolved === true, "Active StylePackage requires resolved rights");
     push(errors, payload?.activationGate?.validationPassed === true, "Active StylePackage requires passed validation");
+    push(errors, representationFields.every((item) => item !== undefined), "Active StylePackage requires a complete representation model");
   }
   push(errors, payload?.executionBoundary?.generatesMedia === false, "StylePackage must not claim media generation");
 }
@@ -530,6 +721,15 @@ function validateStyleCompile(payload, errors) {
   push(errors, payload?.validation?.identityNotOverwritten === true, "StyleCompile must preserve identity");
   push(errors, payload?.validation?.sceneNotOverwritten === true, "StyleCompile must preserve scene facts");
   push(errors, payload?.validation?.temporalSeparated === true, "StyleCompile must separate temporal directives");
+  const realism = payload?.realismProfile;
+  if (realism) {
+    push(errors, realism?.calibration?.scale === "normalized_creative_intent", "StyleCompile realism scales must be normalized creative intent");
+    push(errors, realism?.calibration?.providerNeutral === true, "StyleCompile realism profile must remain Provider-neutral");
+    push(errors, realism?.calibration?.notQualityScore === true, "StyleCompile realism profile must not become a quality score");
+    push(errors, realism?.calibration?.identityProtected === true, "StyleCompile realism profile must protect identity");
+    push(errors, realism?.calibration?.materialStateProtected === true, "StyleCompile realism profile must protect material state");
+    push(errors, realism?.calibration?.doesNotPromiseOutput === true, "StyleCompile realism profile must not promise output quality");
+  }
   push(errors, payload?.executionBoundary?.generatesMedia === false, "StyleCompile must not claim media generation");
 }
 
@@ -768,11 +968,11 @@ function validateReferenceObservation(payload, errors, referenceAsset) {
   const ignore = new Set((transfer.ignore || []).map((item) => String(item).trim().toLocaleLowerCase()));
   push(errors, extract.every((item) => !ignore.has(String(item).trim().toLocaleLowerCase())), "ReferenceObservation extract and ignore lists must be disjoint");
   const authorityDomain = {
-    identity: "identity", face_identity: "identity", body_identity: "identity",
-    appearance: "appearance", makeup: "appearance", hair: "appearance", costume: "appearance", prop: "appearance",
+    identity: "identity", face_identity: "identity", body_identity: "identity", face_morphology: "identity", body_morphology: "identity", skin_surface: "identity", eye_surface: "identity",
+    appearance: "appearance", skin_material: "appearance", makeup: "appearance", hair: "appearance", hair_material: "appearance", costume: "appearance", prop: "appearance",
     expression: "performance", pose: "performance", motion: "performance", performance: "performance",
-    composition: "capture", lighting: "capture", camera_motion: "capture",
-    palette: "style", material: "style", style: "style",
+    capture: "capture", composition: "capture", lighting: "capture", camera_motion: "capture",
+    palette: "style", material: "style", style: "style", representation_geometry: "style", shape_language: "style", linework: "style", surface_style: "style", shading: "style", color_system: "style", depth_language: "style", effects: "style", panel_layout: "style", typography: "style", motion_style: "style",
     environment: "environment", geography: "environment", architecture: "environment", prop_layout: "environment", atmosphere: "environment", temporal_atmosphere: "environment"
   }[payload?.role];
   if (authorityDomain) push(errors, (payload?.authority?.[authorityDomain] || 0) > 0, `ReferenceObservation primary role requires nonzero ${authorityDomain} authority`);
@@ -922,6 +1122,8 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_script_scene": validateScriptScene(payload, errors); break;
     case "cineweave_codex_continuity_ledger": validateContinuityLedger(payload, errors); break;
     case "cineweave_codex_character_spec": validateCharacterSpec(payload, errors); break;
+    case "cineweave_codex_character_morphology_spec": validateCharacterMorphologySpec(payload, errors); break;
+    case "cineweave_codex_morphology_review": validateMorphologyReview(payload, errors); break;
     case "cineweave_codex_character_exploration_brief": validateCharacterExplorationBrief(payload, errors); break;
     case "cineweave_codex_character_option_set": validateCharacterOptionSet(payload, errors); break;
     case "cineweave_codex_character_preference_feedback": validateCharacterPreferenceFeedback(payload, errors); break;
@@ -951,6 +1153,10 @@ function validateByKind(payload, context = {}) {
     case "cineweave_codex_prompt_record": validatePromptRecord(payload, errors); break;
     case "cineweave_codex_storyboard_sequence": validateIntegratedStoryboard(payload, errors); break;
     case "cineweave_codex_style_package": validateStylePackage(payload, errors); break;
+    case "cineweave_codex_style_exploration_brief": validateStyleExplorationBrief(payload, errors); break;
+    case "cineweave_codex_style_option_set": validateStyleOptionSet(payload, errors); break;
+    case "cineweave_codex_style_preference_feedback": validateStylePreferenceFeedback(payload, errors); break;
+    case "cineweave_codex_representation_binding": validateRepresentationBinding(payload, errors); break;
     case "cineweave_codex_style_reference_plan": validateStyleReferencePlan(payload, errors); break;
     case "cineweave_codex_style_compile": validateStyleCompile(payload, errors); break;
     case "cineweave_codex_style_review": validateStyleReview(payload, errors); break;
@@ -985,21 +1191,23 @@ async function runSelfTest(mode = "all") {
   const referenceBindingSet = await readJson("examples/reference-binding-set.json");
   const referenceObservations = [{ artifactRef: referenceBindingSet.bindings[0].observationRef, payload: referenceObservation }];
   const cases = [
-    ["examples/character-spec.json", {}], ["examples/character-exploration-brief.json", {}], ["examples/character-option-set.json", {}], ["examples/character-preference-feedback.json", {}], ["examples/character-binding.json", {}], ["examples/character-reference-plan.json", {}], ["examples/character-appearance-state.json", {}], ["examples/character-review.json", {}], ["examples/character-repair.json", {}],
+    ["examples/character-spec.json", {}], ["examples/character-morphology-spec.json", {}], ["examples/morphology-review.json", {}], ["examples/character-exploration-brief.json", {}], ["examples/character-option-set.json", {}], ["examples/character-preference-feedback.json", {}], ["examples/character-binding.json", {}], ["examples/character-reference-plan.json", {}], ["examples/character-appearance-state.json", {}], ["examples/character-review.json", {}], ["examples/character-repair.json", {}],
   ];
   if (mode === "all") cases.push(
     ["examples/story-brief.json", {}], ["examples/beat-sheet.json", {}], ["examples/script-scene.json", {}], ["examples/continuity-ledger.json", {}],
     ["examples/performance-timeline.json", {}],
     ["examples/scene-spec.json", {}], ["examples/scene-state.json", { sceneSpec }], ["examples/scene-binding.json", { sceneSpec }], ["examples/scene-reference-plan.json", { sceneSpec }], ["examples/interaction-constraint-set.json", {}], ["examples/scene-review.json", { sceneSpec }], ["examples/scene-repair.json", { sceneSpec }],
     ["examples/scene-light-state.json", {}],
-    ["examples/asset-recipe.json", { controlSet }], ["examples/control-channel-set.json", {}], ["examples/evidence-bundle.json", {}], ["examples/capability-profile.json", {}], ["examples/license-profile.json", {}], ["examples/control-benchmark.json", {}],
+    ["examples/asset-recipe.json", { controlSet }], ["recipes/character-morphology-neutral-3view.json", {}], ["recipes/natural-human-fixtures-3up.json", {}], ["recipes/style-exploration-board-4up.json", {}], ["recipes/anime-character-fixtures-3up.json", {}], ["recipes/manga-character-fixtures-3up.json", {}], ["recipes/cross-representation-character-6up.json", {}], ["examples/control-channel-set.json", {}], ["examples/evidence-bundle.json", {}], ["examples/capability-profile.json", {}], ["examples/license-profile.json", {}], ["examples/control-benchmark.json", {}],
     ["examples/adapter-descriptor.json", {}], ["examples/execution-request.json", {}], ["examples/execution-receipt.json", {}], ["examples/execution-receipt-blocked.json", {}], ["examples/skill-evaluation-run.json", {}],
     ["examples/artifact-graph.json", {}], ["examples/project-bundle-manifest.json", {}],
-    ["examples/reference-asset.json", {}], ["examples/reference-observation.json", { referenceAsset }], ["examples/reference-review.json", {}], ["examples/reference-binding-set.json", { referenceObservations }],
+    ["examples/reference-asset.json", {}], ["examples/reference-observation.json", { referenceAsset }],
+    ["examples/reference-observation-portrait-face.json", { referenceAsset }], ["examples/reference-observation-portrait-skin.json", { referenceAsset }], ["examples/reference-observation-portrait-capture.json", { referenceAsset }],
+    ["examples/reference-review.json", {}], ["examples/reference-binding-set.json", { referenceObservations }],
     ["examples/integrated-image-prompt.json", { sceneSpec }], ["examples/integrated-storyboard.json", { sceneSpec }], ["examples/prompt-record.json", {}],
-    ["examples/style-package.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
+    ["examples/style-package.json", {}], ["examples/style-package-anime.json", {}], ["examples/style-package-manga.json", {}], ["examples/style-exploration-brief.json", {}], ["examples/style-option-set.json", {}], ["examples/style-preference-feedback.json", {}], ["examples/representation-binding.json", {}], ["examples/style-reference-plan.json", {}], ["examples/style-compile.json", {}], ["examples/style-light-grammar.json", {}], ["examples/style-review.json", {}],
     ["examples/shot-spec.json", {}], ["examples/shot-lighting-plan.json", { sceneLightState }], ["examples/temporal-spec.json", {}], ["examples/prompt-repair.json", {}],
-    ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}], ["examples/workflow-plan-reference-prompt.json", {}],
+    ["examples/creative-brief.json", {}], ["examples/creative-brief-zero-prompt.json", {}], ["examples/workflow-plan.json", {}], ["examples/workflow-plan-character-exploration.json", {}], ["examples/workflow-plan-character-morphology.json", {}], ["examples/workflow-plan-cross-representation.json", {}], ["examples/workflow-plan-reference-prompt.json", {}], ["examples/workflow-plan-portrait-reference.json", {}],
   );
 
   let ok = true;
@@ -1019,17 +1227,28 @@ async function runSelfTest(mode = "all") {
   const badPrompt = await readJson("examples/integrated-image-prompt.json"); delete badPrompt.sceneBinding; negative.push(["reject scene blocks without SceneBinding", badPrompt, {}]);
   const badControl = await readJson("examples/control-channel-set.json"); badControl.channels[0].fallback.action = "warn"; negative.push(["reject hard control that does not block", badControl, {}]);
   const badRecipe = await readJson("examples/asset-recipe.json"); badRecipe.assembly.ordering.pop(); negative.push(["reject incomplete recipe assembly", badRecipe, { controlSet }]);
+  const badStyleExplorationRecipe = await readJson("recipes/style-exploration-board-4up.json"); badStyleExplorationRecipe.tasks[0].delta[0].fieldPath = "camera.focalLength"; negative.push(["reject style exploration that changes camera", badStyleExplorationRecipe, {}]);
+  const badCrossRepresentationRecipe = await readJson("recipes/cross-representation-character-6up.json"); badCrossRepresentationRecipe.tasks.pop(); badCrossRepresentationRecipe.assembly.ordering.pop(); negative.push(["reject incomplete cross-representation family coverage", badCrossRepresentationRecipe, {}]);
   const badEvidence = await readJson("examples/evidence-bundle.json"); badEvidence.evidence = badEvidence.evidence.filter((item) => item.role !== "body_identity"); negative.push(["reject missing required evidence role", badEvidence, {}]);
   const badCapability = await readJson("examples/capability-profile.json"); badCapability.capabilities.push(structuredClone(badCapability.capabilities[0])); negative.push(["reject duplicate capability", badCapability, {}]);
+  const badFamilyBench = await readJson("examples/control-benchmark.json"); badFamilyBench.cases = badFamilyBench.cases.filter((item) => item.category !== "manga_representation"); negative.push(["reject MangaBench without manga case", badFamilyBench, {}]);
   const badInteraction = await readJson("examples/interaction-constraint-set.json"); badInteraction.constraints.occlusions.push({ frontRef: badInteraction.constraints.occlusions[0].backRef, backRef: badInteraction.constraints.occlusions[0].frontRef, region: "reverse", ordering: "front_before_back" }); negative.push(["reject cyclic occlusion", badInteraction, {}]);
   const badStyle = await readJson("examples/style-package.json"); badStyle.recipe.atomRefs[0].atomId = "unknown.style.atom"; negative.push(["reject StylePackage unknown atom", badStyle, {}]);
   const badStyleActivation = await readJson("examples/style-package.json"); badStyleActivation.status = "active"; negative.push(["reject active StylePackage without activation approval", badStyleActivation, {}]);
+  const badRealismProfile = await readJson("examples/style-compile.json"); badRealismProfile.realismProfile.calibration.identityProtected = false; negative.push(["reject StyleCompile realism profile that can overwrite identity", badRealismProfile, {}]);
   const badBrief = await readJson("examples/creative-brief.json"); badBrief.validation.styleDoesNotOwnIdentity = false; negative.push(["reject CreativeBrief style identity overwrite", badBrief, {}]);
   const badStyleBinding = await readJson("examples/prompt-record.json"); badStyleBinding.styleBinding.mode = "compiled"; delete badStyleBinding.styleBinding.styleCompileRef; negative.push(["reject compiled PromptRecord without StyleCompile ref", badStyleBinding, {}]);
   const badWorkflow = await readJson("examples/workflow-plan.json"); badWorkflow.steps[0].dependsOn = [badWorkflow.steps[2].stepId]; negative.push(["reject cyclic WorkflowPlan", badWorkflow, {}]);
   const badOptionSet = await readJson("examples/character-option-set.json"); badOptionSet.options[0].primaryDelta.axis = "eye_expression"; negative.push(["reject CharacterOptionSet with mixed exploration axes", badOptionSet, {}]);
   const badFeedbackLock = await readJson("examples/character-preference-feedback.json"); badFeedbackLock.convergence.identityLockRequested = true; negative.push(["reject CharacterPreferenceFeedback automatic identity lock", badFeedbackLock, {}]);
   const badFeedbackScore = await readJson("examples/character-preference-feedback.json"); badFeedbackScore.policy.universalBeautyScoreProhibited = false; negative.push(["reject CharacterPreferenceFeedback beauty score policy", badFeedbackScore, {}]);
+  const badSkinMaterial = await readJson("examples/character-appearance-state.json"); badSkinMaterial.styling.skinMaterial.calibration.notBiometric = false; negative.push(["reject biometric CharacterAppearanceState skin material scale", badSkinMaterial, {}]);
+  const badMorphologyVariation = await readJson("examples/character-morphology-spec.json"); badMorphologyVariation.axes.find((axis) => axis.lock === "hard").variationRadius = 0.1; negative.push(["reject variation on hard-locked morphology axis", badMorphologyVariation, {}]);
+  const badMorphologyRelation = await readJson("examples/character-morphology-spec.json"); badMorphologyRelation.relations[0].memberAxisIds.push("face.unknown.axis"); negative.push(["reject morphology relation with unknown axis", badMorphologyRelation, {}]);
+  const badMorphologyReview = await readJson("examples/morphology-review.json"); badMorphologyReview.dimensions[0].status = "fail"; badMorphologyReview.decision.identityLockApproved = true; negative.push(["reject morphology identity lock after failed review", badMorphologyReview, {}]);
+  const badStyleOptions = await readJson("examples/style-option-set.json"); badStyleOptions.options[0].primaryDelta.axis = "linework"; negative.push(["reject mixed-axis StyleOptionSet", badStyleOptions, {}]);
+  const badStyleFeedback = await readJson("examples/style-preference-feedback.json"); badStyleFeedback.convergence.styleActivationRequested = true; negative.push(["reject automatic StylePreferenceFeedback activation", badStyleFeedback, {}]);
+  const badRepresentationBinding = await readJson("examples/representation-binding.json"); badRepresentationBinding.mapping[0].forbiddenTransformations.push(badRepresentationBinding.mapping[0].allowedTransformations[0]); negative.push(["reject overlapping RepresentationBinding transformations", badRepresentationBinding, {}]);
   const badBeatSheet = await readJson("examples/beat-sheet.json"); badBeatSheet.beats[1].order = 1; negative.push(["reject unordered BeatSheet", badBeatSheet, {}]);
   const badPerformanceTimeline = await readJson("examples/performance-timeline.json"); badPerformanceTimeline.phases[1].startSeconds = 0.5; negative.push(["reject overlapping PerformanceTimeline", badPerformanceTimeline, {}]);
   const badSceneLight = await readJson("examples/scene-light-state.json"); badSceneLight.sources[1].sourceId = badSceneLight.sources[0].sourceId; negative.push(["reject duplicate SceneLightState source", badSceneLight, {}]);

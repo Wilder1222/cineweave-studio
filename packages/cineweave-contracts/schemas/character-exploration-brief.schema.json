@@ -157,7 +157,7 @@
           "maxLength": 160,
           "not": { "pattern": "(?:https?:|file:|[\\\\/?#])" }
         },
-        "role": { "enum": ["identity", "appearance", "style", "body", "lighting", "composition"] },
+        "role": { "enum": ["identity", "appearance", "skin_material", "style", "body", "capture", "lighting", "composition"] },
         "preserve": { "$ref": "#/$defs/stringList" },
         "ignore": { "$ref": "#/$defs/stringList" },
         "rightsStatus": { "enum": ["confirmed", "unverified", "unknown", "restricted"] }

@@ -32,7 +32,7 @@
         "observationId": { "type": "string", "minLength": 1, "maxLength": 160, "not": { "pattern": "(?:https?:|file:|[\\\\/?#])" } },
         "sourceType": { "enum": ["image", "video", "text", "palette", "motion_curve", "candidate_media"] },
         "sourceLabel": { "type": "string", "minLength": 1, "maxLength": 500 },
-        "role": { "enum": ["character_visual", "costume", "environment", "lighting", "composition", "palette", "linework", "shading", "material", "camera_motion", "performance", "temporal_atmosphere", "validation_positive", "validation_boundary", "validation_negative"] },
+        "role": { "enum": ["character_visual", "costume", "environment", "capture", "lighting", "composition", "palette", "linework", "shading", "material", "camera_motion", "performance", "temporal_atmosphere", "validation_positive", "validation_boundary", "validation_negative"] },
         "scope": { "enum": ["style", "character", "costume", "scene", "camera", "performance", "motion", "temporal", "image", "video"] },
         "extract": { "$ref": "#/$defs/stringList" },
         "ignore": { "$ref": "#/$defs/stringList" },

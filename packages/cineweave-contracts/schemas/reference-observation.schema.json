@@ -41,10 +41,10 @@
   },
   "$defs": {
     "role": {
-      "enum": ["identity", "face_identity", "body_identity", "appearance", "makeup", "hair", "costume", "prop", "expression", "pose", "motion", "composition", "lighting", "palette", "material", "style", "environment", "geography", "architecture", "prop_layout", "atmosphere", "camera_motion", "performance", "temporal_atmosphere", "mask", "validation_boundary", "reference"]
+      "enum": ["identity", "face_identity", "body_identity", "face_morphology", "body_morphology", "appearance", "skin_material", "skin_surface", "eye_surface", "makeup", "hair", "hair_material", "costume", "prop", "expression", "pose", "motion", "capture", "composition", "lighting", "palette", "material", "style", "representation_geometry", "shape_language", "linework", "surface_style", "shading", "color_system", "depth_language", "effects", "panel_layout", "typography", "motion_style", "environment", "geography", "architecture", "prop_layout", "atmosphere", "camera_motion", "performance", "temporal_atmosphere", "mask", "validation_boundary", "reference"]
     },
     "scope": {
-      "enum": ["full_asset", "full_character", "face", "body", "costume", "prop", "expression", "pose", "motion", "environment", "architecture", "geography", "scale", "prop_layout", "lighting", "material", "weather", "atmosphere", "crowd", "damage", "camera_axis", "composition", "style", "palette", "mask", "generic"]
+      "enum": ["full_asset", "full_character", "face", "face_morphology", "eyes", "skin", "body", "body_morphology", "hair", "costume", "prop", "expression", "pose", "motion", "capture", "environment", "architecture", "geography", "scale", "prop_layout", "lighting", "material", "weather", "atmosphere", "crowd", "damage", "camera_axis", "composition", "style", "representation", "linework", "shading", "depth", "effects", "panel_layout", "typography", "palette", "mask", "generic"]
     },
     "selector": {
       "type": "object",

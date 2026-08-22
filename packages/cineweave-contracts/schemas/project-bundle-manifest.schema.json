@@ -7,7 +7,7 @@
   "required": ["kind", "contractVersion", "bundleFormatVersion", "bundleHash", "createdAt", "sourceProject", "purpose", "contentPolicy", "storeDirectory", "entries", "summary"],
   "properties": {
     "kind": { "const": "cineweave_project_bundle_manifest" },
-    "contractVersion": { "enum": ["2.3.1", "2.4.0"] },
+    "contractVersion": { "enum": ["2.3.1", "2.4.0", "2.5.0"] },
     "bundleFormatVersion": { "enum": ["1.0.0", "1.1.0"] },
     "bundleHash": { "$ref": "common.schema.json#/$defs/contentHash" },
     "createdAt": { "type": "string", "format": "date-time" },
@@ -18,7 +18,7 @@
       "properties": {
         "projectId": { "$ref": "common.schema.json#/$defs/identifier" },
         "projectManifestHash": { "$ref": "common.schema.json#/$defs/contentHash" },
-        "runtimeVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1", "2.4.0"] }
+        "runtimeVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1", "2.4.0", "2.5.0"] }
       }
     },
     "purpose": { "const": "local_transfer" },
@@ -85,6 +85,16 @@
     },
     {
       "if": { "properties": { "contractVersion": { "const": "2.4.0" } }, "required": ["contractVersion"] },
+      "then": {
+        "properties": {
+          "bundleFormatVersion": { "const": "1.1.0" },
+          "contentPolicy": { "required": ["containsReferenceMedia"] },
+          "summary": { "required": ["referenceBlobCount"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "contractVersion": { "const": "2.5.0" } }, "required": ["contractVersion"] },
       "then": {
         "properties": {
           "bundleFormatVersion": { "const": "1.1.0" },

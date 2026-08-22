@@ -1,6 +1,6 @@
 {
   "catalog": "cineweave-production-recipes",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "schema": "schemas/asset-recipe.schema.json",
   "recipes": [
     {
@@ -32,6 +32,42 @@
       "path": "recipes/character-exploration-board-4up.json",
       "ownerSkill": "cineweave-character",
       "outputType": "keyframe_board"
+    },
+    {
+      "recipeId": "recipe.character-morphology-neutral-3view",
+      "path": "recipes/character-morphology-neutral-3view.json",
+      "ownerSkill": "cineweave-character",
+      "outputType": "morphology_turnaround"
+    },
+    {
+      "recipeId": "recipe.natural-human-fixtures-3up",
+      "path": "recipes/natural-human-fixtures-3up.json",
+      "ownerSkill": "cineweave-production",
+      "outputType": "human_realism_fixture"
+    },
+    {
+      "recipeId": "recipe.style-exploration-board-4up",
+      "path": "recipes/style-exploration-board-4up.json",
+      "ownerSkill": "cineweave-style",
+      "outputType": "style_exploration"
+    },
+    {
+      "recipeId": "recipe.anime-character-fixtures-3up",
+      "path": "recipes/anime-character-fixtures-3up.json",
+      "ownerSkill": "cineweave-production",
+      "outputType": "representation_fixture"
+    },
+    {
+      "recipeId": "recipe.manga-character-fixtures-3up",
+      "path": "recipes/manga-character-fixtures-3up.json",
+      "ownerSkill": "cineweave-production",
+      "outputType": "representation_fixture"
+    },
+    {
+      "recipeId": "recipe.cross-representation-character-6up",
+      "path": "recipes/cross-representation-character-6up.json",
+      "ownerSkill": "cineweave-production",
+      "outputType": "cross_representation_sheet"
     },
     {
       "recipeId": "recipe.scene-establishing-frame",

@@ -140,7 +140,7 @@ test("bundle integrity alone cannot bypass staged project semantic verification"
   } finally { await rm(sandbox, { recursive: true, force: true }); }
 });
 
-test("V2.4 bundles carry a V2.2 project without rewriting its manifest", async () => {
+test("V2.5 bundles carry a V2.2 project without rewriting its manifest", async () => {
   const sandbox = await mkdtemp(join(tmpdir(), "cineweave-bundle-v22-"));
   try {
     const source = join(sandbox, "source-project");

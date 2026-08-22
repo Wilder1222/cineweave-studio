@@ -129,6 +129,23 @@
       ]
     },
     {
+      "id": "character-portrait-skin-material-state",
+      "mode": "appearance_state",
+      "prompt": "基于已锁定角色的自然肤色基线，把参考图里的轻薄底妆、适度水润、鼻颊微纹理和少量自然泛红做成一次定妆状态；不能改脸、漂白肤色或把参数说成生理测量。",
+      "loads": [
+        "character-appearance",
+        "portrait-decomposition"
+      ],
+      "expectedOutput": "character-appearance-state with calibrated skinMaterial",
+      "assertions": [
+        "skinMaterial is baseline-relative",
+        "identity and stable complexion remain protected",
+        "makeup coverage and visible surface response are explicit",
+        "values are normalized creative intent rather than biometric or physical measurements",
+        "pore-level detail is conditioned on shot scale"
+      ]
+    },
+    {
       "id": "character-one-variable-repair",
       "mode": "character_repair",
       "prompt": "候选图的脸正确，但右手惯用侧翻转了。",

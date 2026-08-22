@@ -1,6 +1,6 @@
 {
   "name": "cineweave-studio",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "CineWeave Studio is a composable creative Skill system for independent story, character, scene, style, reference, direction, prompt and production workflows.",
   "homepage": "https://github.com/Wilder1222/cineweave-studio",
   "repository": "https://github.com/Wilder1222/cineweave-studio",
@@ -19,6 +19,11 @@
     "character-preference",
     "zero-prompt",
     "character-consistency",
+    "semantic-morphology",
+    "face-design",
+    "representation-binding",
+    "visual-representation-system",
+    "natural-human-rendering",
     "character-performance",
     "scene-design",
     "scene-continuity",
@@ -66,13 +71,14 @@
   "interface": {
     "displayName": "CineWeave Studio",
     "shortDescription": "Composable creative workflows for images, video and production design.",
-    "longDescription": "CineWeave Studio v2.4.0 provides an optional $cineweave entry point plus eight independently usable specialist Skills. Story owns causality and continuity; Character owns identity and performance; Scene owns geography and physical light; Style owns representation; Reference owns content-addressed media, atomic observations and role-scoped bindings; Director owns shots and time; Prompt owns reusable image prompts; Production owns recipes, controls, rights, adapter descriptors, exact execution requests and auditable receipts. Exact versioned contracts support standalone use and acyclic composition. The local runtime stores immutable artifacts and verified reference bytes, exposes exact dependency and approval-gate queries, safely transfers project bundles, runs only trusted registered adapters, defaults external effects to denied and verifies output bytes.",
+    "longDescription": "CineWeave Studio v2.5.0 provides an optional $cineweave entry point plus eight independently usable specialist Skills. Story owns causality and continuity; Character owns preference-led exploration, provider-neutral semantic morphology, identity and performance; Scene owns geography and physical light; Style owns visual representation, one-axis style exploration and exact Character-to-Style RepresentationBindings; Reference owns content-addressed media, atomic observations and role-scoped bindings; Director owns shots and time; Prompt owns reusable image prompts; Production owns recipes, controls, family-specific benches, rights, adapters, exact execution requests and auditable receipts. Exact versioned contracts support standalone use and acyclic composition. The local runtime stores immutable artifacts and verified reference bytes, exposes exact dependency and approval-gate queries, safely transfers project bundles, runs only trusted registered adapters, defaults external effects to denied and verifies output bytes.",
     "developerName": "CineWeave",
     "category": "Productivity",
     "capabilities": [],
     "defaultPrompt": [
       "Turn my vague visual idea into an editable creative brief.",
-      "Explore a character, story or shot with clear creative choices.",
+      "Explore and semantically sculpt a reusable character without a beauty score.",
+      "Keep one character recognizable across photoreal, anime, manga and illustration.",
       "Score this reference and compile an observable image prompt."
     ],
     "brandColor": "#1D6FFF",

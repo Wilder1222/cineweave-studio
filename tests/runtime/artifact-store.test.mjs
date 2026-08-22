@@ -80,7 +80,7 @@ test("concurrent project initialization returns one immutable manifest", async (
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 
-test("V2.4 opens a V2.2 project non-destructively and preserves schema validity", async () => {
+test("V2.5 opens a V2.2 project non-destructively and preserves schema validity", async () => {
   const root = await mkdtemp(join(tmpdir(), "cineweave-runtime-v22-"));
   try {
     const store = join(root, ".cineweave");
@@ -102,7 +102,7 @@ test("V2.4 opens a V2.2 project non-destructively and preserves schema validity"
     assert.equal(opened.contractVersion, "2.2.0");
     assert.equal(opened.projectId, "project.v22-compatible");
     const artifact = await putArtifact(root, { kind: "example_contract", value: "created-by-v24" }, { id: "artifact.v24-on-v22", version: 1 });
-    assert.equal(artifact.envelope.contractVersion, "2.4.0");
+    assert.equal(artifact.envelope.contractVersion, "2.5.0");
     assert.equal((await verifyProject(root)).valid, true);
   } finally { await rm(root, { recursive: true, force: true }); }
 });

@@ -42,12 +42,12 @@ Use one primary role per observation. Common splits:
 
 | Source content | Observation A | Observation B | Explicitly ignore |
 |---|---|---|---|
-| portrait | `face_identity` on face | `lighting` on full frame | costume/background for identity; identity for lighting |
+| portrait | `face_identity` on face | `skin_material`, `makeup`, `hair`, `capture`, `lighting` or `composition` as separate observations | surface/style for identity; identity for every transferable look role |
 | costume photo | `costume` on garment | `material` on fabric region | source person's face and pose |
 | architecture board | `architecture` | `palette` | embedded text, layout and unrelated landmarks |
 | performance clip | `performance` on actor/time | `camera_motion` on frame/time | actor identity for motion; camera path for acting |
 
-Static images can support composition and inferred capture cues but cannot prove focal length, camera acceleration, editing rhythm or secondary motion.
+Static images can support a `capture` observation for visible viewpoint, crop, perspective and focus cues. They cannot prove focal length, aperture, camera body, camera acceleration, editing rhythm or secondary motion; keep those claims inferred unless trusted metadata or declarations establish them.
 
 ## Rights and privacy
 
@@ -69,8 +69,9 @@ An import operation never changes any unknown decision to allowed. Link an exact
 Bind exact Observation refs to exact target refs. Default precedence:
 
 ```text
-identity → appearance → geography → prop layout → performance/pose
-         → composition → lighting → material/palette/style → atmosphere
+identity → stable skin baseline → appearance/skin state → geography → prop layout
+         → performance/pose → capture/composition → lighting
+         → material/palette/style → atmosphere
 ```
 
 This is precedence for conflict resolution, not a universal prompt order. Reject same-role conflicts unless an explicit priority and rationale resolve them. Reject overlapping selectors that give incompatible instructions.

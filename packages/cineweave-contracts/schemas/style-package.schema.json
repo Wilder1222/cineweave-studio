@@ -15,6 +15,10 @@
     "displayName": { "type": "object", "additionalProperties": false, "required": ["zh", "en"], "properties": { "zh": { "type": "string", "minLength": 1, "maxLength": 240 }, "en": { "type": "string", "minLength": 1, "maxLength": 240 } } },
     "purpose": { "type": "string", "minLength": 1, "maxLength": 2000 },
     "semanticSpec": { "$ref": "#/$defs/semanticSpec" },
+    "representationModel": { "$ref": "#/$defs/representationModel" },
+    "abstractionBudget": { "$ref": "#/$defs/abstractionBudget" },
+    "detailBudgetByScale": { "$ref": "#/$defs/detailBudgetByScale" },
+    "identityTranslationPolicy": { "$ref": "#/$defs/identityTranslationPolicy" },
     "atoms": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/atom" } },
     "recipe": { "$ref": "#/$defs/recipe" },
     "referencePlanRef": { "$ref": "#/$defs/contractRef" },
@@ -46,13 +50,72 @@
         "forbidden": { "$ref": "#/$defs/stringList" }
       }
     },
+    "representationModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family", "geometryModel", "surfaceModel", "lightModel", "depthModel", "visualGrammar", "temporalGrammar"],
+      "properties": {
+        "family": { "enum": ["photoreal", "anime", "manga", "illustration", "stylized_3d", "hybrid"] },
+        "geometryModel": { "type": "string", "minLength": 1, "maxLength": 1200 },
+        "surfaceModel": { "type": "string", "minLength": 1, "maxLength": 1200 },
+        "lightModel": { "type": "string", "minLength": 1, "maxLength": 1200 },
+        "depthModel": { "type": "string", "minLength": 1, "maxLength": 1200 },
+        "visualGrammar": { "$ref": "#/$defs/stringList" },
+        "temporalGrammar": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "abstractionBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimensions", "providerNeutral"],
+      "properties": {
+        "dimensions": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["dimension", "level", "rationale"],
+            "properties": {
+              "dimension": { "enum": ["geometry", "proportion", "feature_abstraction", "silhouette", "surface", "material", "color", "light", "line", "depth", "motion", "expression", "physics", "detail"] },
+              "level": { "enum": ["literal", "restrained", "moderate", "high", "symbolic"] },
+              "rationale": { "type": "string", "minLength": 1, "maxLength": 800 }
+            }
+          }
+        },
+        "providerNeutral": { "const": true }
+      }
+    },
+    "detailBudgetByScale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["closeup", "medium", "fullbody", "wide"],
+      "properties": {
+        "closeup": { "$ref": "#/$defs/stringList" },
+        "medium": { "$ref": "#/$defs/stringList" },
+        "fullbody": { "$ref": "#/$defs/stringList" },
+        "wide": { "$ref": "#/$defs/stringList" }
+      }
+    },
+    "identityTranslationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiresRepresentationBinding", "preserve", "allow", "forbid"],
+      "properties": {
+        "requiresRepresentationBinding": { "const": true },
+        "preserve": { "$ref": "#/$defs/stringList" },
+        "allow": { "$ref": "#/$defs/stringList" },
+        "forbid": { "$ref": "#/$defs/stringList" }
+      }
+    },
     "atom": {
       "type": "object",
       "additionalProperties": false,
       "required": ["atomId", "domain", "level", "version", "contentHash", "summary", "invariants", "forbidden", "appliesTo"],
       "properties": {
         "atomId": { "$ref": "#/$defs/lowerId" },
-        "domain": { "enum": ["medium", "representation", "character", "culture", "costume", "production_design", "linework", "shading", "color", "lighting", "composition", "cinematography", "performance", "motion", "temporal", "postprocess"] },
+        "domain": { "enum": ["medium", "representation", "geometry", "shape_language", "surface", "depth", "effects", "panel_layout", "typography", "character", "culture", "costume", "production_design", "linework", "shading", "color", "lighting", "composition", "cinematography", "performance", "motion", "temporal", "postprocess"] },
         "level": { "enum": ["domain", "family", "subclass", "micro_style", "project"] },
         "version": { "type": "integer", "minimum": 1 },
         "contentHash": { "type": "string", "pattern": "^sha256:[0-9a-fA-F]{64}$" },
@@ -63,7 +126,7 @@
         "compatibleWith": { "$ref": "#/$defs/stringList" },
         "conflictsWith": { "$ref": "#/$defs/stringList" },
         "variables": { "type": "array", "maxItems": 24, "items": { "$ref": "#/$defs/variable" } },
-        "appliesTo": { "type": "array", "minItems": 1, "items": { "enum": ["image", "video", "character", "costume", "scene", "camera", "performance", "temporal"] } }
+        "appliesTo": { "type": "array", "minItems": 1, "items": { "enum": ["image", "video", "character", "costume", "scene", "camera", "performance", "temporal", "representation", "page", "text"] } }
       }
     },
     "variable": { "type": "object", "additionalProperties": false, "required": ["variableId", "type"], "properties": { "variableId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$" }, "type": { "enum": ["number", "enum", "boolean", "string"] }, "min": { "type": "number" }, "max": { "type": "number" }, "default": { "type": ["number", "string", "boolean"] }, "allowedValues": { "type": "array", "maxItems": 24, "items": { "type": "string", "minLength": 1, "maxLength": 160 } } } },
@@ -75,7 +138,7 @@
         "recipeId": { "$ref": "#/$defs/lowerId" },
         "parentRecipeRef": { "$ref": "#/$defs/contractRef" },
         "atomRefs": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/atomRef" } },
-        "scopeBindings": { "type": "array", "minItems": 1, "items": { "enum": ["character", "costume", "scene", "camera", "performance", "image", "video", "temporal", "postprocess"] } },
+        "scopeBindings": { "type": "array", "minItems": 1, "items": { "enum": ["character", "costume", "scene", "camera", "performance", "image", "video", "temporal", "postprocess", "representation", "page", "text"] } },
         "invariants": { "$ref": "#/$defs/stringList" },
         "allowedVariation": { "$ref": "#/$defs/stringList" },
         "forbidden": { "$ref": "#/$defs/stringList" }

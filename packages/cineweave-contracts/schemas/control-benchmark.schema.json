@@ -423,6 +423,12 @@
         "scope": {
           "enum": [
             "character",
+            "morphology",
+            "representation",
+            "surface_realism",
+            "graphic_consistency",
+            "cross_representation",
+            "temporal_style",
             "appearance",
             "scene",
             "interaction",
@@ -529,6 +535,15 @@
         "category": {
           "enum": [
             "character_identity",
+            "morphology",
+            "surface_realism",
+            "anime_representation",
+            "manga_representation",
+            "illustration_representation",
+            "stylized_3d_representation",
+            "hybrid_representation",
+            "cross_representation",
+            "temporal_style",
             "appearance",
             "expression",
             "pose",

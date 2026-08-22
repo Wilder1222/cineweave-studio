@@ -43,16 +43,18 @@ Choose the smallest route.
 2. Separate facts into subject, state/action, environment, viewpoint/composition, physical light, materials, representational style, technical delivery and constraints.
 3. Resolve exact Character, Scene, Style, Shot or ReferenceBindingSet refs only when supplied or required. Do not invent hashes or Observation IDs.
 4. Compile only role-scoped observations from an exact binding. Route raw media or ambiguous multi-role uploads to `$cineweave-reference` first.
-5. Allocate a visibility budget: describe only details that can affect the requested framing and scale.
-6. Compile the concise prompt first, then an expanded version only when extra blocks carry distinct control value.
-7. Use targeted negatives for likely failure modes; do not append a universal error dictionary.
-8. Define observable acceptance checks and one next experiment.
+5. Keep stable CharacterSpec surface facts, changeable AppearanceState skin material, RepresentationBinding anchor translation and StyleCompile realism treatment in separate source blocks; resolve conflicts by owner rather than merging adjectives.
+6. Allocate a visibility budget: describe only details that can affect the requested framing and scale.
+7. Compile the concise prompt first, then an expanded version only when extra blocks carry distinct control value.
+8. Use targeted negatives for likely failure modes; do not append a universal error dictionary.
+9. Define observable acceptance checks and one next experiment.
 
 ## Prompt quality rules
 
 - More detail is useful only when it is visible, discriminative, compatible and owned by the current task.
 - Describe relationships: where the subject is, what it is doing, what bears weight, what is obscured, what the light source is and what the audience notices first.
 - For a face, prefer structural relations and visible skin behavior over “perfect beauty.” For a full body, include proportions, posture and weight only when visible.
+- Treat focal length and aperture reconstructed from a still as hypotheses unless declared evidence exists; compile observable perspective and focus behavior first.
 - For architecture, specify era/treatment, typology, massing, bay rhythm, circulation, materials, weathering and camera relation; do not use a culture label as a complete building description.
 - Keep physical lighting separate from style treatment. A warm palette is not a light source; bloom is not illumination.
 - Keep `must preserve`, `may vary`, and `must avoid` separate.
@@ -68,4 +70,4 @@ Return JSON only when the user requests CineWeave import.
 - interactive generation brief: `../../packages/cineweave-contracts/schemas/draft-brief.schema.json`
 - single-variable repair: `../../packages/cineweave-contracts/schemas/prompt-repair.schema.json`
 
-Before returning, verify one primary target, coherent viewpoint and light, no cross-owner fact mutation, scoped references, provider neutrality, an explicit detail budget, targeted constraints and no invented receipt, generation result, rights status or quality claim.
+Before returning, verify one primary target, coherent viewpoint and light, no cross-owner fact mutation, scoped references, provider neutrality, an explicit detail budget, targeted constraints and no invented receipt, generation result, rights status or quality claim. For portraits, also verify identity geometry, physical skin state, RepresentationBinding, representation/retouch and capture hypotheses remain independently traceable.

@@ -34,9 +34,11 @@ If a request jumps directly to Stage 3 or later, state which earlier evidence is
 
 ## Stage 0 — reference gate
 
-Run `$cineweave-reference` `reference_review` before translating a supplied image into a reusable character. Decompose visible evidence into the nine blocks used by the [ReferenceReview schema](../../../packages/cineweave-contracts/schemas/reference-review.schema.json):
+Run `$cineweave-reference` `reference_review` before translating a supplied image into a reusable character. Use the nine purpose-review blocks in the [ReferenceReview schema](../../../packages/cineweave-contracts/schemas/reference-review.schema.json):
 
 `identity`, `appearance`, `performance`, `composition`, `capture`, `lighting`, `materials`, `paletteGrade`, `environment`.
+
+Then create separate atomic ReferenceObservations for every accepted transfer role. In portraits this commonly means `face_identity`, optional `face_morphology`, `skin_surface`, `skin_material`, `makeup`, `hair`, `expression`, `capture`, `composition`, `lighting` and `palette`/`style`; do not put them into one observation.
 
 For every block record:
 
@@ -52,6 +54,8 @@ Use this authority map as a default:
 | Reference evidence | May control | Must not silently control |
 |---|---|---|
 | Face geometry, body proportions, stable asymmetry | Character identity, after review | costume, camera or likeness rights |
+| Makeup-free stable surface baseline | CharacterSpec surface identity, after contamination review | style, health/ethnicity claims or temporary skin condition |
+| Hydration, cosmetic coverage, temporary redness, sebum and surface visibility | CharacterAppearanceState skin material | face geometry or stable complexion identity |
 | Hair, makeup, costume, accessory placement | AppearanceState | face geometry or body proportions |
 | Gesture, gaze, hand placement, expression | Performance candidate | permanent identity anchors |
 | Crop, angle, camera distance, focus | Director composition/capture hypothesis | scene geography |
@@ -83,6 +87,7 @@ Route the approved look to `appearance_state`. Describe the look as a structured
 
 - hair construction, parting, anchor accessories and stable left/right placement;
 - makeup placement, palette, edge softness and intensity;
+- baseline relation, hydration, micro-roughness/specular, translucency readability, regional variation and temporary skin conditions;
 - costume silhouette, layers, closure, fit, construction and movement response;
 - material roughness, sheen, translucency, thickness, wear and light response;
 - accessory hierarchy, density, contact points and forbidden random additions.
@@ -107,8 +112,8 @@ how the camera observes the moment:
 3. subject state, gaze, gesture, breath and emotional restraint;
 4. exact CharacterBinding and AppearanceState anchors;
 5. motivated light and shadow behavior;
-6. skin, hair, textile and jewelry material evidence;
-7. palette/grade and only then restrained style hypotheses;
+6. exact Character surface baseline and AppearanceState skin/hair/textile/jewelry material evidence;
+7. StyleCompile realism/retouch treatment, palette/grade and only then restrained style hypotheses;
 8. targeted negatives derived from known failure modes.
 
 For a realistic portrait, describe physical evidence such as pores, peach fuzz, small tonal variation, natural asymmetry, irregular textile folds and non-uniform specular response. Avoid relying on `perfect`, `flawless`, `porcelain`, `doll-like`, `8K`, `cinematic` or `high-end` as substitutes for observation.

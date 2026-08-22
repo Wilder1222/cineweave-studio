@@ -119,7 +119,7 @@
       "required": ["observationId", "role", "purpose", "preserve", "allowedTransforms"],
       "properties": {
         "observationId": { "type": "string", "minLength": 1, "maxLength": 160 },
-        "role": { "enum": ["identity", "composition", "lighting", "style", "material", "background", "mask", "reference"] },
+        "role": { "$ref": "reference-observation.schema.json#/$defs/role" },
         "purpose": { "type": "string", "minLength": 1, "maxLength": 800 },
         "preserve": { "$ref": "#/$defs/stringList" },
         "allowedTransforms": { "$ref": "#/$defs/stringList" },

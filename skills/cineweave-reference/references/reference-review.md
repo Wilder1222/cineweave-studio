@@ -19,11 +19,13 @@ A review answers “is this exact asset useful for this declared job?” It is n
 |---|---|---|
 | face identity | neutral expression, face unobstructed, moderate perspective, bilateral structure and age readable | beauty filter, stylization, hair/hand occlusion, extreme angle, tiny face |
 | body identity | full body, feet and support visible, neutral lens/pose, proportions readable | flowing costume hides contour, crop, foreshortening, unsupported pose |
+| skin material | regional tone and microtexture readable at useful scale, highlights not clipped, makeup and light contamination separable | beauty filter, denoise, sharpening, heavy foundation, colored light, tiny face, medical or ethnicity inference |
 | costume | silhouette, layer order, closures, hem/sleeve, material and multiple views | only front decoration, identity contamination, impossible ornament topology |
 | pose/performance | weight, contact, gaze, hands and action motivation readable | fashion pose without support, ambiguous hands, still used as motion proof |
 | style | repeatable line, value, color, material and representation rules separable from content | one-off subject/color/composition leakage, creator name without mechanisms |
 | lighting | source direction, softness, ratio, shadow and material response readable | illustration treated as physical capture proof, mixed unknown sources |
 | composition | attention order, foreground/midground/background, scale and negative space readable | composition inseparable from source subject or aspect ratio |
+| capture | viewpoint, crop, perspective and focus cues are readable and can be stated without inventing metadata | focal length or aperture claimed as fact from one still, perspective conflated with face geometry, motion inferred from blur alone |
 | architecture/geography | structure, scale anchors, circulation and multiple viewpoints | decorative facade only, no plan/topology, uncertain historical claim |
 | camera motion | continuous clip with path, speed, acceleration and framing change | static image, edit hidden as motion, subject motion confused with camera motion |
 

@@ -6,7 +6,7 @@ Use this module when a creator asks how to reproduce a portrait reference, wants
 
 - A one-off or reusable portrait Prompt belongs to `$cineweave-prompt`.
 - Reusable face, body, likeness, identity anchors or a stable character DNA belong to `$cineweave-character` and must become a CharacterSpec or CharacterBinding.
-- Reusable makeup, hair, costume and accessory states belong to `$cineweave-character` as an AppearanceState. Director consumes the exact state and does not silently rewrite it.
+- Reusable baseline-relative skin material, makeup, hair, costume and accessory states belong to `$cineweave-character` as an AppearanceState. Stable surface identity remains in CharacterSpec. Director consumes the exact state and does not silently rewrite either one.
 - Director owns shot purpose, blocking, camera and shot-light use. Scene owns
   physical light state; Style owns representational treatment; Prompt owns
   assembly, versioning, scoped negatives and acceptance checks.
@@ -18,13 +18,15 @@ Record visible evidence, confidence and intended transfer for each applicable la
 
 | Layer | Observe | Mapping or handoff |
 |---|---|---|
-| `identity` | face geometry, feature relationships, skin surface, asymmetry, body silhouette and distinctive marks | `CharacterSpec`/`CharacterBinding` when reusable; otherwise scoped identity reference |
-| `appearance` | makeup placement, hair construction, loose strands, ornaments, costume silhouette and garment construction | `AppearanceState`/character handoff; use `wardrobe` only when supplied to the shot |
+| `identity` | face geometry, feature relationships, stable asymmetry, body silhouette and distinctive marks | `face_identity` or `body_identity` observation → `CharacterSpec`/`CharacterBinding` when reusable |
+| `skin_surface` | stable makeup-free regional tone, marks and microtexture baseline | separate `skin_surface` observation → CharacterSpec; never a style shortcut |
+| `skin_material` | visible hydration, roughness/specular, cosmetic coverage and temporary condition | separate `skin_material` observation → baseline-relative AppearanceState |
+| `appearance` | makeup placement, hair construction, loose strands, ornaments, costume silhouette and garment construction | separate `makeup`, `hair` or `costume` observations → `AppearanceState`; use `wardrobe` only when supplied to the shot |
 | `performance` | torso direction, head turn, gaze, mouth, hands, breath, weight shift and frozen action | `characterPerformance`, `actionMoment` and observable emotion cues |
 | `composition` | crop, subject scale, foreground shoulder or obstruction, first visual read and negative space | `shotDesign.composition`, `prompt.blocks.composition` |
-| `capture` | viewpoint, camera height, distance, focal-length hypothesis, focus target, depth and optical softness | `camera` block; mark inferred lens details as hypotheses unless supplied |
+| `capture` | viewpoint, camera height, distance, perspective compression, focus target, depth and optical softness | separate `capture` observation → `camera` block; mark focal length, aperture and hardware as hypotheses unless supplied |
 | `lighting` | motivated source, direction, key/fill/rim relation, falloff, exposure and shadow consistency | `lighting` or `sceneLighting` block |
-| `materials` | skin, hair, silk, satin, metal, beads, flowers and wall response to light | `materials`, `sceneMaterials` and realism anchors |
+| `materials` | hair, silk, satin, metal, beads, flowers and wall response to light | `hair` or non-human `material` observations → character/scene materials; human skin uses `skin_material` |
 | `palette_grade` | hue relationship, saturation, contrast, grain, halation and sharpening level | bounded `style`, `technical` and negative constraints |
 | `environment` | background structure, location clues, atmosphere and scale | `sceneBinding`/environment block; never infer World geography |
 
@@ -70,8 +72,9 @@ Prefer separate references when the creator wants both identity and a new treatm
 
 1. `identity`: face/body/likeness anchors; route persistent identity to `$cineweave-character`.
 2. `appearance`: makeup, hair, costume and accessories; route reusable states to `$cineweave-character`.
-3. `capture_style`: crop, camera, light, palette and grade; Director-owned style/camera evidence.
-4. `environment_material`: location, background, textile or surface behavior when needed.
+3. `capture`: viewpoint, crop, perspective and focus cues; Director-owned evidence with lens metadata kept inferred.
+4. `lighting_style`: light behavior, palette, grade and representation treatment, split again when their roles differ.
+5. `environment_material`: location, background, textile or surface behavior when needed.
 
 Bind one role and scope per input. Declare `preserve`, `borrow` and `exclude`. A style or capture reference cannot replace identity; an appearance reference cannot change body proportions; a lighting reference cannot relocate the subject. Do not expose provider-specific “reference strength” numbers in the provider-neutral Prompt core. Express priority through role, scope, preserve contract and allowed transforms; put adapter-specific weights in a later capability-aware RenderPlan if supported.
 
@@ -79,9 +82,9 @@ Bind one role and scope per input. Declare `preserve`, `borrow` and `exclude`. A
 
 When the user wants an original character to remain recognizable across clothes, poses and scenes, route a compact handoff rather than keeping a prose-only identity block:
 
-- face: geometry, feature relationships, surface and natural asymmetry;
+- face: geometry, feature relationships, stable surface baseline and natural asymmetry;
 - body: silhouette, proportions, center of gravity and dominant side;
-- appearance variables: makeup, hair, wardrobe and accessory states;
+- appearance variables: baseline-relative skin material, makeup, hair, wardrobe and accessory states;
 - performance: posture, gaze, face, hands, breath and signature gestures;
 - rights: source class, likeness consent and redistribution status.
 

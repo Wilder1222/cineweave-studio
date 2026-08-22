@@ -5,10 +5,10 @@ import { randomUUID } from "node:crypto";
 import { parseJsonStrict, sha256Bytes, sha256Canonical } from "./canonical-json.mjs";
 import { assertReferenceBlobRelativePath, listReferenceBlobFiles, verifyReferenceBlob } from "./reference-media.mjs";
 
-export const RUNTIME_VERSION = "2.4.0";
+export const RUNTIME_VERSION = "2.5.0";
 const identifierPattern = /^[a-z0-9][a-z0-9._-]{1,159}$/;
 const contentHashPattern = /^sha256:[0-9a-f]{64}$/;
-const supportedStoreVersions = new Set(["2.2.0", "2.3.0", "2.3.1", "2.4.0"]);
+const supportedStoreVersions = new Set(["2.2.0", "2.3.0", "2.3.1", "2.4.0", "2.5.0"]);
 
 function assertIdentifier(value, label) {
   if (!identifierPattern.test(value || "")) throw new TypeError(`${label} must match ${identifierPattern}`);
@@ -44,8 +44,8 @@ function projectManifestErrors(project) {
   if (typeof project?.name !== "string" || !project.name.trim() || project.name.length > 240) errors.push("project name is invalid");
   if (Number.isNaN(Date.parse(project?.createdAt))) errors.push("project createdAt is invalid");
   if (project?.storage?.mode !== "local_immutable" || project.storage.artifactDirectory !== "artifacts" || project.storage.approvalDirectory !== "approvals") errors.push("project storage directories are invalid");
-  if (["2.3.0", "2.3.1", "2.4.0"].includes(project?.contractVersion) && (project.storage.executionDirectory !== "executions" || project.storage.idempotencyDirectory !== "idempotency")) errors.push("V2.3+ project execution/idempotency directories are invalid");
-  if (project?.contractVersion === "2.4.0" && project.storage.referenceBlobDirectory !== "reference-blobs") errors.push("V2.4 project reference blob directory is invalid");
+  if (["2.3.0", "2.3.1", "2.4.0", "2.5.0"].includes(project?.contractVersion) && (project.storage.executionDirectory !== "executions" || project.storage.idempotencyDirectory !== "idempotency")) errors.push("V2.3+ project execution/idempotency directories are invalid");
+  if (["2.4.0", "2.5.0"].includes(project?.contractVersion) && project.storage.referenceBlobDirectory !== "reference-blobs") errors.push("V2.4+ project reference blob directory is invalid");
   return errors;
 }
 
@@ -369,7 +369,7 @@ export async function verifyProject(projectRoot) {
     try {
       const claim = await readStrictJson(path);
       if (claim.kind !== "cineweave_idempotency_claim") errors.push(`Invalid idempotency claim kind: ${path}`);
-      if (!["2.3.0", "2.3.1", "2.4.0"].includes(claim.contractVersion) || !contentHashPattern.test(claim.keyHash || "") || Number.isNaN(Date.parse(claim.claimedAt))) errors.push(`Invalid idempotency claim metadata: ${path}`);
+      if (!["2.3.0", "2.3.1", "2.4.0", "2.5.0"].includes(claim.contractVersion) || !contentHashPattern.test(claim.keyHash || "") || Number.isNaN(Date.parse(claim.claimedAt))) errors.push(`Invalid idempotency claim metadata: ${path}`);
       if (basename(path) !== `${String(claim.keyHash || "").replace(/^sha256:/, "")}.json`) errors.push(`Idempotency path does not match its key hash: ${path}`);
       const ref = assertArtifactRef(claim.requestArtifactRef);
       const key = `${ref.kind}/${ref.id}@${ref.version}:${ref.contentHash}`;

@@ -118,7 +118,7 @@ function bundleHashInput(manifest) {
 function assertBundleManifest(manifest) {
   assertPlainObject(manifest, "bundle manifest");
   assertExactKeys(manifest, ["kind", "contractVersion", "bundleFormatVersion", "bundleHash", "createdAt", "sourceProject", "purpose", "contentPolicy", "storeDirectory", "entries", "summary"], [], "bundle manifest");
-  const supportedPair = manifest.contractVersion === "2.3.1" && manifest.bundleFormatVersion === "1.0.0" || manifest.contractVersion === "2.4.0" && manifest.bundleFormatVersion === "1.1.0";
+  const supportedPair = manifest.contractVersion === "2.3.1" && manifest.bundleFormatVersion === "1.0.0" || ["2.4.0", "2.5.0"].includes(manifest.contractVersion) && manifest.bundleFormatVersion === "1.1.0";
   if (manifest.kind !== "cineweave_project_bundle_manifest" || !supportedPair) throw new TypeError("Unsupported CineWeave bundle manifest version");
   if (!contentHashPattern.test(manifest.bundleHash || "")) throw new TypeError("bundleHash must be a lowercase SHA-256 hash");
   if (Number.isNaN(Date.parse(manifest.createdAt))) throw new TypeError("createdAt must be an ISO date-time");
@@ -128,7 +128,7 @@ function assertBundleManifest(manifest) {
   assertExactKeys(manifest.sourceProject, ["projectId", "projectManifestHash", "runtimeVersion"], [], "sourceProject");
   if (!new RegExp(`^${identifier}$`).test(manifest.sourceProject.projectId || "")) throw new TypeError("sourceProject.projectId is invalid");
   if (!contentHashPattern.test(manifest.sourceProject.projectManifestHash || "")) throw new TypeError("sourceProject.projectManifestHash is invalid");
-  if (!["2.2.0", "2.3.0", "2.3.1", "2.4.0"].includes(manifest.sourceProject.runtimeVersion)) throw new TypeError("sourceProject.runtimeVersion is unsupported");
+  if (!["2.2.0", "2.3.0", "2.3.1", "2.4.0", "2.5.0"].includes(manifest.sourceProject.runtimeVersion)) throw new TypeError("sourceProject.runtimeVersion is unsupported");
   assertPlainObject(manifest.contentPolicy, "contentPolicy");
   const contentPolicyKeys = manifest.bundleFormatVersion === "1.1.0" ? ["containsProjectContent", "containsReferenceMedia", "redistributionAuthorized", "rightsApprovalImplied"] : ["containsProjectContent", "redistributionAuthorized", "rightsApprovalImplied"];
   assertExactKeys(manifest.contentPolicy, contentPolicyKeys, [], "contentPolicy");
@@ -202,7 +202,7 @@ export async function exportProjectBundle(projectRoot, bundleDirectory, options 
     const projectManifest = await readStrictJson(join(store, "project.json"));
     const manifest = {
       kind: "cineweave_project_bundle_manifest",
-      contractVersion: "2.4.0",
+      contractVersion: "2.5.0",
       bundleFormatVersion: BUNDLE_FORMAT_VERSION,
       bundleHash: "",
       createdAt: options.createdAt || new Date().toISOString(),

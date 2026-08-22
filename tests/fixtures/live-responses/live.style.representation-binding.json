@@ -1,0 +1,11 @@
+{
+  "caseId": "live.style.representation-binding",
+  "selectedSkill": "cineweave-style",
+  "route": "representation_binding",
+  "outcome": "answer",
+  "contractKinds": ["cineweave_codex_representation_binding"],
+  "response": "该 RepresentationBinding 不修改 CharacterSpec，也不改写身份 Canon。眼睛允许适度放大虹膜和简化内部表面，但必须继续保持狭长、轻微上挑和原有眼距；禁止变成圆大眼。脸部轮廓、浅痣和稳定重心作为全局保留锚点，禁止被动画默认脸型或失重姿态覆盖。每项规则分别声明允许与禁止转换，并按近景、全身等可见尺度编译；Provider 控制留给 Production Adapter。",
+  "questions": [],
+  "unsupportedClaims": []
+}
+

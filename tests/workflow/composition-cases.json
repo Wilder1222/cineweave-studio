@@ -1,5 +1,5 @@
 {
-  "version": "2.4.0",
+  "version": "2.5.0",
   "cases": [
     {
       "id": "character-style-director-keyframe",
@@ -24,6 +24,30 @@
       ]
     },
     {
+      "id": "semantic-character-morphology-lock",
+      "workflowExample": "packages/cineweave-contracts/examples/workflow-plan-character-morphology.json",
+      "requiresSkills": ["cineweave-character", "cineweave-production"],
+      "requiresOutputs": [
+        "cineweave_codex_character_morphology_spec",
+        "cineweave_codex_asset_recipe",
+        "cineweave_codex_morphology_review",
+        "cineweave_codex_character_spec"
+      ]
+    },
+    {
+      "id": "cross-representation-character-binding",
+      "workflowExample": "packages/cineweave-contracts/examples/workflow-plan-cross-representation.json",
+      "requiresSkills": ["cineweave-style"],
+      "requiresOutputs": [
+        "cineweave_codex_style_exploration_brief",
+        "cineweave_codex_style_option_set",
+        "cineweave_codex_style_preference_feedback",
+        "cineweave_codex_style_package",
+        "cineweave_codex_representation_binding",
+        "cineweave_codex_style_compile"
+      ]
+    },
+    {
       "id": "reference-to-style-prompt",
       "workflowExample": "packages/cineweave-contracts/examples/workflow-plan-reference-prompt.json",
       "requiresSkills": ["cineweave-reference", "cineweave-style", "cineweave-prompt"],
@@ -32,6 +56,22 @@
         "cineweave_codex_reference_observation",
         "cineweave_codex_reference_binding_set",
         "cineweave_codex_style_compile",
+        "cineweave_codex_image_prompt"
+      ]
+    },
+    {
+      "id": "portrait-reference-decomposition",
+      "workflowExample": "packages/cineweave-contracts/examples/workflow-plan-portrait-reference.json",
+      "requiresSkills": ["cineweave-reference", "cineweave-character", "cineweave-style", "cineweave-director", "cineweave-prompt"],
+      "requiresOutputs": [
+        "cineweave_codex_reference_asset",
+        "cineweave_codex_reference_review",
+        "cineweave_codex_reference_observation",
+        "cineweave_codex_character_spec",
+        "cineweave_codex_character_appearance_state",
+        "cineweave_codex_style_compile",
+        "cineweave_codex_shot_spec",
+        "cineweave_codex_reference_binding_set",
         "cineweave_codex_image_prompt"
       ]
     }

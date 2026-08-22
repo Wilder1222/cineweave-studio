@@ -7,11 +7,11 @@
   "required": ["kind", "contractVersion", "projectId", "name", "createdAt", "runtimeVersion", "storage"],
   "properties": {
     "kind": { "const": "cineweave_project_manifest" },
-    "contractVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1", "2.4.0"] },
+    "contractVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1", "2.4.0", "2.5.0"] },
     "projectId": { "$ref": "common.schema.json#/$defs/identifier" },
     "name": { "type": "string", "minLength": 1, "maxLength": 240 },
     "createdAt": { "type": "string", "format": "date-time" },
-    "runtimeVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1", "2.4.0"] },
+    "runtimeVersion": { "enum": ["2.2.0", "2.3.0", "2.3.1", "2.4.0", "2.5.0"] },
     "storage": {
       "type": "object",
       "additionalProperties": false,
@@ -72,6 +72,20 @@
       "then": {
         "properties": {
           "runtimeVersion": { "const": "2.4.0" },
+          "storage": {
+            "required": ["executionDirectory", "idempotencyDirectory", "referenceBlobDirectory"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "contractVersion": { "const": "2.5.0" } },
+        "required": ["contractVersion"]
+      },
+      "then": {
+        "properties": {
+          "runtimeVersion": { "const": "2.5.0" },
           "storage": {
             "required": ["executionDirectory", "idempotencyDirectory", "referenceBlobDirectory"]
           }

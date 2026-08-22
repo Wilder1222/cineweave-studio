@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/Wilder1222/cineweave-studio/actions/workflows/validate.yml"><img alt="Validation" src="https://img.shields.io/github/actions/workflow/status/Wilder1222/cineweave-studio/validate.yml?branch=main&style=flat-square&label=validation"></a>
   <img alt="Codex plugin" src="https://img.shields.io/badge/Codex-Plugin-1D6FFF?style=flat-square">
-  <img alt="Version 2.4.0" src="https://img.shields.io/badge/version-2.4.0-14B8A6?style=flat-square">
+  <img alt="Version 2.5.0" src="https://img.shields.io/badge/version-2.5.0-14B8A6?style=flat-square">
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-111827?style=flat-square">
 </p>
 
@@ -44,9 +44,12 @@ the director system no longer owns general prompt management.
 | Start with | CineWeave returns |
 | --- | --- |
 | “I only know how the character should feel.” | Comparable identity directions under one neutral fixture—no automatic beauty score or identity lock. |
+| “I like this face direction, but I cannot describe the features.” | A provider-neutral semantic morphology spec with structural relations, locks, bounded variation and neutral three-view review. |
+| “Keep this person recognizable as live action, Anime and Manga.” | Exact Character-to-Style `RepresentationBinding` artifacts and a six-family comparison fixture without mutating Canon. |
 | “Turn this premise into a real scene.” | Dramatic question, causal beats, playable action, subtext and continuity facts. |
 | “Use this courtyard in several shots.” | Versioned geography, material, weather, physical light and interaction constraints. |
 | “I like this look but not the depicted person.” | A byte-bound reference asset, atomic style observation and explicit identity ignore rules. |
+| “拆解这张人像并反推可复用提示词。” | Separate face-identity, skin-material, appearance, style and capture observations, then compile only the requested reusable contracts. |
 | “Make the shot feel intimate.” | Blocking, attention order, lens, depth, motivated shot lighting and a stable temporal end state. |
 | “Write the actual image prompt.” | A reusable Chinese, English or bilingual PromptRecord with a visibility budget and testable constraints. |
 | “Build a 3×3 sheet reliably.” | Independent tile tasks and deterministic external assembly with per-tile hashes. |
@@ -56,7 +59,7 @@ the director system no longer owns general prompt management.
 Install the immutable release tag:
 
 ```bash
-codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.4.0
+codex plugin marketplace add Wilder1222/cineweave-studio --ref v2.5.0
 codex plugin add cineweave-studio@cineweave-studio
 ```
 
@@ -72,9 +75,9 @@ upstream contract refs. The `$cineweave` router is optional.
 | --- | --- | --- |
 | `$cineweave` | intake and acyclic workflow planning | `CreativeBrief`, `WorkflowPlan` |
 | `$cineweave-story` | dramatic causality, script scenes and story continuity | `StoryBrief`, `BeatSheet`, `ScriptScene`, `ContinuityLedger` |
-| `$cineweave-character` | identity, appearance, behavior and actor timing | exploration contracts, `CharacterSpec`, `CharacterBinding`, `PerformanceTimeline` |
+| `$cineweave-character` | identity exploration, semantic morphology, appearance, behavior and actor timing | exploration contracts, `CharacterMorphologySpec`, `MorphologyReview`, `CharacterSpec`, bindings and timelines |
 | `$cineweave-scene` | geography, architecture, materials, physical light and interaction | `SceneSpec`, `SceneState`, `SceneLightState`, bindings and reviews |
-| `$cineweave-style` | medium and representational visual/temporal grammar | `StylePackage`, `StyleCompile`, `StyleLightGrammar` |
+| `$cineweave-style` | one-axis style exploration and visual/temporal representation grammar | style exploration contracts, `StylePackage`, `RepresentationBinding`, `StyleCompile`, `StyleLightGrammar` |
 | `$cineweave-reference` | content-addressed media, atomic observations, suitability and exact role bindings | `ReferenceAsset`, `ReferenceObservation`, `ReferenceReview`, `ReferenceBindingSet` |
 | `$cineweave-director` | shot purpose, blocking, camera, shot light use and time | `ShotSpec`, `ShotLightingPlan`, `TemporalSpec`, storyboard |
 | `$cineweave-prompt` | general text-to-image prompt assets | `PromptRecord`, `ImagePrompt`, hypotheses and one-variable repairs |
@@ -89,6 +92,43 @@ identity directions with the same neutral light, pose, hair and simple clothing.
 Do not rank beauty or lock an identity.
 ```
 
+### Semantically sculpt and verify a character
+
+```text
+Use $cineweave-character. Keep the current adult identity direction, make the
+eye opening moderately longer and slightly less vertically open, preserve the
+jaw and nose, and explore only nearby eye-shape variants. Express the edit as
+semantic axes and structural relations—not provider weights or biometric
+measurements. Then plan a neutral front, three-quarter and profile review; do
+not lock identity until I approve the review.
+```
+
+### Explore style without changing Canon
+
+```text
+Use $cineweave-style. Keep the exact character, appearance, scene, action,
+camera and physical light. Compare four representation directions along one
+axis only: natural-human, naturalistic Anime, cinematic Manga and painterly
+illustration. Return a StyleOptionSet for human preference; do not activate a
+StylePackage automatically.
+```
+
+### Bind one character across representations
+
+```text
+Use $cineweave-style. Map this exact CharacterSpec into the approved Anime
+StylePackage. The eyes may be simplified and the iris modestly enlarged, but
+preserve their long shape, spacing, upward outer-corner direction and subtle
+asymmetry. Return a RepresentationBinding; do not rewrite CharacterSpec.
+```
+
+The contract package includes complete provider-neutral examples for
+[`Natural Human`](packages/cineweave-contracts/examples/style-package.json),
+[`Anime`](packages/cineweave-contracts/examples/style-package-anime.json) and
+[`Manga`](packages/cineweave-contracts/examples/style-package-manga.json), plus
+deterministic family fixtures in the
+[`recipe catalog`](packages/cineweave-contracts/recipes/catalog.json).
+
 ### Bind a reference without contamination
 
 ```text
@@ -97,6 +137,20 @@ for palette and light only. Ignore the depicted person's identity, costume,
 pose, background content and composition. Keep rights unresolved and block
 production promotion until an exact LicenseProfile is approved.
 ```
+
+### Decompose a portrait before compiling its prompt
+
+```text
+Use $cineweave-reference to ingest and review this portrait, then create separate
+face_identity, skin_surface, skin_material, makeup, hair, capture, lighting, composition and
+style/palette observations only where visible. Keep lens metadata inferred and
+rights unresolved. Hand stable identity to CharacterSpec, the visible skin and
+styling state to CharacterAppearanceState, representation to StyleCompile and
+viewpoint to ShotSpec; bind the exact targets before Prompt compiles the image.
+```
+
+The complete dependency example is
+[`workflow-plan-portrait-reference.json`](packages/cineweave-contracts/examples/workflow-plan-portrait-reference.json).
 
 ### Develop story before shots
 
@@ -166,6 +220,13 @@ Four boundaries prevent common drift:
 
 - Reference binds exact bytes and one role per observation; downstream Skills
   decide how accepted evidence affects their own domain.
+- Portrait surface semantics stay split: CharacterSpec protects stable baseline
+  facts, CharacterAppearanceState records the current visible skin state, and
+  StyleCompile controls realism/retouch representation at the requested scale.
+- Identity, appearance and representation remain three independent spaces:
+  semantic morphology defines the person, AppearanceState defines the current
+  construction and condition, and RepresentationBinding translates protected
+  anchors into one visual medium without mutating Canon.
 - Scene places physical light sources; Style defines how light is represented;
   Director chooses how existing sources function in one shot.
 - Character defines actor behavior timing; Director aligns camera timing without
@@ -178,7 +239,7 @@ resolves “latest” or relies on hidden conversation state.
 
 ## Deterministic local runtime
 
-V2.4.0 includes a dependency-free Node.js runtime for immutable local
+V2.5.0 includes a dependency-free Node.js runtime for immutable local
 artifacts, bounded content-addressed reference ingestion, exact dependency
 graphs, hash-bound approval gates, safe project transfer, deterministic board
 assembly and trusted adapter execution with byte-verifiable receipts.
@@ -236,11 +297,12 @@ image model to invent the grid, labels and all panels in a single pass.
 
 ## Verification
 
-The V2.4.0 gate validates 63 contracts and 61 uniquely owned routes, all
-schema/example pairs, semantic positive and negative cases, 28 static behavior
-cases, an 11-case live-evaluation replay set and 37 deterministic runtime test
-definitions, plus standalone bundles, reference links, rights boundaries,
-media-ingestion threats and distributable assets.
+The V2.5.0 gate validates 69 contracts, 66 uniquely owned routes and 14 built-in
+deterministic recipes. It also validates every schema/example pair, semantic
+positive and negative cases, 32 static behavior cases, a 13-case deterministic
+live-evaluation replay set and 37 runtime tests, plus standalone Skill bundles,
+reference links, rights boundaries, media-ingestion threats and distributable
+assets.
 
 ```bash
 npm test
@@ -250,7 +312,7 @@ npm run evals:live -- --plan --model <model>
 
 CI runs on Windows and Linux. See [release policy](docs/release.md),
 [architecture](docs/architecture.md), [language policy](docs/language-policy.md)
-and [V2.2 → V2.3 migration](docs/migration/v2.2-to-v2.3.md).
+and the [V2.5 identity and representation research note](docs/research/2026-08-22-v2.5-identity-and-representation-foundation.md).
 
 ## Repository map
 

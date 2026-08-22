@@ -1,13 +1,13 @@
 {
   "kind": "cineweave_project_bundle_manifest",
-  "contractVersion": "2.4.0",
+  "contractVersion": "2.5.0",
   "bundleFormatVersion": "1.1.0",
-  "bundleHash": "sha256:149079d9a213d26aff8f8300f7c878421585c7dbcb728b08bf6d0316e4900d13",
+  "bundleHash": "sha256:d1006410bdab709aec5bcbf6842b8996a45264f9ec66a61cd9c94d06e36ff656",
   "createdAt": "2026-08-21T10:00:00.000Z",
   "sourceProject": {
     "projectId": "project.bundle-example",
     "projectManifestHash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-    "runtimeVersion": "2.4.0"
+    "runtimeVersion": "2.5.0"
   },
   "purpose": "local_transfer",
   "contentPolicy": {

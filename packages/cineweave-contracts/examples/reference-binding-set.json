@@ -32,7 +32,7 @@
       "role": "style",
       "priority": 40,
       "required": true,
-      "notes": "只传递低饱和色盘、柔和侧光和皮肤微纹理。"
+      "notes": "只传递低饱和暖灰色盘、克制对比和柔和高光过渡；光源结构与皮肤物理状态保持排除。"
     }
   ],
   "resolutionOrder": ["identity", "appearance", "geography", "composition", "lighting", "style"],

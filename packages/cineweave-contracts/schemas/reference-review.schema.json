@@ -13,7 +13,7 @@
     "purpose": { "type": "string", "minLength": 1, "maxLength": 1500 },
     "source": { "$ref": "#/$defs/source" },
     "decision": { "enum": ["recommended", "conditional", "not_recommended"] },
-    "primaryRole": { "enum": ["identity", "appearance", "performance", "composition", "capture", "lighting", "style", "material", "background", "mask", "reference"] },
+    "primaryRole": { "enum": ["identity", "appearance", "skin_material", "performance", "composition", "capture", "lighting", "style", "material", "background", "mask", "reference"] },
     "referenceType": { "enum": ["identity", "style_and_costume", "capture_style", "pose_performance", "environment", "mixed", "unknown"] },
     "authority": { "$ref": "#/$defs/authority" },
     "recommendedCategories": { "$ref": "#/$defs/stringList" },

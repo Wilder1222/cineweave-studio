@@ -1,4 +1,4 @@
-# CineWeave Studio v2.4 architecture
+# CineWeave Studio v2.5 architecture
 
 ## Design contract
 
@@ -45,9 +45,9 @@ phases without an artifact referencing its own downstream output.
 | --- | --- | --- |
 | intake and workflow | `cineweave` | specialist artifacts |
 | story causality and continuity | `cineweave-story` | shots or image prompts |
-| identity, appearance and actor behavior | `cineweave-character` | medium, camera or scene geography |
+| semantic morphology, identity, stable surface baseline, appearance state and actor behavior | `cineweave-character` | medium, camera or scene geography |
 | geography, materials, interaction and physical light | `cineweave-scene` | post-process look or shot source selection |
-| representational visual and temporal grammar | `cineweave-style` | identity, geography or physical source placement |
+| style exploration, RepresentationBinding, visual/temporal grammar and realism treatment | `cineweave-style` | canonical identity, physical skin/material state, geography or source placement |
 | reference bytes, observations, suitability and role bindings | `cineweave-reference` | character/scene/style design, rights grants or provider execution |
 | blocking, camera, shot light use and time | `cineweave-director` | persistent identity or general prompt library |
 | text-to-image prompt assets | `cineweave-prompt` | story causality or shot invention when a ShotSpec is required |
@@ -65,9 +65,62 @@ applies rights gates for exact target contracts. Character, Scene, Style,
 Director and Prompt consume these records without taking ownership of ingest or
 silently treating one upload as identity, costume, pose and style at once.
 
+For portrait decomposition, the common evidence split is:
+
+```text
+face_identity  → CharacterSpec identity
+skin_surface   → CharacterSpec stable baseline
+skin_material  → CharacterAppearanceState current state
+makeup / hair  → CharacterAppearanceState
+capture        → ShotSpec viewpoint and focus hypothesis
+palette/style/surface_style → StyleCompile representation and realism treatment
+all accepted observations → exact post-target ReferenceBindingSet → ImagePrompt
+```
+
+Static capture evidence describes visible perspective and focus cues. Focal
+length, aperture, hardware and motion remain inferred unless trusted metadata
+or declarations establish them. Normalized skin/realism values are creative
+intent, not biometric or physical measurements, provider controls or quality
+guarantees.
+
 SHA-256 answers “are these the same bytes?” only. Content-credential trust,
 copyright, license scope, likeness consent, training, publication and
 redistribution remain separate evidence and policy decisions.
+
+### Identity, appearance and representation
+
+V2.5 treats character design as three orthogonal spaces:
+
+```text
+CharacterMorphologySpec → CharacterSpec identity
+                                  ×
+                    CharacterAppearanceState
+                                  ×
+                         StylePackage
+                                  ↓
+                    RepresentationBinding
+                                  ↓
+          photoreal / anime / manga / illustration / 3D / hybrid
+```
+
+Morphology axes and structural relations are provider-neutral design intent,
+not biometric measurements, landmarks, embeddings, blendshapes or model
+weights. A neutral front/three-quarter/profile MorphologyReview plus an exact
+human approval is required before identity lock.
+
+StylePackage defines a representation model, abstraction budget and
+scale-dependent detail budget. RepresentationBinding then states which exact
+Character anchors survive, how each scope may transform and what is forbidden.
+It can reinterpret Canon but cannot mutate it. Natural Human, Anime and Manga
+therefore share Character and Scene facts while using different surface,
+linework, shading, depth, performance and evaluation grammar.
+
+Family fixtures generate each candidate independently. Natural Human uses
+neutral-close, warm-backlight and full-body tests; Anime uses neutral,
+expression and action tests; Manga uses ink, dramatic and action-panel tests.
+Cross-representation review holds the fixture constant and changes only the
+representation family. Findings remain dimension-level PASS/WARN/FAIL records,
+never one beauty, realism or universal style score.
 
 ### Light
 
@@ -111,7 +164,7 @@ visibility, compatibility and control value.
   policies are explicit opt-ins.
 - Project bundles list every allowed store file with a byte hash and reject
   links, traversal, unknown or unexpected files and existing target stores.
-  V2.4 format 1.1 includes exact reference blobs; import verifies a staged
+  V2.5 continues bundle format 1.1 with exact reference blobs; import verifies a staged
   project before atomically installing its store.
 - Reference ingestion allow-lists PNG, JPEG, WebP, MP4/M4V, MOV and WebM,
   compares extension with a bounded signature/container probe, limits bytes and
@@ -137,16 +190,17 @@ boundaries.
 
 ## Contracts and portable bundles
 
-The canonical manifest owns 63 contract kinds. Each Skill declares its portable
+The canonical manifest owns 69 contract kinds. Each Skill declares its portable
 subset in `skills/<skill>/contracts.json`. Bundle construction copies only the
 needed schemas and recipes and rewrites local references, so a specialist bundle
 does not depend on the repository layout.
 
-Old 2.0, 2.2, 2.3.0 and 2.3.1 contract schemas remain valid where their data
-shape did not break. New reference lifecycle records, ArtifactGraph and the
-suite runtime use `contractVersion: 2.4.0`; ProjectBundle format 1.1 carries
-reference blobs while the runtime still parses legacy V2.3.1 format 1.0
-bundles. Existing project manifests and immutable artifacts are not rewritten.
+Old 2.0, 2.2, 2.3.0, 2.3.1 and 2.4.0 contract schemas remain valid where their
+data shape did not break. V2.5 adds new semantic contracts without rewriting
+older artifacts; suite/runtime envelopes use `contractVersion: 2.5.0` while
+domain contracts retain the earliest compatible version. ProjectBundle format
+1.1 carries reference blobs and remains compatible with V2.4 bundles; the
+runtime also verifies and imports legacy V2.3.1 format 1.0 bundles.
 
 ## Verification model
 
@@ -173,7 +227,8 @@ Release validation covers:
   Skill and a should-not-activate case;
 - standalone bundles, links, security and distributable media rights.
 
-See [V2.4 reference decisions](research/2026-08-22-v2.4-reference-assets-and-bindings.md),
+See [V2.5 identity and representation decisions](research/2026-08-22-v2.5-identity-and-representation-foundation.md),
+[V2.4 reference decisions](research/2026-08-22-v2.4-reference-assets-and-bindings.md),
 [V2.3.1 graph and bundle decisions](research/2026-08-21-v2.3.1-artifact-graph-and-project-bundles.md),
 [V2.3 execution decisions](research/2026-08-21-v2.3-execution-and-live-evals.md)
 and [roadmap](roadmap.md).

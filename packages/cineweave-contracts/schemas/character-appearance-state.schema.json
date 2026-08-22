@@ -526,6 +526,92 @@
         }
       }
     },
+    "skinMaterialLook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baselineRelation",
+        "undertoneShift",
+        "makeupCoverage",
+        "hydration",
+        "microRoughness",
+        "specularStrength",
+        "translucencyReadability",
+        "poreVisibility",
+        "microTextureVisibility",
+        "peachFuzzVisibility",
+        "tonalVariation",
+        "rednessVariation",
+        "sebumVisibility",
+        "imperfectionVisibility",
+        "zoneVariation",
+        "temporaryConditions",
+        "lightResponse",
+        "identityPreservation",
+        "calibration"
+      ],
+      "properties": {
+        "baselineRelation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800
+        },
+        "undertoneShift": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "makeupCoverage": { "$ref": "#/$defs/intentScale" },
+        "hydration": { "$ref": "#/$defs/intentScale" },
+        "microRoughness": { "$ref": "#/$defs/intentScale" },
+        "specularStrength": { "$ref": "#/$defs/intentScale" },
+        "translucencyReadability": { "$ref": "#/$defs/intentScale" },
+        "poreVisibility": { "$ref": "#/$defs/intentScale" },
+        "microTextureVisibility": { "$ref": "#/$defs/intentScale" },
+        "peachFuzzVisibility": { "$ref": "#/$defs/intentScale" },
+        "tonalVariation": { "$ref": "#/$defs/intentScale" },
+        "rednessVariation": { "$ref": "#/$defs/intentScale" },
+        "sebumVisibility": { "$ref": "#/$defs/intentScale" },
+        "imperfectionVisibility": { "$ref": "#/$defs/intentScale" },
+        "zoneVariation": {
+          "$ref": "#/$defs/stringList"
+        },
+        "temporaryConditions": {
+          "$ref": "#/$defs/optionalStringList"
+        },
+        "lightResponse": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800
+        },
+        "identityPreservation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800
+        },
+        "calibration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scale",
+            "notMeasuredPhysicalProperty",
+            "notBiometric",
+            "notProviderControl"
+          ],
+          "properties": {
+            "scale": { "const": "normalized_creative_intent" },
+            "notMeasuredPhysicalProperty": { "const": true },
+            "notBiometric": { "const": true },
+            "notProviderControl": { "const": true }
+          }
+        }
+      }
+    },
+    "intentScale": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
     "makeupLook": {
       "type": "object",
       "additionalProperties": false,
@@ -755,6 +841,9 @@
         "surfaceState"
       ],
       "properties": {
+        "skinMaterial": {
+          "$ref": "#/$defs/skinMaterialLook"
+        },
         "makeup": {
           "$ref": "#/$defs/makeupLook"
         },

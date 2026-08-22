@@ -41,6 +41,20 @@
       ]
     },
     {
+      "id": "style-portrait-realism-profile",
+      "mode": "style_compile",
+      "prompt": "为已定义角色的美妆近景编译克制写实表现：保留自然不对称和可见微纹理，适度理想化与修图；不得改变角色肤色、皮肤状态或面部结构。",
+      "expectedOutput": "StyleCompile with calibrated realismProfile",
+      "assertions": [
+        "realism dimensions are independently bounded",
+        "profile is provider neutral and not a quality score",
+        "CharacterSpec identity remains protected",
+        "CharacterAppearanceState physical skin state remains protected",
+        "microdetail is compiled for the requested shot scale",
+        "no output realism guarantee is made"
+      ]
+    },
+    {
       "id": "style-review-drift",
       "mode": "style_review",
       "prompt": "候选图保留了宋韵色盘，但背景复制了参考图的宫殿布局，且妆容变成现代网红妆；请只提出最小风格修复。",

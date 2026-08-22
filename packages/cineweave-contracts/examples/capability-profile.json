@@ -46,6 +46,54 @@
       ]
     },
     {
+      "capabilityId": "semantic_morphology",
+      "support": "partial",
+      "maxInputs": 1,
+      "maxSubjects": 1,
+      "supportedScopes": ["face_morphology", "body_morphology"],
+      "constraints": ["Semantic axes compile to descriptive controls; they are not provider weights or measured anatomy."]
+    },
+    {
+      "capabilityId": "style_reference",
+      "support": "partial",
+      "maxInputs": 3,
+      "maxSubjects": 3,
+      "supportedScopes": ["linework", "shading", "color_system", "surface_style"],
+      "constraints": ["Each style reference remains role-scoped and cannot supply identity."]
+    },
+    {
+      "capabilityId": "representation_binding",
+      "support": "strong",
+      "maxInputs": 1,
+      "maxSubjects": 3,
+      "supportedScopes": ["character", "representation"],
+      "constraints": ["The binding is compiled before provider execution and never mutates CharacterSpec."]
+    },
+    {
+      "capabilityId": "cross_representation",
+      "support": "partial",
+      "maxInputs": 6,
+      "maxSubjects": 1,
+      "supportedScopes": ["full_character", "representation"],
+      "constraints": ["Cross-family identity requires semantic-anchor review rather than a single pixel similarity score."]
+    },
+    {
+      "capabilityId": "face_landmarks",
+      "support": "unsupported",
+      "maxInputs": 0,
+      "maxSubjects": 0,
+      "supportedScopes": [],
+      "constraints": ["This adapter exposes no landmark control; hard landmark requirements must block or select another adapter."]
+    },
+    {
+      "capabilityId": "mesh_morph",
+      "support": "unsupported",
+      "maxInputs": 0,
+      "maxSubjects": 0,
+      "supportedScopes": [],
+      "constraints": ["A 3D-looking image is not a mesh asset or morph-target result."]
+    },
+    {
       "capabilityId": "face_identity",
       "support": "strong",
       "maxInputs": 3,
@@ -127,6 +175,16 @@
         "face_identity"
       ],
       "minimumConfidence": 0.8
+    },
+    {
+      "capabilityId": "semantic_morphology",
+      "requiredRoles": ["face_morphology", "body_morphology"],
+      "minimumConfidence": 0.75
+    },
+    {
+      "capabilityId": "style_reference",
+      "requiredRoles": ["linework"],
+      "minimumConfidence": 0.7
     },
     {
       "capabilityId": "full_body_identity",

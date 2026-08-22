@@ -2,7 +2,42 @@
 
 ## Unreleased
 
-No unreleased changes.
+- No unreleased changes.
+
+## 2.5.0 — 2026-08-22
+
+- added provider-neutral `CharacterMorphologySpec` and `MorphologyReview`
+  contracts for semantic face/body axes, structural relations, hard and soft
+  locks, bounded nearby variation, neutral three-view evidence and human-only
+  identity approval;
+- added one-axis `StyleExplorationBrief`, `StyleOptionSet` and
+  `StylePreferenceFeedback` contracts so users can compare representations
+  without changing character, appearance, scene, action, camera or physical
+  light;
+- added exact `RepresentationBinding` between Character and Style, including
+  abstraction budgets, scale visibility, allowed transformations and protected
+  identity anchors for photoreal, Anime, Manga, illustration, stylized 3D and
+  scope-based hybrid representations;
+- added Natural Human Rendering as a cross-Skill capability spanning stable
+  surface facts, current skin-material state, representational light and
+  surface grammar, human capture, visibility-aware prompting and family-specific
+  ControlBench checks—without adding a monolithic realism Skill;
+- added atomic `face_identity`, `skin_surface`, `skin_material`, `capture` and
+  other representation evidence roles for portrait decomposition, with an
+  end-to-end role-scoped portrait WorkflowPlan and explicit identity exclusion;
+- added six deterministic production recipes for morphology, natural-human,
+  one-axis style exploration, Anime, Manga and six-family cross-representation
+  validation; each generates independent tasks, retries failed tasks only and
+  assembles approved outputs deterministically;
+- expanded provider capabilities, evidence roles, family Bench semantics,
+  semantic negative tests, activation/composition cases and deterministic live
+  replay fixtures while preserving provider-neutral Canon and human gates;
+- advanced the local runtime and project schemas additively to V2.5.0 while
+  retaining non-destructive support for valid V2.2, V2.3.x and V2.4 artifacts
+  and project bundles;
+- expanded the release gate to 69 contracts, 66 uniquely owned routes, 14
+  built-in recipes, 32 behavior cases, 13 live replay cases and 37 runtime tests
+  across all nine standalone/composable Skills.
 
 ## 2.4.0 — 2026-08-22
 
